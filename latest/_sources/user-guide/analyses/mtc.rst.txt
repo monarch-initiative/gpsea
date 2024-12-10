@@ -1,8 +1,8 @@
 .. _mtc:
 
-===========================
+###########################
 Multiple-testing correction
-===========================
+###########################
 
 **********
 Background
@@ -37,6 +37,7 @@ it is likely that we will obtain one or more false-positive results.
 
 GPSEA offers two approaches to mitigate this problem: multiple-testing correction (MTC) procedures
 and MT filters to choose the terms to be tested.
+
 
 .. _mtc-correction-procedures:
 
@@ -118,27 +119,38 @@ may "survive" the multiple-testing correction.
 
 In the context of GPSEA, we represent the concept of phenotype filtering 
 by :class:`~gpsea.analysis.mtc_filter.PhenotypeMtcFilter`.
-We provide three filtering strategies.
+We provide three filtering strategies, each of which is a subclass
+of :class:`~gpsea.analysis.mtc_filter.PhenotypeMtcFilter`
+and can, therefore, be used
+as a component of :class:`~gpsea.analysis.pcats.HpoTermAnalysis`,
+as shown in :ref:`custom-hpo-analysis`.
+
+There are three phenotype MT filters:
+
+* Use all terms
+* Specified terms
+* HPO MT filter
 
 
-.. _use-all-terms-strategy:
+.. _use-all-terms-mt-filter:
 
-Test all terms
---------------
+Use all terms
+-------------
 
-The first MT filtering strategy is the simplest - do not apply any filtering at all.
-This will result in testing all terms and we do not recommend this strategy, 
-but it can be used to disable MT filtering.
+The first MT filtering strategy is the simplest - it does not apply any filtering,
+resulting in testing all terms.
+We do not recommend this strategy, but it can be used to disable MT filtering.
 
 The strategy is implemented in :class:`~gpsea.analysis.mtc_filter.UseAllTermsMtcFilter`.
 
 >>> from gpsea.analysis.mtc_filter import UseAllTermsMtcFilter
 >>> use_all = UseAllTermsMtcFilter()
 
-.. _specify-terms-strategy:
 
-Specify terms strategy
-----------------------
+.. _specified-terms-mt-filter:
+
+Specified terms
+---------------
 
 In presence of a specific hypothesis as to which terms may be different between groups, 
 then you can specify these terms in :class:`~gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter`.
@@ -159,12 +171,12 @@ we pass an iterable (e.g. a tuple) with these two terms as an argument:
 2
 
 
-.. _hpo-mtc-filter-strategy:
+.. _hpo-mt-filter:
 
-HPO MT filter strategy
------------------------
+HPO MT filter
+-------------
 
-The HPO MT strategy involves making several domain judgments and takes advantage of the HPO structure.
+The HPO MT filter involves making several domain judgments and takes advantage of the HPO structure.
 The strategy needs access to HPO:
 
 >>> import hpotk

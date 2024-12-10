@@ -239,7 +239,7 @@ utility function to generate phenotype predicates for all HPO terms.</p>
 including the <em>indirect</em> annotations whose presence is implied by the <a class="reference internal" href="../glossary.html#true-path-rule"><span class="std std-ref">True path rule</span></a>.</p>
 </section>
 <section id="statistical-analysis">
-<h4>Statistical analysis<a class="headerlink" href="#statistical-analysis" title="Link to this heading"></a></h4>
+<span id="phenotype-groups-statistical-analysis"></span><h4>Statistical analysis<a class="headerlink" href="#statistical-analysis" title="Link to this heading"></a></h4>
 <p>We will use <a class="reference internal" href="#fisher-exact-test"><span class="std std-ref">Fisher exact test</span></a> to test the association
 between genotype and phenotype groups, as described previously.</p>
 <p>In the case of this cohort, we can test association between having a frameshift variant and one of 369 HPO terms.
@@ -255,7 +255,7 @@ of false positive G/P associations.
 The available MTC procedures are listed in the <a class="reference internal" href="mtc.html#mtc-correction-procedures"><span class="std std-ref">Multiple-testing correction procedures</span></a> section.</p>
 <p>We must pick one of these to perform genotype-phenotype analysis.</p>
 <section id="default-analysis">
-<h5>Default analysis<a class="headerlink" href="#default-analysis" title="Link to this heading"></a></h5>
+<span id="default-hpo-analysis"></span><h5>Default analysis<a class="headerlink" href="#default-analysis" title="Link to this heading"></a></h5>
 <p>We recommend using HPO MT filter (<a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter" title="gpsea.analysis.mtc_filter.HpoMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></a>) as a phenotype MT filter
 and Benjamini-Hochberg for multiple testing correction.
 The default analysis can be configured with <a class="reference internal" href="../../apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.configure_hpo_term_analysis" title="gpsea.analysis.pcats.configure_hpo_term_analysis"><code class="xref py py-func docutils literal notranslate"><span class="pre">configure_hpo_term_analysis()</span></code></a> convenience method.</p>
@@ -263,18 +263,21 @@ The default analysis can be configured with <a class="reference internal" href="
 <span class="gp">&gt;&gt;&gt; </span><span class="n">analysis</span> <span class="o">=</span> <span class="n">configure_hpo_term_analysis</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>At this point, the <code class="docutils literal notranslate"><span class="pre">analysis</span></code> configured to test
+a cohort for G/P associations.</p>
 </section>
 <section id="custom-analysis">
-<h5>Custom analysis<a class="headerlink" href="#custom-analysis" title="Link to this heading"></a></h5>
-<p>If the defaults do not work, we can configure the analysis manually.
-First, we choose a phenotype MT filter (e.g. <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter" title="gpsea.analysis.mtc_filter.HpoMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></a>):</p>
+<span id="custom-hpo-analysis"></span><h5>Custom analysis<a class="headerlink" href="#custom-analysis" title="Link to this heading"></a></h5>
+<p>If the default selection of phenotype MT filter and multiple testing correction is not an option,
+we can configure the analysis manually.</p>
+<p>First, we choose a phenotype MT filter (e.g. <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter" title="gpsea.analysis.mtc_filter.HpoMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></a>):</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.mtc_filter</span> <span class="kn">import</span> <span class="n">HpoMtcFilter</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_filter</span> <span class="o">=</span> <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">default_filter</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">term_frequency_threshold</span><span class="o">=</span><span class="mf">.2</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>See the <a class="reference internal" href="mtc.html#mtc-filters"><span class="std std-ref">MT filters: Choosing which terms to test</span></a> section for more info on the available MT filters.</p>
+<p>See the <a class="reference internal" href="mtc.html#mtc-filters"><span class="std std-ref">MT filters: Choosing which terms to test</span></a> section for info regarding other phenotype MT filters.</p>
 </div>
 <p>then a statistical test (e.g. Fisher Exact test):</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pcats.stats</span> <span class="kn">import</span> <span class="n">FisherExactTest</span>
@@ -292,6 +295,10 @@ First, we choose a phenotype MT filter (e.g. <a class="reference internal" href=
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_alpha</span> <span class="o">=</span> <span class="mf">0.05</span>
 </pre></div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>See the <a class="reference internal" href="mtc.html#mtc-correction-procedures"><span class="std std-ref">Multiple-testing correction procedures</span></a> section for a list of available MTC procedure codes.</p>
+</div>
 <p>The final <a class="reference internal" href="../../apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.HpoTermAnalysis" title="gpsea.analysis.pcats.HpoTermAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoTermAnalysis</span></code></a> is created as:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pcats</span> <span class="kn">import</span> <span class="n">HpoTermAnalysis</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">analysis</span> <span class="o">=</span> <span class="n">HpoTermAnalysis</span><span class="p">(</span>
@@ -302,6 +309,7 @@ First, we choose a phenotype MT filter (e.g. <a class="reference internal" href=
 <span class="gp">... </span><span class="p">)</span>
 </pre></div>
 </div>
+<p>The <code class="docutils literal notranslate"><span class="pre">analysis</span></code> is identical to the one configured in the <a class="reference internal" href="#default-hpo-analysis"><span class="std std-ref">Default analysis</span></a> section.</p>
 </section>
 </section>
 </section>
@@ -319,8 +327,10 @@ First, we choose a phenotype MT filter (e.g. <a class="reference internal" href=
 <span class="go">24</span>
 </pre></div>
 </div>
-<p>Thanks to phenotype MT filter, we only tested 24 out of 369 terms.
-We can learn more by showing the MT filter report:</p>
+<p>We tested the <code class="docutils literal notranslate"><span class="pre">cohort</span></code> for association between the genotype groups (<code class="docutils literal notranslate"><span class="pre">gt_predicate</span></code>)
+and HPO terms (<code class="docutils literal notranslate"><span class="pre">pheno_predicates</span></code>).
+Thanks to phenotype MT filter, we only tested 24 out of 369 terms.
+The MT filter report shows the filtering details:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">MtcStatsViewer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_viewer</span> <span class="o">=</span> <span class="n">MtcStatsViewer</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_report</span> <span class="o">=</span> <span class="n">mtc_viewer</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
@@ -510,8 +520,9 @@ We can learn more by showing the MT filter report:</p>
 </div></section>
 <section id="genotype-phenotype-associations">
 <h3>Genotype phenotype associations<a class="headerlink" href="#genotype-phenotype-associations" title="Link to this heading"></a></h3>
-<p>Last, let’s explore the associations. The results include a table with all tested HPO terms
-ordered by the corrected p value (Benjamini-Hochberg FDR):</p>
+<p>Last, let’s explore the associations.</p>
+<p>GPSEA displays the associations between genotypes and HPO terms in a table,
+one HPO term per row. The rows are ordered by the corrected p value and nominal p value in descending order.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">summarize_hpo_analysis</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span> <span class="o">=</span> <span class="n">summarize_hpo_analysis</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span>  

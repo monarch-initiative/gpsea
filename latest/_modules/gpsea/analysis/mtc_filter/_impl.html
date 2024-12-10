@@ -267,7 +267,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `UseAllTermsMtcFilter` filters out *no* phenotype terms.</span>
 
-<span class="sd">    See :ref:`use-all-terms-strategy` section for more info.</span>
+<span class="sd">    See :ref:`use-all-terms-mt-filter` section for more info.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="UseAllTermsMtcFilter.filter">
@@ -308,7 +308,7 @@
 <span class="sd">    terms to the constructor of this class, thereby preventing other terms from</span>
 <span class="sd">    being tested and reducing the multiple testing burden.</span>
 
-<span class="sd">    See :ref:`specify-terms-strategy` section for more info.</span>
+<span class="sd">    See :ref:`specified-terms-mt-filter` section for more info.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">NON_SPECIFIED_TERM</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s2">&quot;ST1&quot;</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Non-specified term&quot;</span><span class="p">)</span>
@@ -384,7 +384,7 @@
 <span class="sd">    `HpoMtcFilter` decides which phenotypes should be tested and which phenotypes are not worth testing.</span>
 
 <span class="sd">    The class leverages a number of heuristics and domain decisions.</span>
-<span class="sd">    See :ref:`hpo-mtc-filter-strategy` section for more info.</span>
+<span class="sd">    See :ref:`hpo-mt-filter` section for more info.</span>
 
 <span class="sd">    We recommend creating an instance using the :func:`default_filter` static factory method.</span>
 <span class="sd">    &quot;&quot;&quot;</span>

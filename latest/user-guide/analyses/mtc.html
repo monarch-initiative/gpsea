@@ -213,20 +213,30 @@ is only 10 instead of 450, and more p-values
 may “survive” the multiple-testing correction.</p>
 <p>In the context of GPSEA, we represent the concept of phenotype filtering
 by <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcFilter" title="gpsea.analysis.mtc_filter.PhenotypeMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeMtcFilter</span></code></a>.
-We provide three filtering strategies.</p>
-<section id="test-all-terms">
-<span id="use-all-terms-strategy"></span><h4>Test all terms<a class="headerlink" href="#test-all-terms" title="Link to this heading"></a></h4>
-<p>The first MT filtering strategy is the simplest - do not apply any filtering at all.
-This will result in testing all terms and we do not recommend this strategy,
-but it can be used to disable MT filtering.</p>
+We provide three filtering strategies, each of which is a subclass
+of <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcFilter" title="gpsea.analysis.mtc_filter.PhenotypeMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeMtcFilter</span></code></a>
+and can, therefore, be used
+as a component of <a class="reference internal" href="../../apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.HpoTermAnalysis" title="gpsea.analysis.pcats.HpoTermAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoTermAnalysis</span></code></a>,
+as shown in <a class="reference internal" href="phenotype-groups.html#custom-hpo-analysis"><span class="std std-ref">Custom analysis</span></a>.</p>
+<p>There are three phenotype MT filters:</p>
+<ul class="simple">
+<li><p>Use all terms</p></li>
+<li><p>Specified terms</p></li>
+<li><p>HPO MT filter</p></li>
+</ul>
+<section id="use-all-terms">
+<span id="use-all-terms-mt-filter"></span><h4>Use all terms<a class="headerlink" href="#use-all-terms" title="Link to this heading"></a></h4>
+<p>The first MT filtering strategy is the simplest - it does not apply any filtering,
+resulting in testing all terms.
+We do not recommend this strategy, but it can be used to disable MT filtering.</p>
 <p>The strategy is implemented in <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.UseAllTermsMtcFilter" title="gpsea.analysis.mtc_filter.UseAllTermsMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">UseAllTermsMtcFilter</span></code></a>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.mtc_filter</span> <span class="kn">import</span> <span class="n">UseAllTermsMtcFilter</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">use_all</span> <span class="o">=</span> <span class="n">UseAllTermsMtcFilter</span><span class="p">()</span>
 </pre></div>
 </div>
 </section>
-<section id="specify-terms-strategy">
-<span id="id1"></span><h4>Specify terms strategy<a class="headerlink" href="#specify-terms-strategy" title="Link to this heading"></a></h4>
+<section id="specified-terms">
+<span id="specified-terms-mt-filter"></span><h4>Specified terms<a class="headerlink" href="#specified-terms" title="Link to this heading"></a></h4>
 <p>In presence of a specific hypothesis as to which terms may be different between groups,
 then you can specify these terms in <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter" title="gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecifiedTermsMtcFilter</span></code></a>.</p>
 <p>For example if we want to specifically test
@@ -245,9 +255,9 @@ we pass an iterable (e.g. a tuple) with these two terms as an argument:</p>
 </pre></div>
 </div>
 </section>
-<section id="hpo-mt-filter-strategy">
-<span id="hpo-mtc-filter-strategy"></span><h4>HPO MT filter strategy<a class="headerlink" href="#hpo-mt-filter-strategy" title="Link to this heading"></a></h4>
-<p>The HPO MT strategy involves making several domain judgments and takes advantage of the HPO structure.
+<section id="hpo-mt-filter">
+<span id="id1"></span><h4>HPO MT filter<a class="headerlink" href="#hpo-mt-filter" title="Link to this heading"></a></h4>
+<p>The HPO MT filter involves making several domain judgments and takes advantage of the HPO structure.
 The strategy needs access to HPO:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">store</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">configure_ontology_store</span><span class="p">()</span>
