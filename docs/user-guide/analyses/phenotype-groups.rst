@@ -179,6 +179,9 @@ The function finds 369 HPO terms that annotate at least one individual,
 including the *indirect* annotations whose presence is implied by the :ref:`true-path-rule`.
 
 
+.. _phenotype-groups-statistical-analysis:
+
+
 Statistical analysis
 --------------------
 
@@ -201,6 +204,7 @@ The available MTC procedures are listed in the :ref:`mtc-correction-procedures` 
 
 We must pick one of these to perform genotype-phenotype analysis.
 
+.. _default-hpo-analysis:
 
 Default analysis
 ^^^^^^^^^^^^^^^^
@@ -212,11 +216,18 @@ The default analysis can be configured with :func:`~gpsea.analysis.pcats.configu
 >>> from gpsea.analysis.pcats import configure_hpo_term_analysis
 >>> analysis = configure_hpo_term_analysis(hpo)
 
+At this point, the ``analysis`` configured to test
+a cohort for G/P associations.
+
+
+.. _custom-hpo-analysis:
 
 Custom analysis
 ^^^^^^^^^^^^^^^
 
-If the defaults do not work, we can configure the analysis manually.
+If the default selection of phenotype MT filter and multiple testing correction is not an option,
+we can configure the analysis manually.
+
 First, we choose a phenotype MT filter (e.g. :class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`):
 
 >>> from gpsea.analysis.mtc_filter import HpoMtcFilter
@@ -224,7 +235,7 @@ First, we choose a phenotype MT filter (e.g. :class:`~gpsea.analysis.mtc_filter.
 
 .. note::
 
-   See the :ref:`mtc-filters` section for more info on the available MT filters.
+   See the :ref:`mtc-filters` section for info regarding other phenotype MT filters.
 
 then a statistical test (e.g. Fisher Exact test):
 
@@ -242,6 +253,10 @@ and we finalize the setup by choosing a MTC procedure
 >>> mtc_correction = 'fdr_bh'
 >>> mtc_alpha = 0.05
 
+.. note::
+
+   See the :ref:`mtc-correction-procedures` section for a list of available MTC procedure codes.
+
 The final :class:`~gpsea.analysis.pcats.HpoTermAnalysis` is created as:
 
 >>> from gpsea.analysis.pcats import HpoTermAnalysis
@@ -251,6 +266,8 @@ The final :class:`~gpsea.analysis.pcats.HpoTermAnalysis` is created as:
 ...     mtc_correction='fdr_bh',
 ...     mtc_alpha=0.05,
 ... )
+
+The ``analysis`` is identical to the one configured in the :ref:`default-hpo-analysis` section.
 
 
 Analysis
@@ -269,8 +286,10 @@ We can now test associations between the genotype groups and the HPO terms:
 24
 
 
+We tested the ``cohort`` for association between the genotype groups (``gt_predicate``)
+and HPO terms (``pheno_predicates``).
 Thanks to phenotype MT filter, we only tested 24 out of 369 terms.
-We can learn more by showing the MT filter report:
+The MT filter report shows the filtering details:
 
 >>> from gpsea.view import MtcStatsViewer
 >>> mtc_viewer = MtcStatsViewer()
@@ -289,8 +308,10 @@ We can learn more by showing the MT filter report:
 Genotype phenotype associations
 ===============================
 
-Last, let's explore the associations. The results include a table with all tested HPO terms
-ordered by the corrected p value (Benjamini-Hochberg FDR):
+Last, let's explore the associations. 
+
+GPSEA displays the associations between genotypes and HPO terms in a table,
+one HPO term per row. The rows are ordered by the corrected p value and nominal p value in descending order.
 
 >>> from gpsea.view import summarize_hpo_analysis
 >>> summary_df = summarize_hpo_analysis(hpo, result)
