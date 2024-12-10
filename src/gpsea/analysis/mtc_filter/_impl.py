@@ -157,7 +157,7 @@ class UseAllTermsMtcFilter(PhenotypeMtcFilter[typing.Any]):
     """
     `UseAllTermsMtcFilter` filters out *no* phenotype terms.
 
-    See :ref:`use-all-terms-strategy` section for more info.
+    See :ref:`use-all-terms-mt-filter` section for more info.
     """
 
     def filter(
@@ -186,7 +186,7 @@ class SpecifiedTermsMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
     terms to the constructor of this class, thereby preventing other terms from
     being tested and reducing the multiple testing burden.
 
-    See :ref:`specify-terms-strategy` section for more info.
+    See :ref:`specified-terms-mt-filter` section for more info.
     """
 
     NON_SPECIFIED_TERM = PhenotypeMtcResult.fail(code="ST1", reason="Non-specified term")
@@ -247,7 +247,7 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
     `HpoMtcFilter` decides which phenotypes should be tested and which phenotypes are not worth testing.
 
     The class leverages a number of heuristics and domain decisions.
-    See :ref:`hpo-mtc-filter-strategy` section for more info.
+    See :ref:`hpo-mt-filter` section for more info.
 
     We recommend creating an instance using the :func:`default_filter` static factory method.
     """

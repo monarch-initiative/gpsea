@@ -309,7 +309,7 @@ For general use, we recommend using a combination
 of a *phenotype MT filter* (:class:`~gpsea.analysis.mtc_filter.PhenotypeMtcFilter`) with a *multiple testing correction*.
 Phenotype MT filter chooses the HPO terms to test according to several heuristics, which
 reduce the multiple testing burden and focus the analysis
-on the most interesting terms (see :ref:`HPO MT filter <hpo-mtc-filter-strategy>` for more info).
+on the most interesting terms (see :ref:`HPO MT filter <hpo-mt-filter>` for more info).
 Then the multiple testing correction, such as Bonferroni or Benjamini-Hochberg,
 is used to control the family-wise error rate or the false discovery rate.
 See :ref:`mtc` for more information.
