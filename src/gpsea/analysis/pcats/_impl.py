@@ -272,8 +272,8 @@ class HpoTermAnalysisResult(MultiPhenotypeAnalysisResult[hpotk.TermId]):
     """
     `HpoTermAnalysisResult` includes the :class:`HpoTermAnalysis` results.
 
-    On top of the attributes of :class:`MultiPhenotypeAnalysisResult` parent,
-    the results include the outcome of :class:`PhenotypeMtcFilter`.
+    On top of the attributes of :class:`~gpsea.analysis.MultiPhenotypeAnalysisResult` parent,
+    the results include the outcome of :class:`~gpsea.analysis.mtc_filter.PhenotypeMtcFilter`.
     """
 
     def __init__(
@@ -326,7 +326,8 @@ class HpoTermAnalysisResult(MultiPhenotypeAnalysisResult[hpotk.TermId]):
     @property
     def mtc_filter_results(self) -> typing.Sequence[PhenotypeMtcResult]:
         """
-        Get a :class:`PhenotypeMtcResult` for each of the :attr:`phenotypes`.
+        Get a :class:`~gpsea.analysis.mtc_filter.PhenotypeMtcResult`
+        for each of the :attr:`~gpsea.analysis.MultiPhenotypeAnalysisResult.phenotypes`.
         """
         return self._mtc_filter_results
 
@@ -355,10 +356,11 @@ class HpoTermAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
     `HpoTermAnalysis` can be applied if the individual phenotypes are represented as HPO terms.
 
     The analysis applies the genotype and phenotype predicates, computes the nominal p values,
-    and addresses the multiple testing burden by applying the :class:`PhenotypeMtcFilter`
+    and addresses the multiple testing burden by applying
+    the :class:`~gpsea.analysis.mtc_filter.PhenotypeMtcFilter`
     followed by the multiple testing correction `mtc_correction` method.
 
-    `PhenotypeMtcFilter` is applied even if no MTC should be applied.
+    :class:`~gpsea.analysis.mtc_filter.PhenotypeMtcFilter` is applied even if no MTC should be applied.
     """
 
     def __init__(

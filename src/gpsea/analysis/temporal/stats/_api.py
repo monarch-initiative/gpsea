@@ -9,7 +9,7 @@ class SurvivalStatistic(Statistic, metaclass=abc.ABCMeta):
     """
     `SurvivalStatistic` calculates a p value
     for 2 or more survival groups
-    computed by a :class:`~gpsea.analysis.tempo.SurvivalMetric`.
+    computed by a :class:`~gpsea.analysis.temporal.Survival`.
     """
 
     def __init__(self, name: str):

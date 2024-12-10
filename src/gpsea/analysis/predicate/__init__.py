@@ -1,5 +1,5 @@
-from ._api import PolyPredicate
+from ._api import PolyPredicate, PatientCategory, Categorization
 
 __all__ = [
-    'PolyPredicate',
+    'PolyPredicate', 'PatientCategory', 'Categorization',
 ]

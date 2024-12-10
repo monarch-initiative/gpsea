@@ -271,7 +271,7 @@ depending on presence of a single allele of a missense or truncating variant
 >>> gt_predicate.group_labels
 ('Missense', 'Truncating')
 
-This is a lot of code, and detailed explanations and examples are available in the :ref:`predicates` section.
+This is a lot of code, and detailed explanations and examples are available in the :ref:`partitioning` section.
 For now, it is enough to know that the `gt_predicate` will assign the individuals
 into `Missense` or `Truncating` group. The individuals with the number of missense (or truncating) variants
 different than one will be omitted from the analysis.

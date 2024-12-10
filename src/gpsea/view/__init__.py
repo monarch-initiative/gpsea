@@ -1,6 +1,6 @@
 from ._phenotype_analysis import summarize_hpo_analysis
 from ._protein_visualizable import ProteinVisualizable
-from ._base import GpseaReport
+from ._base import GpseaReport, BaseViewer
 from ._txp import VariantTranscriptVisualizer
 from ._viewers import (
     CohortVariantViewer,
@@ -25,4 +25,5 @@ __all__ = [
     "VariantTranscriptVisualizer",
     "Formatter",
     "VariantFormatter",
+    "BaseViewer",
 ]

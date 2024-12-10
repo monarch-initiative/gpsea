@@ -88,7 +88,7 @@ todo_include_todos = False
 
 # If `True`, warnings for broken cross-references will be reported
 # during documentation build.
-# nitpicky = True
+nitpicky = False
 
 # -- Options for HTML output ----------------------------------------------
 

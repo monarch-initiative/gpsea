@@ -192,7 +192,7 @@ GPSEA uses a two-pronged strategy to reduce the number of tests and, therefore, 
 a phenotype multiple testing (MT) filter and multiple testing correction (MTC).
 
 Phenotype MT filter selects a (sub)set of HPO terms for testing,
-for instance only the user-selected terms (see :class:`~gpsea.analysis.mtc_filter.SpecifyTermsStrategy`)
+for instance only the user-selected terms (see :class:`~gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter`)
 or the terms selected by :class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`.
 
 Multiple testing correction then adjusts the nominal p values for the increased risk

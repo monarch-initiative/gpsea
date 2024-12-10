@@ -346,7 +346,7 @@ class ProteinMetadata:
 
         The `region` column includes the protein feature name.
         The category is a `str` representing region's feature type. Use `'region'` if no better type fits.
-         Last, `start` and `end` denote 1-based start and end coordinates
+        Last, `start` and `end` denote 1-based start and end coordinates
         of the aminoacid sequence region described by the feature.
         For instance, `[1, 10]` for the first ten aminoacids of the protein.
 

@@ -105,7 +105,7 @@ the genotype groups:
 Final analysis
 --------------
 
-We will put the final analysis together into :class:`~gpsea.analysis.temporal.PhenotypeScoreAnalysis`.
+We will put the final analysis together into a :class:`~gpsea.analysis.temporal.SurvivalAnalysis`.
 
 >>> from gpsea.analysis.temporal import SurvivalAnalysis
 >>> survival_analysis = SurvivalAnalysis(

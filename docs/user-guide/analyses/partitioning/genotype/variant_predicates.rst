@@ -13,7 +13,7 @@ For instance, a predicate can test if a variant is a deletion,
 leads to a missense change, or overlaps with a protein domain.
 
 An array of variant predicates is available as static methods
-of the :class:`~gpsea.analysis.predicate.VariantPredicates` class.
+of the :class:`~gpsea.analysis.predicate.genotype.VariantPredicates` class.
 
 The predicates operate on several lines of information:
 
