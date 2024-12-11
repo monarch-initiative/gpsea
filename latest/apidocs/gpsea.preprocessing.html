@@ -746,13 +746,33 @@ both a <em>gene</em> ID and a specific <em>transcript</em> ID.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.preprocessing.VVMultiCoordinateService.parse_response">
 <span class="sig-name descname"><span class="pre">parse_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tx_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="gpsea.model.html#gpsea.model.TranscriptCoordinates" title="gpsea.model._tx.TranscriptCoordinates"><span class="pre">TranscriptCoordinates</span></a></span></span><a class="reference internal" href="../_modules/gpsea/preprocessing/_vv.html#VVMultiCoordinateService.parse_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.VVMultiCoordinateService.parse_response" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Parses the <cite>response</cite> in JSON format into <cite>TranscriptCoordinates</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gpsea.preprocessing.VariantValidatorDecodeException" title="gpsea.preprocessing.VariantValidatorDecodeException"><strong>VariantValidatorDecodeException</strong></a> – if an error is encountered during <cite>response</cite> parsing.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.preprocessing.VVMultiCoordinateService.parse_multiple">
 <span class="sig-name descname"><span class="pre">parse_multiple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.13)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="gpsea.model.html#gpsea.model.TranscriptCoordinates" title="gpsea.model._tx.TranscriptCoordinates"><span class="pre">TranscriptCoordinates</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/preprocessing/_vv.html#VVMultiCoordinateService.parse_multiple"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.VVMultiCoordinateService.parse_multiple" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Parses the <cite>response</cite> in JSON format into <cite>TranscriptCoordinates</cite>.</p>
+<p>May ignore a transcript if encountering an error during parse.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gpsea.preprocessing.VariantValidatorDecodeException" title="gpsea.preprocessing.VariantValidatorDecodeException"><strong>VariantValidatorDecodeException</strong></a> – if an error is encountered during <cite>response</cite> parsing.</p>
+</dd>
+</dl>
+</dd></dl>
 
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpsea.preprocessing.VariantValidatorDecodeException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.preprocessing.</span></span><span class="sig-name descname"><span class="pre">VariantValidatorDecodeException</span></span><a class="reference internal" href="../_modules/gpsea/preprocessing/_vv.html#VariantValidatorDecodeException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.VariantValidatorDecodeException" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>An exception raised on failure of parsing of the Variant Validator response.</p>
 </dd></dl>
 
 <dl class="py class">
