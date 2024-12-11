@@ -3,7 +3,7 @@
 ![PyPi downloads](https://img.shields.io/pypi/dm/gpsea.svg?label=Pypi%20downloads)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/gpsea)
 
-GPSEA (Genotypes and Phenotypes - Statistical Evaluation of Associations, /dʒiːpiːsiː/) is a Python package for finding genotype-phenotype associations.
+GPSEA (Genotypes and Phenotypes - Statistical Evaluation of Associations) is a Python package for finding genotype-phenotype associations.
 
 
 See the [Tutorial](https://monarch-initiative.github.io/gpsea/stable/tutorial.html) 

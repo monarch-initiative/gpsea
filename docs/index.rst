@@ -10,7 +10,7 @@ A key question in biology and human genetics concerns the relationships between 
 In Mendelian genetics, the focus is generally placed on the study of whether specific disease-causing alleles
 are associated with specific phenotypic manifestations of the disease. 
 
-GPSEA (Genotypes and Phenotypes - Statistical Evaluation of Associations, /dʒiːpiːsiː/)
+GPSEA (Genotypes and Phenotypes - Statistical Evaluation of Associations)
 is a Python package for finding genotype-phenotype associations.
 The input to GPSEA is a collection of `Global Alliance for Genomics and Health (GA4GH) Phenopackets <https://pubmed.ncbi.nlm.nih.gov/35705716/>`_.
 GPSEA ingests the phenopackets and analyzes the genotype-phenotype associations.
