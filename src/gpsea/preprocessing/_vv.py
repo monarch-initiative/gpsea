@@ -340,7 +340,7 @@ class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateServic
             )
         
         # Adjust to strand, if necessary
-        if strand == Strand.POSITIVE:
+        if strand.is_positive():
             start = start_pos - 1  # Convert from 1-based to 0-based coordinate
             end = end_pos
         else:
@@ -358,7 +358,7 @@ class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateServic
         # Ensure the exons are sorted in ascending order
         exons = []
         for exon in sorted(genomic_span['exon_structure'], key=lambda exon_data: exon_data['exon_number']):
-            gen_start = exon['genomic_start'] - 1  # -1 to convert to 0-based coordinates.
+            gen_start = exon['genomic_start']
             gen_end = exon['genomic_end']
             gr = VVMultiCoordinateService._create_genomic_region(
                 contig=contig,
