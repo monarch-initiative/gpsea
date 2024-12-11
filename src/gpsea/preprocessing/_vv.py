@@ -127,9 +127,9 @@ class VVHgvsVariantCoordinateFinder(VariantCoordinateFinder[str]):
         return start, end, change_length
 
 
-class VariantValidatorDecodeException(BaseException):
+class VariantValidatorDecodeException(Exception):
     """
-    An exception thrown when parsing variant validator response fails.
+    An exception raised on failure of parsing of the Variant Validator response.
     """
     pass
 
@@ -172,6 +172,11 @@ class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateServic
         return fetch_response(api_url, self._headers, self._timeout)
 
     def parse_response(self, tx_id: str, response) -> TranscriptCoordinates:
+        """
+        Parses the `response` in JSON format into `TranscriptCoordinates`.
+
+        :raises VariantValidatorDecodeException: if an error is encountered during `response` parsing.
+        """
         if not isinstance(response, list):
             transcript_response = response
         else:
@@ -181,7 +186,7 @@ class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateServic
         if 'requested_symbol' not in transcript_response or transcript_response['requested_symbol'] != tx_id:
             json_formatted_str = json.dumps(response, indent=2)
             error_string = f"Not able to find {tx_id} in the `requested_symbol` field in the response from Variant Validator API: \n{json_formatted_str}"
-            raise ValueError(error_string)
+            raise VariantValidatorDecodeException(error_string)
         if 'transcripts' not in transcript_response:
             VVMultiCoordinateService._handle_missing_field(
                 response=response, 
@@ -189,7 +194,7 @@ class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateServic
             )
         tx_data = self._find_tx_data(tx_id, transcript_response['transcripts'])
         if 'genomic_spans' not in tx_data:
-            raise ValueError(f'A required `genomic_spans` field is missing in the response from Variant Validator API')
+            raise VariantValidatorDecodeException('A required `genomic_spans` field is missing in the response from Variant Validator API')
         
         return VVMultiCoordinateService._parse_tx_coordinates(
             genome_build=self._genome_build,
@@ -201,6 +206,13 @@ class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateServic
         self, 
         response: typing.Mapping[str, typing.Any],
     ) -> typing.Sequence[TranscriptCoordinates]:
+        """
+        Parses the `response` in JSON format into `TranscriptCoordinates`.
+
+        May ignore a transcript if encountering an error during parse.
+
+        :raises VariantValidatorDecodeException: if an error is encountered during `response` parsing.
+        """
         if 'transcripts' not in response:
             VVMultiCoordinateService._handle_missing_field(
                 response=response, 
@@ -219,12 +231,15 @@ class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateServic
             if not matcher:
                 self._logger.debug('Skipping processing transcript %s', tx_id)
                 continue
-            tx_coordinates = VVMultiCoordinateService._parse_tx_coordinates(
-                genome_build=self._genome_build,
-                tx_id=tx_id,
-                tx_data=tx_data,
-            )
-            coordinates.append(tx_coordinates)
+            try:
+                tx_coordinates = VVMultiCoordinateService._parse_tx_coordinates(
+                    genome_build=self._genome_build,
+                    tx_id=tx_id,
+                    tx_data=tx_data,
+                )
+                coordinates.append(tx_coordinates)
+            except VariantValidatorDecodeException as e:
+                self._logger.debug('Cannot parse tx coordinates for %s: %s', tx_id, e)
 
         return tuple(coordinates)
 
@@ -247,7 +262,7 @@ class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateServic
     def _handle_missing_field(response, field: str):
         json_formatted_str = json.dumps(response, indent=2)
         error_string = f"A required `{field}` field is missing in the response from Variant Validator API: \n{json_formatted_str}"
-        raise ValueError(error_string)
+        raise VariantValidatorDecodeException(error_string)
 
     @staticmethod
     def _parse_tx_coordinates(
@@ -263,7 +278,7 @@ class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateServic
         strand = VVMultiCoordinateService._parse_strand(genomic_span)
         start_pos = genomic_span['start_position']
         end_pos = genomic_span['end_position']
-        region = VVMultiCoordinateService._parse_tx_region(contig, start_pos, end_pos, strand)
+        region = VVMultiCoordinateService._create_genomic_region(contig, start_pos, end_pos, strand)
 
         exons = VVMultiCoordinateService._parse_exons(contig, strand, genomic_span)
 
@@ -291,7 +306,7 @@ class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateServic
                 return contig, value
 
         contig_names = sorted(genomic_spans.keys())
-        raise ValueError(f'Contigs {contig_names} were not found in genome build `{genome_build.identifier}`')
+        raise VariantValidatorDecodeException(f'Contigs {contig_names} were not found in genome build `{genome_build.identifier}`')
 
     @staticmethod
     def _parse_strand(genomic_span) -> Strand:
@@ -301,10 +316,15 @@ class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateServic
         elif orientation == -1:
             return Strand.NEGATIVE
         else:
-            raise ValueError(f'Invalid orientation value {orientation} was not {{-1, 1}}')
-
+            raise VariantValidatorDecodeException(f'Invalid orientation value {orientation} was not {{-1, 1}}')
+    
     @staticmethod
-    def _parse_tx_region(contig: Contig, start_pos: int, end_pos: int, strand: Strand) -> GenomicRegion:
+    def _create_genomic_region(
+        contig: Contig,
+        start_pos: int,
+        end_pos: int,
+        strand: Strand,
+    ) -> GenomicRegion:
         """
         The `start_pos` and `end_pos` coordinates are on the positive strand, but the genomic region that we
         are returning must be on given `strand`. Therefore, we transpose accordingly.
@@ -312,6 +332,14 @@ class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateServic
         However, note that start_pos > end_pos if `strand == Strand.NEGATIVE`. This is unusual in our environment,
         where we ensure the following: `start <= end`.
         """
+        # Check contig bounds
+        if not all(0 < val <= len(contig) for val in (start_pos, end_pos)):
+            raise VariantValidatorDecodeException(
+                f'`start` {start_pos:,} and/or `end` {end_pos:,} are out of bounds' 
+                f'for the contig {contig.name} with length {len(contig)}'
+            )
+        
+        # Adjust to strand, if necessary
         if strand == Strand.POSITIVE:
             start = start_pos - 1  # Convert from 1-based to 0-based coordinate
             end = end_pos
@@ -322,19 +350,22 @@ class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateServic
         return GenomicRegion(contig, start, end, strand)
 
     @staticmethod
-    def _parse_exons(contig: Contig, strand: Strand, genomic_span: typing.Dict) -> typing.Sequence[GenomicRegion]:
+    def _parse_exons(
+        contig: Contig,
+        strand: Strand,
+        genomic_span: typing.Dict,
+    ) -> typing.Sequence[GenomicRegion]:
         # Ensure the exons are sorted in ascending order
         exons = []
         for exon in sorted(genomic_span['exon_structure'], key=lambda exon_data: exon_data['exon_number']):
             gen_start = exon['genomic_start'] - 1  # -1 to convert to 0-based coordinates.
             gen_end = exon['genomic_end']
-            if strand.is_positive():
-                start = gen_start
-                end = gen_end
-            else:
-                start = transpose_coordinate(contig, gen_end)  # !
-                end = transpose_coordinate(contig, gen_start)  # !
-            gr = GenomicRegion(contig, start, end, strand)
+            gr = VVMultiCoordinateService._create_genomic_region(
+                contig=contig,
+                start_pos=gen_start,
+                end_pos=gen_end,
+                strand=strand,
+            )
             exons.append(gr)
 
         return exons
@@ -349,11 +380,11 @@ class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateServic
         for exon in exons:
             exon_len = len(exon)
             if start is None:
-                if processed < coding_start <= processed + exon_len:
+                if processed < coding_start <= (processed + exon_len):
                     start = exon.start + coding_start - processed - 1  # `-1` to convert to 0-based coordinate!
 
             if end is None:
-                if processed < coding_end <= processed + exon_len:
+                if processed < coding_end <= (processed + exon_len):
                     end = exon.start + coding_end - processed
 
             if start is not None and end is not None:
@@ -361,7 +392,7 @@ class VVMultiCoordinateService(TranscriptCoordinateService, GeneCoordinateServic
 
             processed += exon_len
 
-        raise ValueError('Could not parse CDS start and end from given coordinates')
+        raise VariantValidatorDecodeException('Could not parse CDS start and end from given coordinates')
 
     @staticmethod
     def _parse_is_preferred(
