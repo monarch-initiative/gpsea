@@ -10,7 +10,7 @@ from ._patient import PatientCreator, CohortCreator
 from ._phenopacket import PhenopacketVariantCoordinateFinder, PhenopacketPatientCreator, PhenopacketOntologyTermOnsetParser
 from ._uniprot import UniprotProteinMetadataService
 from ._vep import VepFunctionalAnnotator
-from ._vv import VVHgvsVariantCoordinateFinder, VVMultiCoordinateService
+from ._vv import VVHgvsVariantCoordinateFinder, VVMultiCoordinateService, VariantValidatorDecodeException
 
 __all__ = [
     'configure_caching_cohort_creator', 'configure_cohort_creator',
@@ -24,6 +24,6 @@ __all__ = [
     'TranscriptCoordinateService', 'GeneCoordinateService',
     'UniprotProteinMetadataService',
     'VepFunctionalAnnotator',
-    'VVHgvsVariantCoordinateFinder', 'VVMultiCoordinateService',
+    'VVHgvsVariantCoordinateFinder', 'VVMultiCoordinateService', 'VariantValidatorDecodeException',
     'DefaultImpreciseSvFunctionalAnnotator',
 ]
