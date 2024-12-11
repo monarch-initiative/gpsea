@@ -97,8 +97,9 @@ class TranscriptCoordinates:
 
         n_bases = 0
         for exon in self.exons:
-            start = max(self._cds_start, exon.start)
-            end = min(self._cds_end, exon.end)
+            # Assuming `_cds_start` and `_cds_end` are always present since we check `is_coding()` above.
+            start = max(self._cds_start, exon.start) # type: ignore
+            end = min(self._cds_end, exon.end) # type: ignore
             n_bases += max(end - start, 0)
 
         return n_bases - 3  # minus stop codon
@@ -110,6 +111,8 @@ class TranscriptCoordinates:
         Returns: the number of codons of the transcript or `None` if the transcript is non-coding.
         """
         n_coding_bases = self.get_coding_base_count()
+        if n_coding_bases is None:
+            return None
         assert n_coding_bases % 3 == 0, (f"Transcript {self._id} has {n_coding_bases:,} "
                                          f"coding bases that is not divisible by 3!")
         return int(n_coding_bases / 3)
@@ -126,6 +129,7 @@ class TranscriptCoordinates:
         utrs = []
 
         for exon in self.exons:
+            # Assuming `_cds_start` and `_cds_end` are always present since we check `is_coding()` above.
             if exon.start >= self._cds_start:
                 break
             if exon.end <= self._cds_start:
@@ -151,6 +155,7 @@ class TranscriptCoordinates:
         utrs = []
 
         for exon in self.exons:
+            # Assuming `_cds_start` and `_cds_end` are always present since we check `is_coding()` above.
             if exon.end > self._cds_end:
                 if self._cds_end <= exon.start:
                     # An entire exon is UTR.
@@ -173,6 +178,7 @@ class TranscriptCoordinates:
 
         coding_regions = []
         for exon in self.exons:
+            # Assuming `_cds_start` and `_cds_end` are always present since we check `is_coding()` above.
             if self._cds_start >= exon.end or self._cds_end <= exon.start:
                 # An entire exon is UTR.
                 continue

@@ -1,4 +1,5 @@
 import abc
+import math
 import typing
 
 from collections import defaultdict
@@ -13,7 +14,7 @@ from ._base import Survival
 from ._util import prepare_censored_data
 from .stats import SurvivalStatistic
 
-from .._base import MonoPhenotypeAnalysisResult
+from .._base import MonoPhenotypeAnalysisResult, StatisticResult, AnalysisException
 from .._partition import ContinuousPartitioning
 
 
@@ -21,9 +22,9 @@ class Endpoint(ContinuousPartitioning, metaclass=abc.ABCMeta):
     """
     `Endpoint` computes survival for the analyzed individual.
 
-    An example endpoint includes :func:`~gpsea.analysis.survival.endpoint.death`,
-    :func:`~gpsea.analysis.survival.endpoint.disease_onset`,
-    or onset of a phenotypic feature (:func:`~gpsea.analysis.survival.endpoint.hpo_onset`).
+    Example endpoints include :func:`~gpsea.analysis.temporal.endpoint.death`,
+    :func:`~gpsea.analysis.temporal.endpoint.disease_onset`,
+    or onset of a phenotypic feature (:func:`~gpsea.analysis.temporal.endpoint.hpo_onset`).
     """
 
     @abc.abstractmethod
@@ -56,7 +57,7 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
 
     The index includes the individual IDs (`patient_id`), and then there are 2 columns
     with the `genotype` group id (:attr:`~gpsea.analysis.predicate.PatientCategory.cat_id`)
-    and the `phenotype` with the survival represented as :class:`~gpsea.analysis.tempo.Survival` object.
+    and the `phenotype` with the survival represented as :class:`~gpsea.analysis.temporal.Survival` object.
 
     A `genotype` value may be missing (`None`) if the individual cannot be assigned
     into a genotype category.
@@ -69,14 +70,14 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
         endpoint: Endpoint,
         statistic: SurvivalStatistic,
         data: pd.DataFrame,
-        pval: float,
+        statistic_result: StatisticResult,
     ):
         super().__init__(
             gt_predicate=gt_predicate,
             phenotype=endpoint,
             statistic=statistic,
             data=data,
-            pval=pval,
+            statistic_result=statistic_result,
         )
         assert isinstance(endpoint, Endpoint)
 
@@ -131,7 +132,7 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
             f"endpoint={self._phenotype}, "
             f"statistic={self._statistic}, "
             f"data={self._data}, "
-            f"pval={self._pval})"
+            f"statistic_result={self._statistic_result})"
         )
 
     def __repr__(self) -> str:
@@ -146,6 +147,9 @@ class SurvivalAnalysis:
     The cohort is partitioned into groups using a genotype predicate
     and survival is computed for each cohort member. The difference between
     survivals is tested with selected :class:`~gpsea.analysis.temporal.stats.SurvivalStatistic`.
+
+    The analysis may raise an :class:`~gpsea.analysis.AnalysisException` if issues are encountered.
+    The exception includes the reason(s) in `args` as well as any partial data, to help with troubleshooting.
     """
 
     def __init__(
@@ -187,12 +191,17 @@ class SurvivalAnalysis:
                 survivals[gt_cat].append(survival)
 
         vals = tuple(survivals[gt_cat] for gt_cat in gt_predicate.get_categorizations())
-        pval = self._statistic.compute_pval(vals)
+        result = self._statistic.compute_pval(vals)
+        if math.isnan(result.pval):
+            raise AnalysisException(
+                dict(data=data),
+                "The survival values did not meet the expectation of the statistical test!",
+            )
 
         return SurvivalAnalysisResult(
             gt_predicate=gt_predicate,
             endpoint=endpoint,
             statistic=self._statistic,
             data=data,
-            pval=pval,
+            statistic_result=result,
         )

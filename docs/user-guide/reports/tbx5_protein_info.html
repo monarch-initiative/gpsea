@@ -1,97 +1,200 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Cohort</title>
-  <style>table {
-    border-collapse: collapse;
-    margin: 25px 0;
-      font-size: 0.9em;
-      font-family: sans-serif;
-      min-width: 400px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-  }
+<div>
+    <style>
+        /** Light theme is the default */
+        :root {
+            --gpsea-color-text: black;
+            --gpsea-color-link-text: rgb(0, 118, 187);
+            --gpsea-color-link-hover: rgb(0, 99, 156);
+            --gpsea-color-primary-a0: #2f5170;
+            --gpsea-color-primary-a10: #4778a5;
+            --gpsea-color-primary-a20: #5995ce;
+            --gpsea-color-primary-a60: LightSkyBlue;
+            --gpsea-color-surface-a0: #fcfcfc;
+            --gpsea-color-surface-a10: #ffffff;
+            --gpsea-color-surface-a20: #b3b3b3;
+            --gpsea-color-surface-a30: #8d8d8d;
+            --gpsea-color-surface-a40: #646464;
+            --gpsea-color-surface-a50: #000000;
+        }
 
+        /** Dark theme */
+        /*
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --gpsea-color-text: rgb(240, 240, 240);
+                --gpsea-color-link-text: rgb(240, 240, 240);
+                --gpsea-color-link-hover: lightblue;
+                --gpsea-color-primary-a0: #64a3df;
+                --gpsea-color-primary-a10: #5286b8;
+                --gpsea-color-primary-a20: #375c7e;
+                --gpsea-color-primary-a60: #233b52;
+                --gpsea-color-surface-a0: #121212;
+                --gpsea-color-surface-a10: #282828;
+                --gpsea-color-surface-a20: #3f3f3f;
+                --gpsea-color-surface-a30: #575757;
+                --gpsea-color-surface-a40: #717171;
+                --gpsea-color-surface-a50: #8b8b8b;
+            }
+        }
+        */
 
-  .table .column-1 {
-      text-align: left;
-  }
-  th {
-    background-color: LightSkyBlue;
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 5px;
-  font-weight: bold;
-  font-size: 120%;
-}
+        #gpsea-body {
+            max-width: 1600px;
+            color: var(--gpsea-color-text);
+            background-color: var(--gpsea-color-surface-a0);
+            padding: 10px 0;
+        }
 
+        #gpsea-body {
 
-  tr {
-    border: 1px solid #dddddd;
-  }
+            h1,
+            h2,
+            h3,
+            h4,
+            h5 {
+                color: var(--gpsea-color-primary-a0);
+            }
 
-  td {
-    padding: 5px;
-    font-weight: bold;
-  }
+            a {
+                color: var(--gpsea-color-link-text);
+                text-decoration: none;
+            }
 
-  tr:nth-child(even) {
-    background-color: #f2f2f2;
-  }
+            a:hover {
+                color: var(--gpsea-color-link-hover);
+            }
 
-  .table td,tr {
-    text-align: left;
-}
+            #cohort-summary {
+                max-width: 800px;
+            }
 
-.table td:first-child, tr:first-child {
-    text-align: left;
-}
+            td {
+                padding: 5px 0;
+            }
 
-caption {
-  caption-side: top;
-  text-align: left;
-  padding-bottom: 10px;
-  font-weight: bold;
-}
+            .cards {
+                display: flex;
+                flex-flow: row wrap;
+                align-items: top;
+                gap: 1rem;
+            }
 
-</style>
-</head>
+            .card {
+                border-radius: 5px;
+                padding: 0px 10px;
+                background: var(--gpsea-color-surface-a10);
+                border: 1px solid var(--gpsea-color-surface-a30);
+                box-shadow: 0 4px 8px var(--gpsea-color-surface-a30);
+            }
 
-<body>
-  <h1>T-box transcription factor TBX5:  NP_852259.1</h1>
-    <table>
-        <caption style="color:black;">
-           T-box transcription factor TBX5 (NP_852259.1) has 2 annotated protein features.
-            32 were found to be located within these features, and
-            113 were located elsewhere. The total length of the protein is
-            518 amino acid residues.
-        </caption>
-        <tbody>
-            <tr class="strng">
-                <th>Name</th>
-                <th>Type</th>
-                <th>Coordinates</th>
-                <th>Count</th>
-                <th>Variants</th>
-            </tr>
-            
-            <tr>
-                <td>Disordered</td>
-                <td>REGION</td>
-                <td>1 - 46</td>
-                <td>13</td>
-                <td>p.Ala34GlyfsTer27; p.Ala34ProfsTer32; p.Ser36ThrfsTer25; p.Pro14Thr</td>
-            </tr>
-            
-            <tr>
-                <td>Disordered</td>
-                <td>REGION</td>
-                <td>250 - 356</td>
-                <td>19</td>
-                <td>p.Gln302ArgfsTer92; p.Gln315ArgfsTer79; p.Arg279Ter; p.Tyr342ThrfsTer52; p.Val263Met; p.Ser261Cys; p.Val267TrpfsTer127; p.Tyr291Ter; p.Glu294Ter</td>
-            </tr>
-            
-        </tbody>
-    </table>
-</body>
-</html>
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 10px 0;
+                font-size: 0.9em;
+                font-family: sans-serif;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+                border: 1px solid var(--gpsea-color-primary-a60);
+            }
+
+            th {
+                text-align: left;
+                padding: 2px;
+                font-weight: bold;
+                font-size: 120%;
+                color: var(--gpsea-color-text);
+                background-color: var(--gpsea-color-primary-a60);
+            }
+
+            table td,
+            tr {
+                text-align: right;
+                padding: 0px 5px;
+            }
+
+            tr:nth-child(even) {
+                background-color: var(--gpsea-color-surface-a10);
+            }
+
+            tr:nth-child(odd) {
+                background-color: var(--gpsea-color-surface-a20);
+            }
+
+            .lft {
+                text-align: left;
+            }
+
+            caption {
+                caption-side: top;
+                text-align: left;
+                padding-bottom: 10px;
+                font-weight: bold;
+            }
+        }
+    </style>
+    <div id="gpsea-body">
+        
+<h1>T-box transcription factor TBX5: NP_852259.1</h1>
+<div class="card">
+  <p>
+    T-box transcription factor TBX5 has 5 annotated protein featureses.
+    139 were found to be located within these features,
+    and 6 were located elsewhere.
+    The total length of the protein is 518 amino acid residues.
+  </p>
+  <table>
+    <tbody>
+        <tr>
+          <th>Count</th>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Coordinates</th>
+          <th>Variants</th>
+        </tr>
+        
+        <tr>
+          <td>13</td>
+          <td>Disordered</td>
+          <td>Region</td>
+          <td>2 - 46</td>
+          <td>p.Ala34GlyfsTer27; p.Ser36ThrfsTer25; p.Ala34ProfsTer32; p.Pro14Thr</td>
+        </tr>
+        
+        <tr>
+          <td>107</td>
+          <td>T-box</td>
+          <td>DNA binding</td>
+          <td>59 - 238</td>
+          <td>p.Trp121Gly; p.Ala143ArgfsTer40; p.Leu94Arg; p.Arg237Trp; p.Gly80Arg; p.Arg237Gln; p.Thr72Lys; p.Val214GlyfsTer12; p.Ile227_Glu228insTer; p.Phe168LeufsTer6; p.Arg81Trp; p.Tyr136Ter; p.Gln151Ter; p.Lys88Ter; p.Pro85Thr; p.His220del; p.Arg237Pro; p.Arg134ProfsTer49; p.Ile106Val; p.Met83PhefsTer6; p.Val153SerfsTer21; p.Met74Ile; p.Thr161Pro; p.Lys226Asn; p.Leu65GlnfsTer10; p.Thr223Met; p.Pro139GlnfsTer11; p.Gly125AlafsTer25; p.Ser196Ter; p.Gly195Ala</td>
+        </tr>
+        
+        <tr>
+          <td>19</td>
+          <td>Disordered</td>
+          <td>Region</td>
+          <td>251 - 356</td>
+          <td>p.Glu294Ter; p.Val267TrpfsTer127; p.Tyr291Ter; p.Val263Met; p.Ser261Cys; p.Gln315ArgfsTer79; p.Arg279Ter; p.Gln302ArgfsTer92; p.Tyr342ThrfsTer52</td>
+        </tr>
+        
+        <tr>
+          <td>8</td>
+          <td>Polar residues</td>
+          <td>Compositional bias</td>
+          <td>264 - 299</td>
+          <td>p.Arg279Ter; p.Tyr291Ter; p.Val267TrpfsTer127; p.Glu294Ter</td>
+        </tr>
+        
+        <tr>
+          <td>1</td>
+          <td>Basic and acidic residues</td>
+          <td>Compositional bias</td>
+          <td>321 - 346</td>
+          <td>p.Tyr342ThrfsTer52</td>
+        </tr>
+        
+    </tbody>
+</table>
+</div>
+
+    </div>
+</div>

@@ -17,7 +17,7 @@ from ..predicate.phenotype import P, PhenotypePolyPredicate
 from ..mtc_filter import PhenotypeMtcFilter, PhenotypeMtcResult
 
 from .stats import CountStatistic
-from .._base import MultiPhenotypeAnalysisResult
+from .._base import MultiPhenotypeAnalysisResult, StatisticResult
 
 DEFAULT_MTC_PROCEDURE = 'fdr_bh'
 """
@@ -193,30 +193,31 @@ class MultiPhenotypeAnalysis(typing.Generic[P], metaclass=abc.ABCMeta):
 
         return issues
 
-    def _compute_nominal_pvals(
+    def _compute_nominal_stats(
         self,
         n_usable: typing.Iterable[int],
         all_counts: typing.Iterable[pd.DataFrame],
-    ) -> np.ndarray:
-        pvals = []
+    ) -> typing.Sequence[typing.Optional[StatisticResult]]:
+        results = []
         for i, (usable, count) in enumerate(zip(n_usable, all_counts)):
             if usable == 0:
-                pvals.append(np.nan)
+                results.append(None)
             else:
                 try:
-                    pval = self._count_statistic.compute_pval(count)
-                    pvals.append(pval)
+                    stat_result = self._count_statistic.compute_pval(count)
+                    results.append(stat_result)
                 except ValueError as ve:
                     # TODO: add more context to the exception?
                     raise ve
 
-        return np.array(pvals)
+        return np.array(results)
 
     def _apply_mtc(
         self,
-        pvals: typing.Sequence[float],
+        stats: typing.Sequence[typing.Optional[StatisticResult]],
     ) -> typing.Sequence[float]:
         assert self._mtc_correction is not None
+        pvals = tuple(s.pval for s in stats if s is not None)
         _, corrected_pvals, _, _ = multitest.multipletests(
             pvals=pvals,
             alpha=self._mtc_alpha,
@@ -247,13 +248,13 @@ class DiseaseAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
         )
 
         # 2 - Compute nominal p values
-        pvals = self._compute_nominal_pvals(n_usable=n_usable, all_counts=all_counts)
+        stats = self._compute_nominal_stats(n_usable=n_usable, all_counts=all_counts)
 
         # 3 - Apply Multiple Testing Correction
         if self._mtc_correction is None:
             corrected_pvals = None
         else:
-            corrected_pvals = self._apply_mtc(pvals=pvals)
+            corrected_pvals = self._apply_mtc(stats=stats)
 
         return MultiPhenotypeAnalysisResult(
             gt_predicate=gt_predicate,
@@ -262,7 +263,7 @@ class DiseaseAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
             pheno_predicates=pheno_predicates,
             n_usable=n_usable,
             all_counts=all_counts,
-            pvals=pvals,
+            statistic_results=stats,
             corrected_pvals=corrected_pvals,
         )
 
@@ -271,8 +272,8 @@ class HpoTermAnalysisResult(MultiPhenotypeAnalysisResult[hpotk.TermId]):
     """
     `HpoTermAnalysisResult` includes the :class:`HpoTermAnalysis` results.
 
-    On top of the attributes of :class:`MultiPhenotypeAnalysisResult` parent,
-    the results include the outcome of :class:`PhenotypeMtcFilter`.
+    On top of the attributes of :class:`~gpsea.analysis.MultiPhenotypeAnalysisResult` parent,
+    the results include the outcome of :class:`~gpsea.analysis.mtc_filter.PhenotypeMtcFilter`.
     """
 
     def __init__(
@@ -283,7 +284,7 @@ class HpoTermAnalysisResult(MultiPhenotypeAnalysisResult[hpotk.TermId]):
         pheno_predicates: typing.Iterable[PhenotypePolyPredicate[hpotk.TermId]],
         n_usable: typing.Sequence[int],
         all_counts: typing.Sequence[pd.DataFrame],
-        pvals: typing.Sequence[float],
+        statistic_results: typing.Sequence[typing.Optional[StatisticResult]],
         corrected_pvals: typing.Optional[typing.Sequence[float]],
         mtc_filter_name: str,
         mtc_filter_results: typing.Sequence[PhenotypeMtcResult],
@@ -295,7 +296,7 @@ class HpoTermAnalysisResult(MultiPhenotypeAnalysisResult[hpotk.TermId]):
             statistic=statistic,
             n_usable=n_usable,
             all_counts=all_counts,
-            pvals=pvals,
+            statistic_results=statistic_results,
             corrected_pvals=corrected_pvals,
             mtc_correction=mtc_correction,
         )
@@ -325,7 +326,8 @@ class HpoTermAnalysisResult(MultiPhenotypeAnalysisResult[hpotk.TermId]):
     @property
     def mtc_filter_results(self) -> typing.Sequence[PhenotypeMtcResult]:
         """
-        Get a :class:`PhenotypeMtcResult` for each of the :attr:`phenotypes`.
+        Get a :class:`~gpsea.analysis.mtc_filter.PhenotypeMtcResult`
+        for each of the :attr:`~gpsea.analysis.MultiPhenotypeAnalysisResult.phenotypes`.
         """
         return self._mtc_filter_results
 
@@ -354,10 +356,11 @@ class HpoTermAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
     `HpoTermAnalysis` can be applied if the individual phenotypes are represented as HPO terms.
 
     The analysis applies the genotype and phenotype predicates, computes the nominal p values,
-    and addresses the multiple testing burden by applying the :class:`PhenotypeMtcFilter`
+    and addresses the multiple testing burden by applying
+    the :class:`~gpsea.analysis.mtc_filter.PhenotypeMtcFilter`
     followed by the multiple testing correction `mtc_correction` method.
 
-    `PhenotypeMtcFilter` is applied even if no MTC should be applied.
+    :class:`~gpsea.analysis.mtc_filter.PhenotypeMtcFilter` is applied even if no MTC should be applied.
     """
 
     def __init__(
@@ -401,7 +404,7 @@ class HpoTermAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
             cohort_size=cohort_size,
         )
 
-        pvals = np.full(shape=(len(n_usable),), fill_value=np.nan)
+        results = np.full(shape=(len(n_usable),), fill_value=None)
         corrected_pvals = None
 
         mtc_mask = np.array([r.is_passed() for r in mtc_filter_results])
@@ -409,16 +412,16 @@ class HpoTermAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
             # We have at least one HPO term to test.
 
             # 3 - Compute nominal p values
-            pvals[mtc_mask] = self._compute_nominal_pvals(
+            results[mtc_mask] = self._compute_nominal_stats(
                 n_usable=slice_list_in_numpy_style(n_usable, mtc_mask),
                 all_counts=slice_list_in_numpy_style(all_counts, mtc_mask),
             )
 
             # 4 - Apply Multiple Testing Correction
             if self._mtc_correction is not None:
-                corrected_pvals = np.full(shape=pvals.shape, fill_value=np.nan)
+                corrected_pvals = np.full(shape=results.shape, fill_value=np.nan)
                 # Do not test the p values that have been filtered out.
-                corrected_pvals[mtc_mask] = self._apply_mtc(pvals=pvals[mtc_mask])
+                corrected_pvals[mtc_mask] = self._apply_mtc(stats=results[mtc_mask])
 
         return HpoTermAnalysisResult(
             gt_predicate=gt_predicate,
@@ -427,7 +430,7 @@ class HpoTermAnalysis(MultiPhenotypeAnalysis[hpotk.TermId]):
             pheno_predicates=pheno_predicates,
             n_usable=n_usable,
             all_counts=all_counts,
-            pvals=pvals,
+            statistic_results=results,
             corrected_pvals=corrected_pvals,
             mtc_filter_name=self._mtc_filter.filter_method_name(),
             mtc_filter_results=mtc_filter_results,

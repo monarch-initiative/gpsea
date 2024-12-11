@@ -5,9 +5,17 @@ import typing
 import hpotk
 import pytest
 
+from hpotk.validate import (
+    AnnotationPropagationValidator,
+    ObsoleteTermIdsValidator,
+    PhenotypicAbnormalityValidator,
+    ValidationRunner,
+)
+
 from gpsea.analysis.predicate.genotype import (
     GenotypePolyPredicate,
     VariantPredicates,
+    biallelic_predicate,
     allele_count,
 )
 from gpsea.analysis.predicate.phenotype import PhenotypePolyPredicate, HpoPredicate
@@ -30,7 +38,6 @@ from gpsea.model import (
     VariantInfo,
 )
 from gpsea.model.genome import GRCh38, GenomicRegion, Region, Strand, GenomeBuild
-from ._protein_test_service import ProteinTestMetadataService
 
 
 def pytest_addoption(parser):
@@ -112,24 +119,19 @@ def hpo(fpath_test_data_dir: str) -> hpotk.MinimalOntology:
 
 
 @pytest.fixture(scope="session")
-def validation_runner(hpo: hpotk.MinimalOntology) -> hpotk.validate.ValidationRunner:
+def validation_runner(hpo: hpotk.MinimalOntology) -> ValidationRunner:
     validators = (
-        hpotk.validate.ObsoleteTermIdsValidator(hpo),
-        hpotk.validate.AnnotationPropagationValidator(hpo),
-        hpotk.validate.PhenotypicAbnormalityValidator(hpo),
+        ObsoleteTermIdsValidator(hpo),
+        AnnotationPropagationValidator(hpo),
+        PhenotypicAbnormalityValidator(hpo),
     )
-    return hpotk.validate.ValidationRunner(validators)
+    return ValidationRunner(validators)
 
 
 def make_region(contig: str, start: int, end: int) -> GenomicRegion:
     a_contig = GRCh38.contig_by_name(contig)
     assert a_contig is not None
     return GenomicRegion(a_contig, start, end, Strand.POSITIVE)
-
-
-@pytest.fixture(scope="session")
-def protein_test_service() -> ProteinTestMetadataService:
-    return ProteinTestMetadataService.create()
 
 
 @pytest.fixture(scope="session")
@@ -224,6 +226,46 @@ def suox_protein_metadata(
 ) -> ProteinMetadata:
     with open(fpath_suox_protein_metadata) as fh:
         return json.load(fh, cls=GpseaJSONDecoder)
+
+
+@pytest.fixture(scope="session")
+def fpath_cyp21a2_cohort(
+    fpath_test_data_dir: str,
+) -> str:
+    # Generated from Phenopacket Store `0.1.20`.
+    return os.path.join(fpath_test_data_dir, "CYP21A2.0.1.20.json")
+
+
+@pytest.fixture(scope="session")
+def cyp21a2_cohort(
+    fpath_cyp21a2_cohort: str,
+) -> Cohort:
+    with open(fpath_cyp21a2_cohort) as fh:
+        return json.load(fh, cls=GpseaJSONDecoder)
+
+
+@pytest.fixture(scope="session")
+def cyp21a2_mane_tx_id() -> str:
+    return "NM_000500.9"
+
+
+@pytest.fixture(scope="session")
+def cyp21a2_gt_predicate(
+    cyp21a2_mane_tx_id: str,
+) -> GenotypePolyPredicate:
+    return biallelic_predicate(
+        a_predicate=VariantPredicates.variant_effect(
+            effect=VariantEffect.MISSENSE_VARIANT,
+            tx_id=cyp21a2_mane_tx_id,
+        ),
+        a_label="Missense",
+        b_label="Other",
+    )
+
+
+@pytest.fixture(scope="session")
+def cyp21a2_testosterone_label() -> str:
+    return "LOINC:2986-8"
 
 
 @pytest.fixture(scope="session")

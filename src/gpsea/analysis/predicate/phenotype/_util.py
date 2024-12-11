@@ -15,7 +15,7 @@ def prepare_predicates_for_terms_of_interest(
     missing_implies_excluded: bool = False,
 ) -> typing.Sequence[PhenotypePolyPredicate[hpotk.TermId]]:
     """
-    A convenience method for creating a battery of :class:`PropagatingPhenotypePredicate` predicates
+    A convenience method for creating a battery of :class:`PhenotypePolyPredicate` predicates
     for testing all phenotypes of interest.
 
     :param cohort: a cohort of individuals to investigate.

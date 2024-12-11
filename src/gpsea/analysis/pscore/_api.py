@@ -7,7 +7,7 @@ from gpsea.model import Patient
 from ..predicate.genotype import GenotypePolyPredicate
 from .stats import PhenotypeScoreStatistic
 
-from .._base import MonoPhenotypeAnalysisResult, Statistic
+from .._base import MonoPhenotypeAnalysisResult, Statistic, StatisticResult
 from .._partition import ContinuousPartitioning
 
 
@@ -93,8 +93,8 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
     """
     `PhenotypeScoreAnalysisResult` is a container for :class:`PhenotypeScoreAnalysis` results.
 
-    The :attr:`PhenotypeScoreAnalysisResult.data` property provides a data frame
-    with phenotype score for each tested individual:
+    The :attr:`~gpsea.analysis.MonoPhenotypeAnalysisResult.data`
+    property provides a data frame with phenotype score for each tested individual:
     
     ==========  ========  =========
     patient_id  genotype  phenotype
@@ -104,7 +104,7 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
     patient_3   None      2
     patient_4   1         2
     ...         ...       ...
-    ==========  ========  ===============
+    ==========  ========  =========
 
     The DataFrame index includes the identifiers of the tested individuals and the values are stored
     in `genotype` and `phenotype` columns.
@@ -122,9 +122,9 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
         phenotype: PhenotypeScorer,
         statistic: Statistic,
         data: pd.DataFrame,
-        pval: float,
+        statistic_result: StatisticResult,
     ):
-        super().__init__(gt_predicate, phenotype, statistic, data, pval)
+        super().__init__(gt_predicate, phenotype, statistic, data, statistic_result)
         assert isinstance(phenotype, PhenotypeScorer)
 
     def phenotype_scorer(self) -> PhenotypeScorer:
@@ -192,7 +192,7 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
             f"phenotype_scorer={self._phenotype}, "
             f"statistic={self._statistic}, "
             f"data={self._data}, "
-            f"pval={self._pval})"
+            f"statistic_result={self._statistic_result})"
         )
 
     def __repr__(self) -> str:
@@ -262,12 +262,12 @@ class PhenotypeScoreAnalysis:
         y = data.loc[
             data[MonoPhenotypeAnalysisResult.GT_COL] == y_key, MonoPhenotypeAnalysisResult.PH_COL
         ].to_numpy(dtype=float)  # type: ignore
-        pval = self._statistic.compute_pval(scores=(x, y))
+        result = self._statistic.compute_pval(scores=(x, y))
 
         return PhenotypeScoreAnalysisResult(
             gt_predicate=gt_predicate,
             phenotype=pheno_scorer,
             statistic=self._statistic,
             data=data,
-            pval=pval,
+            statistic_result=result,
         )

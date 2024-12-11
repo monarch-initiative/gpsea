@@ -1,5 +1,10 @@
 """
-GPSEA is a library for analyzing genotype-phenotype correlations in cohorts of rare disease patients.
+GPSEA is a library for finding genotype-phenotype associations.
 """
 
-__version__ = "0.7.1"
+__version__ = "0.8.0"
+
+_overwrite = False
+"""
+A private "hack" flag for regenerating documentation output (HTML fragments, figures).
+"""

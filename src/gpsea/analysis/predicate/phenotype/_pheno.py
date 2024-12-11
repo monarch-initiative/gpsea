@@ -230,17 +230,22 @@ class HpoPredicate(PhenotypePolyPredicate[hpotk.TermId]):
 
 class DiseasePresencePredicate(PhenotypePolyPredicate[hpotk.TermId]):
     """
-    `DiseasePresencePredicate` tests if the patient was diagnosed with a disease.
+    `DiseasePresencePredicate` tests if an individual was diagnosed with a disease.
 
-    The predicate tests if the patient's diseases include a disease ID formatted as a :class:`~hpotk.model.TermId`.
-
-    :param disease_id_query: the Disease ID to test
+    :param disease_id_query: a disease identifier formatted either as a CURIE `str` (e.g. ``OMIM:256000``)
+      or as a :class:`~hpotk.TermId`.
     """
 
-    def __init__(self, disease_id_query: hpotk.TermId):
-        self._query = validate_instance(
-            disease_id_query, hpotk.TermId, "disease_id_query"
-        )
+    def __init__(
+        self,
+        disease_id_query: typing.Union[str, hpotk.TermId],
+    ):
+        if isinstance(disease_id_query, str):
+            self._query = hpotk.TermId.from_curie(disease_id_query)
+        elif isinstance(disease_id_query, hpotk.TermId):
+            self._query = disease_id_query
+        else:
+            raise AssertionError
 
         self._diagnosis_present = PhenotypeCategorization(
             category=YES,

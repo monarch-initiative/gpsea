@@ -1,5 +1,22 @@
-from ._base import AnalysisResult, MonoPhenotypeAnalysisResult, MultiPhenotypeAnalysisResult
+from ._base import (
+    AnalysisException,
+    AnalysisResult,
+    MonoPhenotypeAnalysisResult,
+    MultiPhenotypeAnalysisResult,
+    Statistic,
+    StatisticResult,
+)
+from ._partition import Partitioning, ContinuousPartitioning
+from ._util import Summarizable
 
 __all__ = [
-    "AnalysisResult", "MonoPhenotypeAnalysisResult", "MultiPhenotypeAnalysisResult",
+    "AnalysisException",
+    "AnalysisResult",
+    "MonoPhenotypeAnalysisResult",
+    "MultiPhenotypeAnalysisResult",
+    "Statistic",
+    "StatisticResult",
+    "Partitioning",
+    "ContinuousPartitioning",
+    "Summarizable",
 ]

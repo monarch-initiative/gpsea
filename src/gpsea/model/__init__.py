@@ -8,7 +8,7 @@ and we follow with data classes for phenotype, genotype, transcript, and protein
 from ._base import SampleLabels, Sex
 from ._cohort import Cohort, Patient, VitalStatus, Status
 from ._gt import Genotype, Genotypes, Genotyped
-from ._phenotype import Phenotype, Disease, Measurement
+from ._phenotype import Phenotype, Disease, Measurement, OnsetAware
 from ._protein import FeatureInfo, FeatureType, ProteinFeature, ProteinMetadata
 from ._temporal import Age, Timeline
 from ._tx import TranscriptCoordinates
@@ -19,7 +19,7 @@ from ._variant_effects import VariantEffect
 __all__ = [
     'Cohort', 'Patient', 'SampleLabels', 'Sex', 'VitalStatus', 'Status',
     'Age', 'Timeline',
-    'Phenotype', 'Disease', 'Measurement',
+    'Phenotype', 'Disease', 'Measurement', 'OnsetAware',
     'Variant', 'VariantClass', 'VariantCoordinates', 'ImpreciseSvInfo', 'VariantInfo', 'VariantInfoAware',
     'Genotype', 'Genotypes', 'Genotyped',
     'TranscriptAnnotation', 'VariantEffect', 'TranscriptInfoAware',

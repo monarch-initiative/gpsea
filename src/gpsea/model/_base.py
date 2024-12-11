@@ -62,8 +62,11 @@ class SampleLabels:
 
     def __init__(self, label: str,
                  meta_label: typing.Optional[str] = None):
-        self._label = hpotk.util.validate_instance(label, str, 'label')
-        self._meta_label = hpotk.util.validate_optional_instance(meta_label, str, 'meta_label')
+        assert isinstance(label, str)
+        self._label = label
+        if meta_label is not None:
+            assert isinstance(meta_label, str)
+        self._meta_label = meta_label
 
     @property
     def label(self) -> str:

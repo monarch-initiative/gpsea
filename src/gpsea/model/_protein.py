@@ -3,8 +3,8 @@ import enum
 import io
 import json
 import typing
+import warnings
 
-import hpotk
 import pandas as pd
 
 from gpsea.util import open_text_io_handle_for_reading
@@ -19,8 +19,10 @@ class FeatureInfo:
     """
 
     def __init__(self, name: str, region: Region):
-        self._name = hpotk.util.validate_instance(name, str, "name")
-        self._region = hpotk.util.validate_instance(region, Region, "region")
+        assert isinstance(name, str)
+        self._name = name
+        assert isinstance(region, Region)
+        self._region = region
 
     @property
     def name(self) -> str:
@@ -79,10 +81,24 @@ class FeatureInfo:
     def __repr__(self) -> str:
         return str(self)
 
+def _deprecation_warning():
+    warnings.warn(
+            f"`FeatureType` was deprecated and will be removed prior `v1.0.0`. Use a `str` instead!",
+            DeprecationWarning,
+        )
+
 
 class FeatureType(enum.Enum):
     """
     An enum representing the protein feature types supported in GPSEA.
+
+    Use :func:`~gpsea.model.FeatureType.from_string` to parse a feature from Uniprot:
+
+    >>> from gpsea.model import FeatureType
+    >>> val = "Dna Binding"
+    >>> feature_type = FeatureType.from_string(val)
+    >>> feature_type.name
+    'DNA_BINDING'
     """
 
     REPEAT = enum.auto()
@@ -123,6 +139,24 @@ class FeatureType(enum.Enum):
     A zinc finger is a small, functional, independently folded domain that coordinates one or more zinc ions to stabilize its structure through cysteine and/or histidine residues.
     """
 
+    TOPOLOGICAL_DOMAIN = enum.auto()
+    """
+    non-membrane region of a membrane-spanning protein
+    """
+
+    TRANSMEMBRANE = enum.auto()
+    """
+    Section of a protein that goes through the membrane of the cell or an organelle
+    """
+
+    DNA_BINDING = enum.auto()
+    """
+    A region with a known DNA binding activity.
+    """
+
+    def __init__(self, _value):
+        _deprecation_warning()
+
     @staticmethod
     def from_string(category: str) -> "FeatureType":
         cat_lower = category.lower()
@@ -140,8 +174,18 @@ class FeatureType(enum.Enum):
             return FeatureType.COMPOSITIONAL_BIAS
         elif cat_lower == "zinc finger":
             return FeatureType.ZINC_FINGER
+        elif cat_lower == "topological domain":
+            return FeatureType.TOPOLOGICAL_DOMAIN
+        elif cat_lower == "transmembrane":
+            return FeatureType.TRANSMEMBRANE
+        elif cat_lower == "dna binding":
+            return FeatureType.DNA_BINDING
         else:
             raise ValueError(f'Unrecognized protein feature type: "{category}"')
+        
+    @staticmethod
+    def deprecation_warning():
+        _deprecation_warning()
 
 
 class ProteinFeature(metaclass=abc.ABCMeta):
@@ -149,7 +193,7 @@ class ProteinFeature(metaclass=abc.ABCMeta):
     @staticmethod
     def create(
         info: FeatureInfo,
-        feature_type: FeatureType,
+        feature_type: str,
     ) -> "ProteinFeature":
         return SimpleProteinFeature(info, feature_type)
 
@@ -160,11 +204,11 @@ class ProteinFeature(metaclass=abc.ABCMeta):
 
     @property
     @abc.abstractmethod
-    def feature_type(self) -> FeatureType:
+    def feature_type(self) -> str:
         pass
 
     def to_string(self) -> str:
-        return f"{self.feature_type.name}-{self.info.name}-{self.info.region}"
+        return f"{self.feature_type}-{self.info.name}-{self.info.region}"
 
 
 class SimpleProteinFeature(ProteinFeature):
@@ -174,20 +218,20 @@ class SimpleProteinFeature(ProteinFeature):
 
     # Not part of the public API.
 
-    def __init__(self, info: FeatureInfo, feature_type: FeatureType):
+    def __init__(
+        self,
+        info: FeatureInfo,
+        feature_type: str,
+    ):
         """Constructs all necessary attributes for a SimpleProteinFeature
 
         Args:
             info (FeatureInfo): A FeatureInfo object, describing name and location of the feature
             feature_type (FeatureType): A FeatureType object, limited to specific feature types
         """
-        if not isinstance(info, FeatureInfo):
-            raise ValueError(f"info must be type FeatureInfo but was type {type(info)}")
+        assert isinstance(info, FeatureInfo)
         self._info = info
-        if not isinstance(feature_type, FeatureType):
-            raise ValueError(
-                f"feature_type must be type FeatureType but was type {type(feature_type)}"
-            )
+        assert isinstance(feature_type, str)
         self._type = feature_type
 
     @property
@@ -199,10 +243,9 @@ class SimpleProteinFeature(ProteinFeature):
         return self._info
 
     @property
-    def feature_type(self) -> FeatureType:
+    def feature_type(self) -> str:
         """
-        Returns:
-            FeatureType: A FeatureType object, limited to specific feature types (e.g. REGION, REPEAT, MOTIF, DOMAIN)
+        Get a `str` with the feature type (e.g. `Region`, `Zinc finger`, ...).
         """
         return self._type
 
@@ -302,8 +345,8 @@ class ProteinMetadata:
         +------------------+----------+--------+-------+
 
         The `region` column includes the protein feature name.
-        The category must be one of `'repeat'`, `'motif'`, `'domain'`, or `'region'`.
-        Use `region` if no other option fits. Last, `start` and `end` denote 1-based start and end coordinates
+        The category is a `str` representing region's feature type. Use `'region'` if no better type fits.
+        Last, `start` and `end` denote 1-based start and end coordinates
         of the aminoacid sequence region described by the feature.
         For instance, `[1, 10]` for the first ten aminoacids of the protein.
 
@@ -325,8 +368,7 @@ class ProteinMetadata:
             region_name = row["region"]
             region_start = row["start"] - 1  # convert to 0-based coordinates
             region_end = row["end"]
-            region_category = row["category"]
-            feature_type = FeatureType.from_string(region_category)
+            feature_type = row["category"]
             finfo = FeatureInfo(
                 name=region_name, region=Region(start=region_start, end=region_end)
             )
@@ -370,9 +412,11 @@ class ProteinMetadata:
         for feature in data["features"]:
             region_name = feature["description"]
             locus = feature["location"]
-            region_start = int(locus["start"]["value"]) - 1  # convert to 0-based coordinates
+            region_start = (
+                int(locus["start"]["value"]) - 1
+            )  # convert to 0-based coordinates
             region_end = int(locus["end"]["value"])
-            feature_type = FeatureType.from_string(feature["type"])
+            feature_type = feature["type"]
             finfo = FeatureInfo(
                 name=region_name, region=Region(start=region_start, end=region_end)
             )
@@ -437,7 +481,7 @@ class ProteinMetadata:
             Iterable[ProteinFeature]: A subgroup of the protein features that correspond to protein domains.
         """
         return filter(
-            lambda f: f.feature_type == FeatureType.DOMAIN, self.protein_features
+            lambda f: f.feature_type.upper() == "DOMAIN", self.protein_features
         )
 
     def repeats(self) -> typing.Iterable[ProteinFeature]:
@@ -446,7 +490,7 @@ class ProteinMetadata:
             Iterable[ProteinFeature]: A subgroup of the protein features that correspond to repeat regions.
         """
         return filter(
-            lambda f: f.feature_type == FeatureType.REPEAT, self.protein_features
+            lambda f: f.feature_type.upper() == "REPEAT", self.protein_features
         )
 
     def regions(self) -> typing.Iterable[ProteinFeature]:
@@ -455,7 +499,7 @@ class ProteinMetadata:
             Iterable[ProteinFeature]: A subgroup of the protein features that correspond to generic regions.
         """
         return filter(
-            lambda f: f.feature_type == FeatureType.REGION, self.protein_features
+            lambda f: f.feature_type.upper() == "REGION", self.protein_features
         )
 
     def motifs(self) -> typing.Iterable[ProteinFeature]:
@@ -464,7 +508,7 @@ class ProteinMetadata:
             Iterable[ProteinFeature]: A subgroup of the protein features that correspond to motifs.
         """
         return filter(
-            lambda f: f.feature_type == FeatureType.MOTIF, self.protein_features
+            lambda f: f.feature_type.upper() == "MOTIF", self.protein_features
         )
 
     def get_features_variant_overlaps(

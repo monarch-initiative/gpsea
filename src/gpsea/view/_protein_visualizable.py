@@ -36,7 +36,7 @@ class ProteinVisualizable:
         self._protein_feature_ends = list()
         for feature in protein_meta.protein_features:
             self._protein_feature_names.append(feature.info.name)
-            self._protein_feature_types.append(feature.feature_type.name.lower())
+            self._protein_feature_types.append(feature.feature_type.lower())
             self._protein_feature_starts.append(feature.info.start)
             self._protein_feature_ends.append(feature.info.end)
 

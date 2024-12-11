@@ -3,6 +3,7 @@ import os
 import hpotk
 import pytest
 
+from hpotk.validate import ValidationRunner
 from stairval import Level
 from stairval.notepad import create_notepad
 
@@ -19,10 +20,9 @@ from gpsea.preprocessing import (
 )
 from gpsea.preprocessing import (
     FunctionalAnnotator,
-    VarCachingFunctionalAnnotator,
-    VepFunctionalAnnotator,
     ImpreciseSvFunctionalAnnotator,
     DefaultImpreciseSvFunctionalAnnotator,
+    configure_default_functional_annotator,
 )
 from gpsea.preprocessing import PhenopacketPatientCreator, PhenopacketOntologyTermOnsetParser
 from gpsea.preprocessing import VVMultiCoordinateService
@@ -147,11 +147,9 @@ class TestPhenopacketPatientCreator:
         fpath_variant_cache_dir = os.path.join(fpath_cache_dir, "variant_cache")
         os.makedirs(fpath_variant_cache_dir, exist_ok=True)
 
-        return VarCachingFunctionalAnnotator.with_cache_folder(
-            fpath_cache_dir=fpath_variant_cache_dir,
-            fallback=VepFunctionalAnnotator(
-                timeout=20,
-            ),
+        return configure_default_functional_annotator(
+            ann_source="VEP",
+            cache_dir=fpath_variant_cache_dir,
         )
 
     @pytest.fixture
@@ -182,7 +180,7 @@ class TestPhenopacketPatientCreator:
     def patient_creator(
         self,
         hpo: hpotk.MinimalOntology,
-        validation_runner: hpotk.validate.ValidationRunner,
+        validation_runner: ValidationRunner,
         genome_build: GenomeBuild,
         functional_annotator: FunctionalAnnotator,
         imprecise_sv_functional_annotator: ImpreciseSvFunctionalAnnotator,

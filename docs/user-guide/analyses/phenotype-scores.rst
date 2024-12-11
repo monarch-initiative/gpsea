@@ -1,9 +1,21 @@
 .. _phenotype-score-stats:
 
 
-===========================================
+###########################################
 Compare phenotype scores in genotype groups
-===========================================
+###########################################
+
+.. doctest::
+  :hide:
+
+  >>> from gpsea import _overwrite
+
+
+In this section, we show how to test for an association between genotype group and a phenotype score.
+We assume a cohort was preprocessed following the :ref:`input-data` section,
+and we use a genotype predicate and a phenotype scorer from the :ref:`partitioning` section to assign each cohort member
+into a genotype group and to compute a phenotype score.
+We use Mann-Whitney U test to test for differences in phenotype score distributions between the groups.
 
 
 .. _mann-whitney-u-test:
@@ -30,7 +42,7 @@ This is a non-parametric test that compares the medians of the two groups to det
 6.348081479150902e-06
 
 
-``p_value`` evaluates to `6.348081479150901e-06`, meaning there is a significant difference between the groups.
+p value of `6.348081479150901e-06` suggests a significant difference between the groups.
 
 
 ****************
@@ -58,7 +70,7 @@ We will load 19 phenopackets that represent individuals with mutations in *RERE*
 whose signs and symptoms were encoded into HPO terms and deposited into Phenopacket Store.
 We will load the :class:`~gpsea.model.Cohort`
 from a `JSON file <https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/RERE.0.1.20.json>`_.
-The cohort was prepared from phenopackets as described in :ref:`create-cohort-from-phenopackets` section,
+The cohort was prepared from phenopackets as described in :ref:`create-a-cohort` section,
 and then serialized as a JSON file following the instructions in :ref:`cohort-persistence` section.
 
 .. 
@@ -143,15 +155,7 @@ This component is responsible for computing a phenotype score for an individual.
 As far as GPSEA framework is concerned, the phenotype score must be a floating point number
 or a `NaN` value if the score cannot be computed for an individual.
 
-Several out-of-shelf examples include:
-
-* :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer` to count the number of abnormalities 
-  in organ groups described by top-level HPO terms (*Abnormal brain morphology*, *Abnormal heart morphology*, ...)
-* :class:`~gpsea.analysis.pscore.DeVriesPhenotypeScorer` for assessment of the severity of intellectual disability
-* :class:`~gpsea.analysis.pscore.MeasurementPhenotypeScorer` that uses a laboratory test measurement, 
-  such as `Testosterone [Mass/volume] in Serum or Plasma <https://loinc.org/2986-8/>`_, as the score
-
-Here we use :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer` for scoring
+Here we use the :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer` for scoring
 the individuals based on the number of structural defects
 from the following 5 categories:
 
@@ -163,7 +167,8 @@ from the following 5 categories:
 
 For example, an individual with a congenital heart defect would be assigned a score of `1`,
 an individual with congenital heart defect and a renal anomaly would be assigned a score of `2`,
-and so on.
+and so on. If an individual had two heart defects (e.g., atrial septal defect and ventricular septal defect), 
+a score of 1 (not 2) would be assigned for the heart defect category.
 
 The :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer` automatizes this scoring method
 by encoding the categories into HPO terms:
@@ -288,7 +293,7 @@ to visualize the phenotype score distributions:
 .. doctest:: phenotype-scores
    :hide:
 
-   >>> fig.savefig('docs/img/rere_phenotype_score_boxplot.png')  # doctest: +SKIP
+   >>> if _overwrite: fig.savefig('docs/img/rere_phenotype_score_boxplot.png')
 
 
 

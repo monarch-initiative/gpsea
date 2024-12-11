@@ -1,0 +1,181 @@
+<div>
+    <style>
+        /** Light theme is the default */
+        :root {
+            --gpsea-color-text: black;
+            --gpsea-color-link-text: rgb(0, 118, 187);
+            --gpsea-color-link-hover: rgb(0, 99, 156);
+            --gpsea-color-primary-a0: #2f5170;
+            --gpsea-color-primary-a10: #4778a5;
+            --gpsea-color-primary-a20: #5995ce;
+            --gpsea-color-primary-a60: LightSkyBlue;
+            --gpsea-color-surface-a0: #fcfcfc;
+            --gpsea-color-surface-a10: #ffffff;
+            --gpsea-color-surface-a20: #b3b3b3;
+            --gpsea-color-surface-a30: #8d8d8d;
+            --gpsea-color-surface-a40: #646464;
+            --gpsea-color-surface-a50: #000000;
+        }
+
+        /** Dark theme */
+        /*
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --gpsea-color-text: rgb(240, 240, 240);
+                --gpsea-color-link-text: rgb(240, 240, 240);
+                --gpsea-color-link-hover: lightblue;
+                --gpsea-color-primary-a0: #64a3df;
+                --gpsea-color-primary-a10: #5286b8;
+                --gpsea-color-primary-a20: #375c7e;
+                --gpsea-color-primary-a60: #233b52;
+                --gpsea-color-surface-a0: #121212;
+                --gpsea-color-surface-a10: #282828;
+                --gpsea-color-surface-a20: #3f3f3f;
+                --gpsea-color-surface-a30: #575757;
+                --gpsea-color-surface-a40: #717171;
+                --gpsea-color-surface-a50: #8b8b8b;
+            }
+        }
+        */
+
+        #gpsea-body {
+            max-width: 1600px;
+            color: var(--gpsea-color-text);
+            background-color: var(--gpsea-color-surface-a0);
+            padding: 10px 0;
+        }
+
+        #gpsea-body {
+
+            h1,
+            h2,
+            h3,
+            h4,
+            h5 {
+                color: var(--gpsea-color-primary-a0);
+            }
+
+            a {
+                color: var(--gpsea-color-link-text);
+                text-decoration: none;
+            }
+
+            a:hover {
+                color: var(--gpsea-color-link-hover);
+            }
+
+            #cohort-summary {
+                max-width: 800px;
+            }
+
+            td {
+                padding: 5px 0;
+            }
+
+            .cards {
+                display: flex;
+                flex-flow: row wrap;
+                align-items: top;
+                gap: 1rem;
+            }
+
+            .card {
+                border-radius: 5px;
+                padding: 0px 10px;
+                background: var(--gpsea-color-surface-a10);
+                border: 1px solid var(--gpsea-color-surface-a30);
+                box-shadow: 0 4px 8px var(--gpsea-color-surface-a30);
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 10px 0;
+                font-size: 0.9em;
+                font-family: sans-serif;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+                border: 1px solid var(--gpsea-color-primary-a60);
+            }
+
+            th {
+                text-align: left;
+                padding: 2px;
+                font-weight: bold;
+                font-size: 120%;
+                color: var(--gpsea-color-text);
+                background-color: var(--gpsea-color-primary-a60);
+            }
+
+            table td,
+            tr {
+                text-align: right;
+                padding: 0px 5px;
+            }
+
+            tr:nth-child(even) {
+                background-color: var(--gpsea-color-surface-a10);
+            }
+
+            tr:nth-child(odd) {
+                background-color: var(--gpsea-color-surface-a20);
+            }
+
+            .lft {
+                text-align: left;
+            }
+
+            caption {
+                caption-side: top;
+                text-align: left;
+                padding-bottom: 10px;
+                font-weight: bold;
+            }
+        }
+    </style>
+    <div id="gpsea-body">
+        
+<h1>Phenotype testing report</h1>
+<div class="cards">
+  <div class="card">
+    <ul>
+      <li>Phenotype MTC filter: <em>HPO MTC filter</em></li>
+      <li>Multiple testing correction: <em>fdr_bh</em></li>
+    </ul>
+  </div>
+  <div class="card">
+    <table>
+      <tbody>
+        <tr>
+          <th>Code</th>
+          <th>Reason</th>
+          <th>Count</th>
+        </tr>
+        
+        <tr>
+          <td>HMF01</td>
+          <td>Skipping term with maximum frequency that was less than threshold 0.4</td>
+          <td>19</td>
+        </tr>
+        
+        <tr>
+          <td>HMF08</td>
+          <td>Skipping general term</td>
+          <td>48</td>
+        </tr>
+        
+        <tr>
+          <td>HMF09</td>
+          <td>Skipping term with maximum annotation frequency that was less than threshold 0.4</td>
+          <td>285</td>
+        </tr>
+        
+      </tbody>
+      <caption>
+        Performed statistical tests for 17 out of the total of 369 HPO terms.
+      </caption>
+    </table>
+  </div>
+</div>
+
+    </div>
+</div>

@@ -2,7 +2,7 @@ import typing
 
 import hpotk
 
-from gpsea.model import FeatureType, VariantClass, VariantEffect, ProteinMetadata
+from gpsea.model import VariantClass, VariantEffect, ProteinMetadata, FeatureType
 from gpsea.model.genome import Region
 from ._api import VariantPredicate, AllVariantPredicate, AnyVariantPredicate
 from ._predicates import (
@@ -406,7 +406,7 @@ class VariantPredicates:
 
     @staticmethod
     def protein_feature_type(
-        feature_type: FeatureType,
+        feature_type: typing.Union[FeatureType, str],
         protein_metadata: ProteinMetadata,
     ) -> VariantPredicate:
         """
@@ -418,6 +418,9 @@ class VariantPredicates:
                 (e.g. :class:`~gpsea.model.FeatureType.DOMAIN`).
             protein_metadata: the information about the protein.
         """
+        if isinstance(feature_type, FeatureType):
+            FeatureType.deprecation_warning()
+            feature_type = feature_type.name
         return ProteinFeatureTypePredicate(
             feature_type=feature_type,
             protein_metadata=protein_metadata,

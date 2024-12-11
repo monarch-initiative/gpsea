@@ -6,10 +6,11 @@ import pytest
 
 from gpsea.model.genome import GenomeBuild
 from gpsea.preprocessing import FunctionalAnnotator, ImpreciseSvFunctionalAnnotator, VariantCoordinateFinder
-from gpsea.preprocessing import VepFunctionalAnnotator, VarCachingFunctionalAnnotator, VVHgvsVariantCoordinateFinder, DefaultImpreciseSvFunctionalAnnotator
+from gpsea.preprocessing import VVHgvsVariantCoordinateFinder, DefaultImpreciseSvFunctionalAnnotator
 from gpsea.preprocessing import PhenopacketPatientCreator
 from gpsea.preprocessing import VVMultiCoordinateService
 from gpsea.preprocessing import CohortCreator, load_phenopacket_folder
+from gpsea.preprocessing import configure_default_functional_annotator
 
 
 class TestPhenopacketCohortCreator:
@@ -17,17 +18,9 @@ class TestPhenopacketCohortCreator:
     @pytest.fixture
     def functional_annotator(
         self,
-        fpath_project_dir: str,
     ) -> FunctionalAnnotator:
-        fpath_cache_dir = os.path.join(fpath_project_dir, '.gpsea_cache')
-        fpath_variant_cache_dir = os.path.join(fpath_cache_dir, 'variant_cache')
-        os.makedirs(fpath_variant_cache_dir, exist_ok=True)
-        
-        return VarCachingFunctionalAnnotator.with_cache_folder(
-            fpath_cache_dir=fpath_variant_cache_dir,
-            fallback=VepFunctionalAnnotator(
-                timeout=20,
-            ),
+        return configure_default_functional_annotator(
+            ann_source="VEP",
         )
 
     @pytest.fixture
