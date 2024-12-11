@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.temporal._api &mdash; GPSEA 0.7.1 documentation</title>
+  <title>gpsea.analysis.temporal._api &mdash; GPSEA 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../../../../_static/documentation_options.js?v=486e5634"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -43,9 +43,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../setup.html">Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../user-guide/index.html">User guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../apidocs/modules.html">API reference</a></li>
@@ -77,6 +77,7 @@
              
   <h1>Source code for gpsea.analysis.temporal._api</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">typing</span>
 
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
@@ -91,7 +92,7 @@
 <span class="kn">from</span> <span class="nn">._util</span> <span class="kn">import</span> <span class="n">prepare_censored_data</span>
 <span class="kn">from</span> <span class="nn">.stats</span> <span class="kn">import</span> <span class="n">SurvivalStatistic</span>
 
-<span class="kn">from</span> <span class="nn">.._base</span> <span class="kn">import</span> <span class="n">MonoPhenotypeAnalysisResult</span>
+<span class="kn">from</span> <span class="nn">.._base</span> <span class="kn">import</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="p">,</span> <span class="n">StatisticResult</span><span class="p">,</span> <span class="n">AnalysisException</span>
 <span class="kn">from</span> <span class="nn">.._partition</span> <span class="kn">import</span> <span class="n">ContinuousPartitioning</span>
 
 
@@ -101,9 +102,9 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `Endpoint` computes survival for the analyzed individual.</span>
 
-<span class="sd">    An example endpoint includes :func:`~gpsea.analysis.survival.endpoint.death`,</span>
-<span class="sd">    :func:`~gpsea.analysis.survival.endpoint.disease_onset`,</span>
-<span class="sd">    or onset of a phenotypic feature (:func:`~gpsea.analysis.survival.endpoint.hpo_onset`).</span>
+<span class="sd">    Example endpoints include :func:`~gpsea.analysis.temporal.endpoint.death`,</span>
+<span class="sd">    :func:`~gpsea.analysis.temporal.endpoint.disease_onset`,</span>
+<span class="sd">    or onset of a phenotypic feature (:func:`~gpsea.analysis.temporal.endpoint.hpo_onset`).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Endpoint.compute_survival">
@@ -142,7 +143,7 @@
 
 <span class="sd">    The index includes the individual IDs (`patient_id`), and then there are 2 columns</span>
 <span class="sd">    with the `genotype` group id (:attr:`~gpsea.analysis.predicate.PatientCategory.cat_id`)</span>
-<span class="sd">    and the `phenotype` with the survival represented as :class:`~gpsea.analysis.tempo.Survival` object.</span>
+<span class="sd">    and the `phenotype` with the survival represented as :class:`~gpsea.analysis.temporal.Survival` object.</span>
 
 <span class="sd">    A `genotype` value may be missing (`None`) if the individual cannot be assigned</span>
 <span class="sd">    into a genotype category.</span>
@@ -155,14 +156,14 @@
         <span class="n">endpoint</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">,</span>
         <span class="n">statistic</span><span class="p">:</span> <span class="n">SurvivalStatistic</span><span class="p">,</span>
         <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="n">pval</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">statistic_result</span><span class="p">:</span> <span class="n">StatisticResult</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">gt_predicate</span><span class="o">=</span><span class="n">gt_predicate</span><span class="p">,</span>
             <span class="n">phenotype</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
             <span class="n">statistic</span><span class="o">=</span><span class="n">statistic</span><span class="p">,</span>
             <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
-            <span class="n">pval</span><span class="o">=</span><span class="n">pval</span><span class="p">,</span>
+            <span class="n">statistic_result</span><span class="o">=</span><span class="n">statistic_result</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">Endpoint</span><span class="p">)</span>
 
@@ -220,7 +221,7 @@
             <span class="sa">f</span><span class="s2">&quot;endpoint=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_phenotype</span><span class="si">}</span><span class="s2">, &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;statistic=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span><span class="si">}</span><span class="s2">, &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;data=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="si">}</span><span class="s2">, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;pval=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_pval</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;statistic_result=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_statistic_result</span><span class="si">}</span><span class="s2">)&quot;</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -238,6 +239,9 @@
 <span class="sd">    The cohort is partitioned into groups using a genotype predicate</span>
 <span class="sd">    and survival is computed for each cohort member. The difference between</span>
 <span class="sd">    survivals is tested with selected :class:`~gpsea.analysis.temporal.stats.SurvivalStatistic`.</span>
+
+<span class="sd">    The analysis may raise an :class:`~gpsea.analysis.AnalysisException` if issues are encountered.</span>
+<span class="sd">    The exception includes the reason(s) in `args` as well as any partial data, to help with troubleshooting.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -281,14 +285,19 @@
                 <span class="n">survivals</span><span class="p">[</span><span class="n">gt_cat</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">survival</span><span class="p">)</span>
 
         <span class="n">vals</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">survivals</span><span class="p">[</span><span class="n">gt_cat</span><span class="p">]</span> <span class="k">for</span> <span class="n">gt_cat</span> <span class="ow">in</span> <span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_categorizations</span><span class="p">())</span>
-        <span class="n">pval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span><span class="o">.</span><span class="n">compute_pval</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span><span class="o">.</span><span class="n">compute_pval</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">pval</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">AnalysisException</span><span class="p">(</span>
+                <span class="nb">dict</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">),</span>
+                <span class="s2">&quot;The survival values did not meet the expectation of the statistical test!&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">SurvivalAnalysisResult</span><span class="p">(</span>
             <span class="n">gt_predicate</span><span class="o">=</span><span class="n">gt_predicate</span><span class="p">,</span>
             <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
             <span class="n">statistic</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span><span class="p">,</span>
             <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
-            <span class="n">pval</span><span class="o">=</span><span class="n">pval</span><span class="p">,</span>
+            <span class="n">statistic_result</span><span class="o">=</span><span class="n">result</span><span class="p">,</span>
         <span class="p">)</span></div>
 </div>
 

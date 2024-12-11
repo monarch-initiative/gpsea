@@ -5,14 +5,26 @@
 Compare genotype and phenotype groups
 =====================================
 
+.. doctest::
+  :hide:
+
+  >>> from gpsea import _overwrite
+
+In this section, we show how to test the association between genotype and phenotype categories.
+We assume a cohort was preprocessed following the :ref:`input-data` section,
+and we use predicates described in the :ref:`partitioning` to assign each cohort member
+into a group along the genotype and phenotype axes.
+We use Fisher exact test (FET) to test for differences between the groups
+and we apply multiple testing correction to mitigate finding significant associations by chance. 
+
 
 .. _fisher-exact-test:
 
-***********************
-Fisher exact test (FET)
-***********************
+*****************
+Fisher exact test
+*****************
 
-The Fisher exact test (FET) calculates the exact probability value
+The Fisher exact test calculates the exact probability value
 for the relationship between two dichotomous variables.
 In our implementation, the two dichotomous variables are the genotype and the phenotype.
 For instance, the individuals of the cohort may be divided
@@ -78,7 +90,7 @@ Load cohort
 
 For the purpose of this analysis, we will load the :class:`~gpsea.model.Cohort`
 from a `JSON file <https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/TBX5.0.1.20.json>`_.
-The cohort was prepared from phenopackets as described in :ref:`create-cohort-from-phenopackets` section,
+The cohort was prepared from phenopackets as described in :ref:`create-a-cohort` section,
 and then serialized as a JSON file following the instructions in :ref:`cohort-persistence` section.
 
 .. 
@@ -167,6 +179,9 @@ The function finds 369 HPO terms that annotate at least one individual,
 including the *indirect* annotations whose presence is implied by the :ref:`true-path-rule`.
 
 
+.. _phenotype-groups-statistical-analysis:
+
+
 Statistical analysis
 --------------------
 
@@ -180,7 +195,7 @@ GPSEA uses a two-pronged strategy to reduce the number of tests and, therefore, 
 a phenotype multiple testing (MT) filter and multiple testing correction (MTC).
 
 Phenotype MT filter selects a (sub)set of HPO terms for testing,
-for instance only the user-selected terms (see :class:`~gpsea.analysis.mtc_filter.SpecifyTermsStrategy`)
+for instance only the user-selected terms (see :class:`~gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter`)
 or the terms selected by :class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`.
 
 Multiple testing correction then adjusts the nominal p values for the increased risk
@@ -189,6 +204,7 @@ The available MTC procedures are listed in the :ref:`mtc-correction-procedures` 
 
 We must pick one of these to perform genotype-phenotype analysis.
 
+.. _default-hpo-analysis:
 
 Default analysis
 ^^^^^^^^^^^^^^^^
@@ -200,11 +216,18 @@ The default analysis can be configured with :func:`~gpsea.analysis.pcats.configu
 >>> from gpsea.analysis.pcats import configure_hpo_term_analysis
 >>> analysis = configure_hpo_term_analysis(hpo)
 
+At this point, the ``analysis`` configured to test
+a cohort for G/P associations.
+
+
+.. _custom-hpo-analysis:
 
 Custom analysis
 ^^^^^^^^^^^^^^^
 
-If the defaults do not work, we can configure the analysis manually.
+If the default selection of phenotype MT filter and multiple testing correction is not an option,
+we can configure the analysis manually.
+
 First, we choose a phenotype MT filter (e.g. :class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`):
 
 >>> from gpsea.analysis.mtc_filter import HpoMtcFilter
@@ -212,7 +235,7 @@ First, we choose a phenotype MT filter (e.g. :class:`~gpsea.analysis.mtc_filter.
 
 .. note::
 
-   See the :ref:`mtc-filters` section for more info on the available MT filters.
+   See the :ref:`mtc-filters` section for info regarding other phenotype MT filters.
 
 then a statistical test (e.g. Fisher Exact test):
 
@@ -230,6 +253,10 @@ and we finalize the setup by choosing a MTC procedure
 >>> mtc_correction = 'fdr_bh'
 >>> mtc_alpha = 0.05
 
+.. note::
+
+   See the :ref:`mtc-correction-procedures` section for a list of available MTC procedure codes.
+
 The final :class:`~gpsea.analysis.pcats.HpoTermAnalysis` is created as:
 
 >>> from gpsea.analysis.pcats import HpoTermAnalysis
@@ -239,6 +266,8 @@ The final :class:`~gpsea.analysis.pcats.HpoTermAnalysis` is created as:
 ...     mtc_correction='fdr_bh',
 ...     mtc_alpha=0.05,
 ... )
+
+The ``analysis`` is identical to the one configured in the :ref:`default-hpo-analysis` section.
 
 
 Analysis
@@ -257,8 +286,10 @@ We can now test associations between the genotype groups and the HPO terms:
 24
 
 
+We tested the ``cohort`` for association between the genotype groups (``gt_predicate``)
+and HPO terms (``pheno_predicates``).
 Thanks to phenotype MT filter, we only tested 24 out of 369 terms.
-We can learn more by showing the MT filter report:
+The MT filter report shows the filtering details:
 
 >>> from gpsea.view import MtcStatsViewer
 >>> mtc_viewer = MtcStatsViewer()
@@ -271,14 +302,16 @@ We can learn more by showing the MT filter report:
 .. doctest:: phenotype-groups
    :hide:
 
-   >>> mtc_report.write('docs/user-guide/analyses/report/tbx5_frameshift.mtc_report.html')  # doctest: +SKIP
+   >>> if _overwrite: mtc_report.write('docs/user-guide/analyses/report/tbx5_frameshift.mtc_report.html')
 
 
 Genotype phenotype associations
 ===============================
 
-Last, let's explore the associations. The results include a table with all tested HPO terms
-ordered by the corrected p value (Benjamini-Hochberg FDR):
+Last, let's explore the associations. 
+
+GPSEA displays the associations between genotypes and HPO terms in a table,
+one HPO term per row. The rows are ordered by the corrected p value and nominal p value in descending order.
 
 >>> from gpsea.view import summarize_hpo_analysis
 >>> summary_df = summarize_hpo_analysis(hpo, result)
@@ -291,7 +324,7 @@ ordered by the corrected p value (Benjamini-Hochberg FDR):
 .. doctest:: phenotype-groups
    :hide:
 
-   >>> summary_df.to_csv('docs/user-guide/analyses/report/tbx5_frameshift.csv')  # doctest: +SKIP
+   >>> if _overwrite: summary_df.to_csv('docs/user-guide/analyses/report/tbx5_frameshift.csv')
 
 
 The table shows that several HPO terms are significantly associated

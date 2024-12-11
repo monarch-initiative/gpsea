@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.model._gt &mdash; GPSEA 0.7.1 documentation</title>
+  <title>gpsea.model._gt &mdash; GPSEA 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../../../_static/documentation_options.js?v=486e5634"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -43,9 +43,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup.html">Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user-guide/index.html">User guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../apidocs/modules.html">API reference</a></li>
@@ -157,14 +157,14 @@
 <div class="viewcode-block" id="Genotypes.empty">
 <a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Genotypes.empty">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">empty</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">empty</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="s2">&quot;Genotypes&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">EMPTY</span></div>
 
 
 <div class="viewcode-block" id="Genotypes.single">
 <a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Genotypes.single">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">single</span><span class="p">(</span><span class="n">sample_id</span><span class="p">:</span> <span class="n">SampleLabels</span><span class="p">,</span> <span class="n">genotype</span><span class="p">:</span> <span class="n">Genotype</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">single</span><span class="p">(</span><span class="n">sample_id</span><span class="p">:</span> <span class="n">SampleLabels</span><span class="p">,</span> <span class="n">genotype</span><span class="p">:</span> <span class="n">Genotype</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Genotypes&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A shortcut for creating `Genotypes` for a single sample:</span>
 
@@ -181,7 +181,7 @@
 <div class="viewcode-block" id="Genotypes.from_mapping">
 <a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.Genotypes.from_mapping">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_mapping</span><span class="p">(</span><span class="n">mapping</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">SampleLabels</span><span class="p">,</span> <span class="n">Genotype</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="nf">from_mapping</span><span class="p">(</span><span class="n">mapping</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="n">SampleLabels</span><span class="p">,</span> <span class="n">Genotype</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Genotypes&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create `Genotypes` from mapping between sample IDs and genotypes.</span>
 

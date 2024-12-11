@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.pscore._api &mdash; GPSEA 0.7.1 documentation</title>
+  <title>gpsea.analysis.pscore._api &mdash; GPSEA 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../../../../_static/documentation_options.js?v=486e5634"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -43,9 +43,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../setup.html">Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../user-guide/index.html">User guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../apidocs/modules.html">API reference</a></li>
@@ -85,7 +85,7 @@
 <span class="kn">from</span> <span class="nn">..predicate.genotype</span> <span class="kn">import</span> <span class="n">GenotypePolyPredicate</span>
 <span class="kn">from</span> <span class="nn">.stats</span> <span class="kn">import</span> <span class="n">PhenotypeScoreStatistic</span>
 
-<span class="kn">from</span> <span class="nn">.._base</span> <span class="kn">import</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="p">,</span> <span class="n">Statistic</span>
+<span class="kn">from</span> <span class="nn">.._base</span> <span class="kn">import</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="p">,</span> <span class="n">Statistic</span><span class="p">,</span> <span class="n">StatisticResult</span>
 <span class="kn">from</span> <span class="nn">.._partition</span> <span class="kn">import</span> <span class="n">ContinuousPartitioning</span>
 
 
@@ -182,8 +182,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `PhenotypeScoreAnalysisResult` is a container for :class:`PhenotypeScoreAnalysis` results.</span>
 
-<span class="sd">    The :attr:`PhenotypeScoreAnalysisResult.data` property provides a data frame</span>
-<span class="sd">    with phenotype score for each tested individual:</span>
+<span class="sd">    The :attr:`~gpsea.analysis.MonoPhenotypeAnalysisResult.data`</span>
+<span class="sd">    property provides a data frame with phenotype score for each tested individual:</span>
 <span class="sd">    </span>
 <span class="sd">    ==========  ========  =========</span>
 <span class="sd">    patient_id  genotype  phenotype</span>
@@ -193,7 +193,7 @@
 <span class="sd">    patient_3   None      2</span>
 <span class="sd">    patient_4   1         2</span>
 <span class="sd">    ...         ...       ...</span>
-<span class="sd">    ==========  ========  ===============</span>
+<span class="sd">    ==========  ========  =========</span>
 
 <span class="sd">    The DataFrame index includes the identifiers of the tested individuals and the values are stored</span>
 <span class="sd">    in `genotype` and `phenotype` columns.</span>
@@ -211,9 +211,9 @@
         <span class="n">phenotype</span><span class="p">:</span> <span class="n">PhenotypeScorer</span><span class="p">,</span>
         <span class="n">statistic</span><span class="p">:</span> <span class="n">Statistic</span><span class="p">,</span>
         <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="n">pval</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">statistic_result</span><span class="p">:</span> <span class="n">StatisticResult</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">gt_predicate</span><span class="p">,</span> <span class="n">phenotype</span><span class="p">,</span> <span class="n">statistic</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">pval</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">gt_predicate</span><span class="p">,</span> <span class="n">phenotype</span><span class="p">,</span> <span class="n">statistic</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">statistic_result</span><span class="p">)</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">phenotype</span><span class="p">,</span> <span class="n">PhenotypeScorer</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PhenotypeScoreAnalysisResult.phenotype_scorer">
@@ -287,7 +287,7 @@
             <span class="sa">f</span><span class="s2">&quot;phenotype_scorer=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_phenotype</span><span class="si">}</span><span class="s2">, &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;statistic=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span><span class="si">}</span><span class="s2">, &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;data=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="si">}</span><span class="s2">, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;pval=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_pval</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;statistic_result=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_statistic_result</span><span class="si">}</span><span class="s2">)&quot;</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -362,14 +362,14 @@
         <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
             <span class="n">data</span><span class="p">[</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span> <span class="o">==</span> <span class="n">y_key</span><span class="p">,</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">PH_COL</span>
         <span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-        <span class="n">pval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span><span class="o">.</span><span class="n">compute_pval</span><span class="p">(</span><span class="n">scores</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span><span class="o">.</span><span class="n">compute_pval</span><span class="p">(</span><span class="n">scores</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">PhenotypeScoreAnalysisResult</span><span class="p">(</span>
             <span class="n">gt_predicate</span><span class="o">=</span><span class="n">gt_predicate</span><span class="p">,</span>
             <span class="n">phenotype</span><span class="o">=</span><span class="n">pheno_scorer</span><span class="p">,</span>
             <span class="n">statistic</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span><span class="p">,</span>
             <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
-            <span class="n">pval</span><span class="o">=</span><span class="n">pval</span><span class="p">,</span>
+            <span class="n">statistic_result</span><span class="o">=</span><span class="n">result</span><span class="p">,</span>
         <span class="p">)</span></div>
 </div>
 

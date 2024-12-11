@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.pcats._impl &mdash; GPSEA 0.7.1 documentation</title>
+  <title>gpsea.analysis.pcats._impl &mdash; GPSEA 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../../../../_static/documentation_options.js?v=486e5634"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -43,9 +43,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../setup.html">Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../user-guide/index.html">User guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../apidocs/modules.html">API reference</a></li>
@@ -95,7 +95,7 @@
 <span class="kn">from</span> <span class="nn">..mtc_filter</span> <span class="kn">import</span> <span class="n">PhenotypeMtcFilter</span><span class="p">,</span> <span class="n">PhenotypeMtcResult</span>
 
 <span class="kn">from</span> <span class="nn">.stats</span> <span class="kn">import</span> <span class="n">CountStatistic</span>
-<span class="kn">from</span> <span class="nn">.._base</span> <span class="kn">import</span> <span class="n">MultiPhenotypeAnalysisResult</span>
+<span class="kn">from</span> <span class="nn">.._base</span> <span class="kn">import</span> <span class="n">MultiPhenotypeAnalysisResult</span><span class="p">,</span> <span class="n">StatisticResult</span>
 
 <span class="n">DEFAULT_MTC_PROCEDURE</span> <span class="o">=</span> <span class="s1">&#39;fdr_bh&#39;</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -279,30 +279,31 @@
 
         <span class="k">return</span> <span class="n">issues</span>
 
-    <span class="k">def</span> <span class="nf">_compute_nominal_pvals</span><span class="p">(</span>
+    <span class="k">def</span> <span class="nf">_compute_nominal_stats</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_usable</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
         <span class="n">all_counts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-        <span class="n">pvals</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">StatisticResult</span><span class="p">]]:</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">usable</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">n_usable</span><span class="p">,</span> <span class="n">all_counts</span><span class="p">)):</span>
             <span class="k">if</span> <span class="n">usable</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">pvals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">pval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count_statistic</span><span class="o">.</span><span class="n">compute_pval</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
-                    <span class="n">pvals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pval</span><span class="p">)</span>
+                    <span class="n">stat_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count_statistic</span><span class="o">.</span><span class="n">compute_pval</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+                    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stat_result</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">ve</span><span class="p">:</span>
                     <span class="c1"># TODO: add more context to the exception?</span>
                     <span class="k">raise</span> <span class="n">ve</span>
 
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pvals</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_apply_mtc</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">pvals</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">stats</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">StatisticResult</span><span class="p">]],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_correction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">pvals</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">pval</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">stats</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">corrected_pvals</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">multitest</span><span class="o">.</span><span class="n">multipletests</span><span class="p">(</span>
             <span class="n">pvals</span><span class="o">=</span><span class="n">pvals</span><span class="p">,</span>
             <span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_mtc_alpha</span><span class="p">,</span>
@@ -336,13 +337,13 @@
         <span class="p">)</span>
 
         <span class="c1"># 2 - Compute nominal p values</span>
-        <span class="n">pvals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_nominal_pvals</span><span class="p">(</span><span class="n">n_usable</span><span class="o">=</span><span class="n">n_usable</span><span class="p">,</span> <span class="n">all_counts</span><span class="o">=</span><span class="n">all_counts</span><span class="p">)</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_nominal_stats</span><span class="p">(</span><span class="n">n_usable</span><span class="o">=</span><span class="n">n_usable</span><span class="p">,</span> <span class="n">all_counts</span><span class="o">=</span><span class="n">all_counts</span><span class="p">)</span>
 
         <span class="c1"># 3 - Apply Multiple Testing Correction</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_correction</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">corrected_pvals</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">corrected_pvals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_mtc</span><span class="p">(</span><span class="n">pvals</span><span class="o">=</span><span class="n">pvals</span><span class="p">)</span>
+            <span class="n">corrected_pvals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_mtc</span><span class="p">(</span><span class="n">stats</span><span class="o">=</span><span class="n">stats</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">MultiPhenotypeAnalysisResult</span><span class="p">(</span>
             <span class="n">gt_predicate</span><span class="o">=</span><span class="n">gt_predicate</span><span class="p">,</span>
@@ -351,7 +352,7 @@
             <span class="n">pheno_predicates</span><span class="o">=</span><span class="n">pheno_predicates</span><span class="p">,</span>
             <span class="n">n_usable</span><span class="o">=</span><span class="n">n_usable</span><span class="p">,</span>
             <span class="n">all_counts</span><span class="o">=</span><span class="n">all_counts</span><span class="p">,</span>
-            <span class="n">pvals</span><span class="o">=</span><span class="n">pvals</span><span class="p">,</span>
+            <span class="n">statistic_results</span><span class="o">=</span><span class="n">stats</span><span class="p">,</span>
             <span class="n">corrected_pvals</span><span class="o">=</span><span class="n">corrected_pvals</span><span class="p">,</span>
         <span class="p">)</span></div>
 
@@ -363,8 +364,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `HpoTermAnalysisResult` includes the :class:`HpoTermAnalysis` results.</span>
 
-<span class="sd">    On top of the attributes of :class:`MultiPhenotypeAnalysisResult` parent,</span>
-<span class="sd">    the results include the outcome of :class:`PhenotypeMtcFilter`.</span>
+<span class="sd">    On top of the attributes of :class:`~gpsea.analysis.MultiPhenotypeAnalysisResult` parent,</span>
+<span class="sd">    the results include the outcome of :class:`~gpsea.analysis.mtc_filter.PhenotypeMtcFilter`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -375,7 +376,7 @@
         <span class="n">pheno_predicates</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]],</span>
         <span class="n">n_usable</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
         <span class="n">all_counts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
-        <span class="n">pvals</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">statistic_results</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">StatisticResult</span><span class="p">]],</span>
         <span class="n">corrected_pvals</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
         <span class="n">mtc_filter_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">mtc_filter_results</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PhenotypeMtcResult</span><span class="p">],</span>
@@ -387,7 +388,7 @@
             <span class="n">statistic</span><span class="o">=</span><span class="n">statistic</span><span class="p">,</span>
             <span class="n">n_usable</span><span class="o">=</span><span class="n">n_usable</span><span class="p">,</span>
             <span class="n">all_counts</span><span class="o">=</span><span class="n">all_counts</span><span class="p">,</span>
-            <span class="n">pvals</span><span class="o">=</span><span class="n">pvals</span><span class="p">,</span>
+            <span class="n">statistic_results</span><span class="o">=</span><span class="n">statistic_results</span><span class="p">,</span>
             <span class="n">corrected_pvals</span><span class="o">=</span><span class="n">corrected_pvals</span><span class="p">,</span>
             <span class="n">mtc_correction</span><span class="o">=</span><span class="n">mtc_correction</span><span class="p">,</span>
         <span class="p">)</span>
@@ -417,7 +418,8 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mtc_filter_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PhenotypeMtcResult</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get a :class:`PhenotypeMtcResult` for each of the :attr:`phenotypes`.</span>
+<span class="sd">        Get a :class:`~gpsea.analysis.mtc_filter.PhenotypeMtcResult`</span>
+<span class="sd">        for each of the :attr:`~gpsea.analysis.MultiPhenotypeAnalysisResult.phenotypes`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_filter_results</span>
 
@@ -452,10 +454,11 @@
 <span class="sd">    `HpoTermAnalysis` can be applied if the individual phenotypes are represented as HPO terms.</span>
 
 <span class="sd">    The analysis applies the genotype and phenotype predicates, computes the nominal p values,</span>
-<span class="sd">    and addresses the multiple testing burden by applying the :class:`PhenotypeMtcFilter`</span>
+<span class="sd">    and addresses the multiple testing burden by applying</span>
+<span class="sd">    the :class:`~gpsea.analysis.mtc_filter.PhenotypeMtcFilter`</span>
 <span class="sd">    followed by the multiple testing correction `mtc_correction` method.</span>
 
-<span class="sd">    `PhenotypeMtcFilter` is applied even if no MTC should be applied.</span>
+<span class="sd">    :class:`~gpsea.analysis.mtc_filter.PhenotypeMtcFilter` is applied even if no MTC should be applied.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -499,7 +502,7 @@
             <span class="n">cohort_size</span><span class="o">=</span><span class="n">cohort_size</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="n">pvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n_usable</span><span class="p">),),</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n_usable</span><span class="p">),),</span> <span class="n">fill_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="n">corrected_pvals</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="n">mtc_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">r</span><span class="o">.</span><span class="n">is_passed</span><span class="p">()</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">mtc_filter_results</span><span class="p">])</span>
@@ -507,16 +510,16 @@
             <span class="c1"># We have at least one HPO term to test.</span>
 
             <span class="c1"># 3 - Compute nominal p values</span>
-            <span class="n">pvals</span><span class="p">[</span><span class="n">mtc_mask</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_nominal_pvals</span><span class="p">(</span>
+            <span class="n">results</span><span class="p">[</span><span class="n">mtc_mask</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_nominal_stats</span><span class="p">(</span>
                 <span class="n">n_usable</span><span class="o">=</span><span class="n">slice_list_in_numpy_style</span><span class="p">(</span><span class="n">n_usable</span><span class="p">,</span> <span class="n">mtc_mask</span><span class="p">),</span>
                 <span class="n">all_counts</span><span class="o">=</span><span class="n">slice_list_in_numpy_style</span><span class="p">(</span><span class="n">all_counts</span><span class="p">,</span> <span class="n">mtc_mask</span><span class="p">),</span>
             <span class="p">)</span>
 
             <span class="c1"># 4 - Apply Multiple Testing Correction</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_correction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">corrected_pvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">pvals</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                <span class="n">corrected_pvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
                 <span class="c1"># Do not test the p values that have been filtered out.</span>
-                <span class="n">corrected_pvals</span><span class="p">[</span><span class="n">mtc_mask</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_mtc</span><span class="p">(</span><span class="n">pvals</span><span class="o">=</span><span class="n">pvals</span><span class="p">[</span><span class="n">mtc_mask</span><span class="p">])</span>
+                <span class="n">corrected_pvals</span><span class="p">[</span><span class="n">mtc_mask</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_mtc</span><span class="p">(</span><span class="n">stats</span><span class="o">=</span><span class="n">results</span><span class="p">[</span><span class="n">mtc_mask</span><span class="p">])</span>
 
         <span class="k">return</span> <span class="n">HpoTermAnalysisResult</span><span class="p">(</span>
             <span class="n">gt_predicate</span><span class="o">=</span><span class="n">gt_predicate</span><span class="p">,</span>
@@ -525,7 +528,7 @@
             <span class="n">pheno_predicates</span><span class="o">=</span><span class="n">pheno_predicates</span><span class="p">,</span>
             <span class="n">n_usable</span><span class="o">=</span><span class="n">n_usable</span><span class="p">,</span>
             <span class="n">all_counts</span><span class="o">=</span><span class="n">all_counts</span><span class="p">,</span>
-            <span class="n">pvals</span><span class="o">=</span><span class="n">pvals</span><span class="p">,</span>
+            <span class="n">statistic_results</span><span class="o">=</span><span class="n">results</span><span class="p">,</span>
             <span class="n">corrected_pvals</span><span class="o">=</span><span class="n">corrected_pvals</span><span class="p">,</span>
             <span class="n">mtc_filter_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_mtc_filter</span><span class="o">.</span><span class="n">filter_method_name</span><span class="p">(),</span>
             <span class="n">mtc_filter_results</span><span class="o">=</span><span class="n">mtc_filter_results</span><span class="p">,</span>

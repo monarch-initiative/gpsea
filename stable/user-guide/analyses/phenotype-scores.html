@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Compare phenotype scores in genotype groups &mdash; GPSEA 0.7.1 documentation</title>
+  <title>Compare phenotype scores in genotype groups &mdash; GPSEA 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../../_static/documentation_options.js?v=486e5634"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -24,7 +24,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Compare measurement values" href="measurements.html" />
-    <link rel="prev" title="Compare genotype and phenotype groups" href="phenotype-groups.html" /> 
+    <link rel="prev" title="Multiple-testing correction" href="mtc.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,16 +46,17 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup.html">Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">User guide</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../input-data.html">Input data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../exploratory.html">Cohort exploratory analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../predicates/index.html">Predicates</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">Statistical analyses</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="partitioning/index.html">Partitioning</a></li>
 <li class="toctree-l3"><a class="reference internal" href="phenotype-groups.html">Compare genotype and phenotype groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mtc.html">Multiple-testing correction</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Compare phenotype scores in genotype groups</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mann-whitney-u-test">Mann-Whitney U Test</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#example-analysis">Example analysis</a></li>
@@ -65,8 +66,6 @@
 <li class="toctree-l3"><a class="reference internal" href="survival.html">Survival analysis</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../mtc.html">Multiple-testing correction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../general_hpo_terms.html">General HPO terms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary.html">Glossary</a></li>
 </ul>
 </li>
@@ -101,6 +100,11 @@
              
   <section id="compare-phenotype-scores-in-genotype-groups">
 <span id="phenotype-score-stats"></span><h1>Compare phenotype scores in genotype groups<a class="headerlink" href="#compare-phenotype-scores-in-genotype-groups" title="Link to this heading"></a></h1>
+<p>In this section, we show how to test for an association between genotype group and a phenotype score.
+We assume a cohort was preprocessed following the <a class="reference internal" href="../input-data.html#input-data"><span class="std std-ref">Input data</span></a> section,
+and we use a genotype predicate and a phenotype scorer from the <a class="reference internal" href="partitioning/index.html#partitioning"><span class="std std-ref">Partitioning</span></a> section to assign each cohort member
+into a genotype group and to compute a phenotype score.
+We use Mann-Whitney U test to test for differences in phenotype score distributions between the groups.</p>
 <section id="mann-whitney-u-test">
 <span id="id1"></span><h2>Mann-Whitney U Test<a class="headerlink" href="#mann-whitney-u-test" title="Link to this heading"></a></h2>
 <p>We may want to compare the total number of occurences of a specific set of phenotypic features between two different genotype groups.
@@ -119,7 +123,7 @@ This is a non-parametric test that compares the medians of the two groups to det
 <span class="go">6.348081479150902e-06</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">p_value</span></code> evaluates to <cite>6.348081479150901e-06</cite>, meaning there is a significant difference between the groups.</p>
+<p>p value of <cite>6.348081479150901e-06</cite> suggests a significant difference between the groups.</p>
 </section>
 <section id="example-analysis">
 <h2>Example analysis<a class="headerlink" href="#example-analysis" title="Link to this heading"></a></h2>
@@ -141,7 +145,7 @@ We will load 19 phenopackets that represent individuals with mutations in <em>RE
 whose signs and symptoms were encoded into HPO terms and deposited into Phenopacket Store.
 We will load the <a class="reference internal" href="../../apidocs/gpsea.model.html#gpsea.model.Cohort" title="gpsea.model.Cohort"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cohort</span></code></a>
 from a <a class="reference external" href="https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/RERE.0.1.20.json">JSON file</a>.
-The cohort was prepared from phenopackets as described in <a class="reference internal" href="../input-data.html#create-cohort-from-phenopackets"><span class="std std-ref">Create a cohort from GA4GH phenopackets</span></a> section,
+The cohort was prepared from phenopackets as described in <a class="reference internal" href="../input-data.html#create-a-cohort"><span class="std std-ref">Create a cohort</span></a> section,
 and then serialized as a JSON file following the instructions in <a class="reference internal" href="../input-data.html#cohort-persistence"><span class="std std-ref">Persist the cohort for later</span></a> section.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">json</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.io</span> <span class="kn">import</span> <span class="n">GpseaJSONDecoder</span>
@@ -214,15 +218,7 @@ is a point mutation or a loss of function mutation.</p>
 <p>This component is responsible for computing a phenotype score for an individual.
 As far as GPSEA framework is concerned, the phenotype score must be a floating point number
 or a <cite>NaN</cite> value if the score cannot be computed for an individual.</p>
-<p>Several out-of-shelf examples include:</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.CountingPhenotypeScorer" title="gpsea.analysis.pscore.CountingPhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CountingPhenotypeScorer</span></code></a> to count the number of abnormalities
-in organ groups described by top-level HPO terms (<em>Abnormal brain morphology</em>, <em>Abnormal heart morphology</em>, …)</p></li>
-<li><p><a class="reference internal" href="../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.DeVriesPhenotypeScorer" title="gpsea.analysis.pscore.DeVriesPhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeVriesPhenotypeScorer</span></code></a> for assessment of the severity of intellectual disability</p></li>
-<li><p><a class="reference internal" href="../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.MeasurementPhenotypeScorer" title="gpsea.analysis.pscore.MeasurementPhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">MeasurementPhenotypeScorer</span></code></a> that uses a laboratory test measurement,
-such as <a class="reference external" href="https://loinc.org/2986-8/">Testosterone [Mass/volume] in Serum or Plasma</a>, as the score</p></li>
-</ul>
-<p>Here we use <a class="reference internal" href="../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.CountingPhenotypeScorer" title="gpsea.analysis.pscore.CountingPhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CountingPhenotypeScorer</span></code></a> for scoring
+<p>Here we use the <a class="reference internal" href="../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.CountingPhenotypeScorer" title="gpsea.analysis.pscore.CountingPhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CountingPhenotypeScorer</span></code></a> for scoring
 the individuals based on the number of structural defects
 from the following 5 categories:</p>
 <ul class="simple">
@@ -234,7 +230,8 @@ from the following 5 categories:</p>
 </ul>
 <p>For example, an individual with a congenital heart defect would be assigned a score of <cite>1</cite>,
 an individual with congenital heart defect and a renal anomaly would be assigned a score of <cite>2</cite>,
-and so on.</p>
+and so on. If an individual had two heart defects (e.g., atrial septal defect and ventricular septal defect),
+a score of 1 (not 2) would be assigned for the heart defect category.</p>
 <p>The <a class="reference internal" href="../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.CountingPhenotypeScorer" title="gpsea.analysis.pscore.CountingPhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CountingPhenotypeScorer</span></code></a> automatizes this scoring method
 by encoding the categories into HPO terms:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">structural_defects</span> <span class="o">=</span> <span class="p">(</span>
@@ -355,7 +352,7 @@ lying within 1.5x the inter-quartile range (IQR) from the box.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="phenotype-groups.html" class="btn btn-neutral float-left" title="Compare genotype and phenotype groups" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mtc.html" class="btn btn-neutral float-left" title="Multiple-testing correction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="measurements.html" class="btn btn-neutral float-right" title="Compare measurement values" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

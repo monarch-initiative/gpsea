@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea package &mdash; GPSEA 0.7.1 documentation</title>
+  <title>gpsea package &mdash; GPSEA 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../_static/documentation_options.js?v=486e5634"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -48,9 +48,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user-guide/index.html">User guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">API reference</a><ul class="current">
@@ -101,15 +101,21 @@
              
   <section id="module-gpsea">
 <span id="gpsea-package"></span><h1>gpsea package<a class="headerlink" href="#module-gpsea" title="Link to this heading"></a></h1>
-<p>GPSEA is a library for analyzing genotype-phenotype correlations in cohorts of rare disease patients.</p>
+<p>GPSEA is a library for finding genotype-phenotype associations.</p>
 <section id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="gpsea.analysis.html">gpsea.analysis package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.html#gpsea.analysis.AnalysisException"><code class="docutils literal notranslate"><span class="pre">AnalysisException</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.html#gpsea.analysis.AnalysisResult"><code class="docutils literal notranslate"><span class="pre">AnalysisResult</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.html#gpsea.analysis.MonoPhenotypeAnalysisResult"><code class="docutils literal notranslate"><span class="pre">MonoPhenotypeAnalysisResult</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.html#gpsea.analysis.MultiPhenotypeAnalysisResult"><code class="docutils literal notranslate"><span class="pre">MultiPhenotypeAnalysisResult</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.html#gpsea.analysis.Statistic"><code class="docutils literal notranslate"><span class="pre">Statistic</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.html#gpsea.analysis.StatisticResult"><code class="docutils literal notranslate"><span class="pre">StatisticResult</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.html#gpsea.analysis.Partitioning"><code class="docutils literal notranslate"><span class="pre">Partitioning</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.html#gpsea.analysis.ContinuousPartitioning"><code class="docutils literal notranslate"><span class="pre">ContinuousPartitioning</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.html#gpsea.analysis.Summarizable"><code class="docutils literal notranslate"><span class="pre">Summarizable</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.html#subpackages">Subpackages</a></li>
 </ul>
 </li>
@@ -125,6 +131,7 @@
 <li class="toctree-l2"><a class="reference internal" href="gpsea.model.html#gpsea.model.Phenotype"><code class="docutils literal notranslate"><span class="pre">Phenotype</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.model.html#gpsea.model.Disease"><code class="docutils literal notranslate"><span class="pre">Disease</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.model.html#gpsea.model.Measurement"><code class="docutils literal notranslate"><span class="pre">Measurement</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.model.html#gpsea.model.OnsetAware"><code class="docutils literal notranslate"><span class="pre">OnsetAware</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.model.html#gpsea.model.Variant"><code class="docutils literal notranslate"><span class="pre">Variant</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.model.html#gpsea.model.VariantClass"><code class="docutils literal notranslate"><span class="pre">VariantClass</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.model.html#gpsea.model.VariantCoordinates"><code class="docutils literal notranslate"><span class="pre">VariantCoordinates</span></code></a></li>
@@ -149,6 +156,8 @@
 <li class="toctree-l1"><a class="reference internal" href="gpsea.preprocessing.html">gpsea.preprocessing package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.preprocessing.html#gpsea.preprocessing.configure_caching_cohort_creator"><code class="docutils literal notranslate"><span class="pre">configure_caching_cohort_creator()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.preprocessing.html#gpsea.preprocessing.configure_cohort_creator"><code class="docutils literal notranslate"><span class="pre">configure_cohort_creator()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.preprocessing.html#gpsea.preprocessing.configure_default_tx_coordinate_service"><code class="docutils literal notranslate"><span class="pre">configure_default_tx_coordinate_service()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.preprocessing.html#gpsea.preprocessing.configure_default_functional_annotator"><code class="docutils literal notranslate"><span class="pre">configure_default_functional_annotator()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.preprocessing.html#gpsea.preprocessing.configure_default_protein_metadata_service"><code class="docutils literal notranslate"><span class="pre">configure_default_protein_metadata_service()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.preprocessing.html#gpsea.preprocessing.configure_protein_metadata_service"><code class="docutils literal notranslate"><span class="pre">configure_protein_metadata_service()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.preprocessing.html#gpsea.preprocessing.VariantCoordinateFinder"><code class="docutils literal notranslate"><span class="pre">VariantCoordinateFinder</span></code></a></li>
@@ -166,14 +175,11 @@
 <li class="toctree-l2"><a class="reference internal" href="gpsea.preprocessing.html#gpsea.preprocessing.PreprocessingValidationResult"><code class="docutils literal notranslate"><span class="pre">PreprocessingValidationResult</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.preprocessing.html#gpsea.preprocessing.TranscriptCoordinateService"><code class="docutils literal notranslate"><span class="pre">TranscriptCoordinateService</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.preprocessing.html#gpsea.preprocessing.GeneCoordinateService"><code class="docutils literal notranslate"><span class="pre">GeneCoordinateService</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.preprocessing.html#gpsea.preprocessing.ProteinAnnotationCache"><code class="docutils literal notranslate"><span class="pre">ProteinAnnotationCache</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.preprocessing.html#gpsea.preprocessing.ProtCachingMetadataService"><code class="docutils literal notranslate"><span class="pre">ProtCachingMetadataService</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.preprocessing.html#gpsea.preprocessing.UniprotProteinMetadataService"><code class="docutils literal notranslate"><span class="pre">UniprotProteinMetadataService</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.preprocessing.html#gpsea.preprocessing.VepFunctionalAnnotator"><code class="docutils literal notranslate"><span class="pre">VepFunctionalAnnotator</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.preprocessing.html#gpsea.preprocessing.VariantAnnotationCache"><code class="docutils literal notranslate"><span class="pre">VariantAnnotationCache</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.preprocessing.html#gpsea.preprocessing.VarCachingFunctionalAnnotator"><code class="docutils literal notranslate"><span class="pre">VarCachingFunctionalAnnotator</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.preprocessing.html#gpsea.preprocessing.VVHgvsVariantCoordinateFinder"><code class="docutils literal notranslate"><span class="pre">VVHgvsVariantCoordinateFinder</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.preprocessing.html#gpsea.preprocessing.VVMultiCoordinateService"><code class="docutils literal notranslate"><span class="pre">VVMultiCoordinateService</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.preprocessing.html#gpsea.preprocessing.VariantValidatorDecodeException"><code class="docutils literal notranslate"><span class="pre">VariantValidatorDecodeException</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.preprocessing.html#gpsea.preprocessing.DefaultImpreciseSvFunctionalAnnotator"><code class="docutils literal notranslate"><span class="pre">DefaultImpreciseSvFunctionalAnnotator</span></code></a></li>
 </ul>
 </li>
@@ -190,6 +196,7 @@
 <li class="toctree-l2"><a class="reference internal" href="gpsea.view.html#gpsea.view.VariantTranscriptVisualizer"><code class="docutils literal notranslate"><span class="pre">VariantTranscriptVisualizer</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.view.html#gpsea.view.Formatter"><code class="docutils literal notranslate"><span class="pre">Formatter</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.view.html#gpsea.view.VariantFormatter"><code class="docutils literal notranslate"><span class="pre">VariantFormatter</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.view.html#gpsea.view.BaseViewer"><code class="docutils literal notranslate"><span class="pre">BaseViewer</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -213,6 +220,7 @@
 <li class="toctree-l1"><a class="reference internal" href="gpsea.util.html">gpsea.util module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.util.html#gpsea.util.open_text_io_handle_for_reading"><code class="docutils literal notranslate"><span class="pre">open_text_io_handle_for_reading()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.util.html#gpsea.util.open_text_io_handle_for_writing"><code class="docutils literal notranslate"><span class="pre">open_text_io_handle_for_writing()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.util.html#gpsea.util.open_resource"><code class="docutils literal notranslate"><span class="pre">open_resource()</span></code></a></li>
 </ul>
 </li>
 </ul>

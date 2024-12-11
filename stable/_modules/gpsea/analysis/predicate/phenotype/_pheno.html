@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.predicate.phenotype._pheno &mdash; GPSEA 0.7.1 documentation</title>
+  <title>gpsea.analysis.predicate.phenotype._pheno &mdash; GPSEA 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../../../../../_static/documentation_options.js?v=486e5634"></script>
       <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -43,9 +43,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../setup.html">Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../user-guide/index.html">User guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../apidocs/modules.html">API reference</a></li>
@@ -325,17 +325,22 @@
 <a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.DiseasePresencePredicate">[docs]</a>
 <span class="k">class</span> <span class="nc">DiseasePresencePredicate</span><span class="p">(</span><span class="n">PhenotypePolyPredicate</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `DiseasePresencePredicate` tests if the patient was diagnosed with a disease.</span>
+<span class="sd">    `DiseasePresencePredicate` tests if an individual was diagnosed with a disease.</span>
 
-<span class="sd">    The predicate tests if the patient&#39;s diseases include a disease ID formatted as a :class:`~hpotk.model.TermId`.</span>
-
-<span class="sd">    :param disease_id_query: the Disease ID to test</span>
+<span class="sd">    :param disease_id_query: a disease identifier formatted either as a CURIE `str` (e.g. ``OMIM:256000``)</span>
+<span class="sd">      or as a :class:`~hpotk.TermId`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">disease_id_query</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_query</span> <span class="o">=</span> <span class="n">validate_instance</span><span class="p">(</span>
-            <span class="n">disease_id_query</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span> <span class="s2">&quot;disease_id_query&quot;</span>
-        <span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">disease_id_query</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">disease_id_query</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_query</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">disease_id_query</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">disease_id_query</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_query</span> <span class="o">=</span> <span class="n">disease_id_query</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_diagnosis_present</span> <span class="o">=</span> <span class="n">PhenotypeCategorization</span><span class="p">(</span>
             <span class="n">category</span><span class="o">=</span><span class="n">YES</span><span class="p">,</span>

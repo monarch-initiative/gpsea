@@ -1,0 +1,199 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Counting phenotype scorer &mdash; GPSEA 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/gpsea.css?v=547657ed" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../../_static/copybutton.js?v=6dbb43f8"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="De Vries Score" href="devries.html" />
+    <link rel="prev" title="HPO predicate" href="hpo_predicate.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GPSEA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">User guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../input-data.html">Input data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../exploratory.html">Cohort exploratory analysis</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">Statistical analyses</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">Partitioning</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../genotype/index.html">Genotype predicates</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="index.html">Phenotype predicates and scorers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../gallery.html">Gallery</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../phenotype-groups.html">Compare genotype and phenotype groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mtc.html">Multiple-testing correction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../phenotype-scores.html">Compare phenotype scores in genotype groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../measurements.html">Compare measurement values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../survival.html">Survival analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../glossary.html">Glossary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../apidocs/modules.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GPSEA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">User guide</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Statistical analyses</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Partitioning</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Phenotype predicates and scorers</a></li>
+      <li class="breadcrumb-item active">Counting phenotype scorer</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/user-guide/analyses/partitioning/phenotype/counting.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="counting-phenotype-scorer">
+<span id="counting"></span><h1>Counting phenotype scorer<a class="headerlink" href="#counting-phenotype-scorer" title="Link to this heading"></a></h1>
+<p>The <a class="reference internal" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.CountingPhenotypeScorer" title="gpsea.analysis.pscore.CountingPhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CountingPhenotypeScorer</span></code></a> assigns a phenotype score that is equivalent
+to the count of observed phenotypes (HPO terms) that are either an exact match to the <cite>query</cite> terms or their descendants.
+Typically, the <cite>query</cite> terms will comprise abnormalities in different organ systems.
+For instance, we may want to count whether an individual has brain, liver, kidney, and skin abnormalities.
+In the case, the query would include the corresponding terms (e.g., Abnormal brain morphology HP:0012443).
+An individual can then have between 0 and 4 phenotype group abnormalities.  The scorer does not double count if the individual has multiple
+observed abnormalities in one of the organ systems (i.e., multiple descendents of one of the query terms). Each individual can thus have a score
+of between 0 (no relevant abnormalities) to the number of categories (if the individual has an abnormality in each of the categories).
+The genotype groups are then compared with respect to the distribution of counts using the Mann Whitney U test.</p>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h2>
+<p>Here we use <a class="reference internal" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.CountingPhenotypeScorer" title="gpsea.analysis.pscore.CountingPhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CountingPhenotypeScorer</span></code></a> for scoring
+the individuals based on the number of structural defects
+from the following 5 categories:</p>
+<ul class="simple">
+<li><p>Brain anomalies</p></li>
+<li><p>Eye anomalies</p></li>
+<li><p>Congenital heart defects</p></li>
+<li><p>Renal anomalies</p></li>
+<li><p>Sensorineural hearing loss</p></li>
+</ul>
+<p>For example, an individual with a congenital heart defect would be assigned a score of <cite>1</cite>,
+an individual with congenital heart defect and a renal anomaly would be assigned a score of <cite>2</cite>,
+and so on. If an individual had two heart defects (e.g., atrial septal defect and ventricular septal defect),
+a score of 1 (not 2) would be assigned for the heart defect category.</p>
+<p>The <a class="reference internal" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.CountingPhenotypeScorer" title="gpsea.analysis.pscore.CountingPhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CountingPhenotypeScorer</span></code></a> automatizes this scoring method
+by encoding the categories into HPO terms:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">structural_defects</span> <span class="o">=</span> <span class="p">(</span>
+<span class="gp">... </span>    <span class="s1">&#39;HP:0012443&#39;</span><span class="p">,</span>  <span class="c1"># Abnormal brain morphology (Brain anomalies)</span>
+<span class="gp">... </span>    <span class="s1">&#39;HP:0012372&#39;</span><span class="p">,</span>  <span class="c1"># Abnormal eye morphology (Eye anomalies)</span>
+<span class="gp">... </span>    <span class="s1">&#39;HP:0001627&#39;</span><span class="p">,</span>  <span class="c1"># Abnormal heart morphology (Congenital heart defects)</span>
+<span class="gp">... </span>    <span class="s1">&#39;HP:0012210&#39;</span><span class="p">,</span>  <span class="c1"># Abnormal renal morphology (Renal anomalies)</span>
+<span class="gp">... </span>    <span class="s1">&#39;HP:0000407&#39;</span><span class="p">,</span>  <span class="c1"># Sensorineural hearing impairment (Sensorineural hearing loss)</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and then tests the individuals for presence of at least one HPO term
+that corresponds to the structural defect
+(e.g. <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0012443">Abnormal brain morphology</a>, exact match)
+or that is its descendant
+(e.g. <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0001272">Cerebellar atrophy</a>).</p>
+<p>The counting scorer uses HPO hierarchy as a prerequisite.
+We can load HPO using HPO toolkit:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">store</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">configure_ontology_store</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">load_minimal_hpo</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;v2024-07-01&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then, we construct the scorer with
+<a class="reference internal" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.CountingPhenotypeScorer.from_query_curies" title="gpsea.analysis.pscore.CountingPhenotypeScorer.from_query_curies"><code class="xref py py-func docutils literal notranslate"><span class="pre">from_query_curies()</span></code></a> function:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pscore</span> <span class="kn">import</span> <span class="n">CountingPhenotypeScorer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_scorer</span> <span class="o">=</span> <span class="n">CountingPhenotypeScorer</span><span class="o">.</span><span class="n">from_query_curies</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">query</span><span class="o">=</span><span class="n">structural_defects</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_scorer</span><span class="o">.</span><span class="n">description</span>
+<span class="go">&#39;Assign a phenotype score that is equivalent to the count of present phenotypes that are either an exact match to the query terms or their descendants&#39;</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="hpo_predicate.html" class="btn btn-neutral float-left" title="HPO predicate" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="devries.html" class="btn btn-neutral float-right" title="De Vries Score" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

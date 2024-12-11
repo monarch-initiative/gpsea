@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.model.genome package &mdash; GPSEA 0.7.1 documentation</title>
+  <title>gpsea.model.genome package &mdash; GPSEA 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../_static/documentation_options.js?v=486e5634"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -46,9 +46,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user-guide/index.html">User guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">API reference</a><ul class="current">
@@ -255,7 +255,7 @@ The region has length that corresponds to the number of spanned bases/aminoacids
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.model.genome.Region.overlaps_with">
-<span class="sig-name descname"><span class="pre">overlaps_with</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#Region.overlaps_with"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.Region.overlaps_with" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">overlaps_with</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.Region" title="gpsea.model.genome._genome.Region"><span class="pre">Region</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#Region.overlaps_with"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.Region.overlaps_with" title="Link to this definition"></a></dt>
 <dd><p>Test if this <cite>Region</cite> overlaps with the <cite>other</cite> <cite>Region</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -266,7 +266,7 @@ The region has length that corresponds to the number of spanned bases/aminoacids
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.model.genome.Region.contains">
-<span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#Region.contains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.Region.contains" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.Region" title="gpsea.model.genome._genome.Region"><span class="pre">Region</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#Region.contains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.Region.contains" title="Link to this definition"></a></dt>
 <dd><p>Test if this <cite>Region</cite> contains the <cite>other</cite> region.</p>
 <p>Empty interval <cite>other</cite> is considered as being contained in <cite>self</cite> if <cite>other</cite> lies on either boundary of <cite>self</cite>.</p>
 <dl class="field-list simple">
@@ -295,7 +295,7 @@ strand of the <a class="reference internal" href="#gpsea.model.genome.GenomicReg
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.model.genome.Region.distance_to">
-<span class="sig-name descname"><span class="pre">distance_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#Region.distance_to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.Region.distance_to" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">distance_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.Region" title="gpsea.model.genome._genome.Region"><span class="pre">Region</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#Region.distance_to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.Region.distance_to" title="Link to this definition"></a></dt>
 <dd><p>Calculate the number of bases present between this and the <cite>other</cite> region.</p>
 <p>The distance is zero if the regions are adjacent or if they overlap.
 The distance is positive if this is upstream (left) of <cite>other</cite>
@@ -354,7 +354,7 @@ and negative if this is located downstream (right) of <cite>other</cite>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.model.genome.GenomicRegion.overlaps_with">
-<span class="sig-name descname"><span class="pre">overlaps_with</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#GenomicRegion.overlaps_with"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.GenomicRegion.overlaps_with" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">overlaps_with</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.GenomicRegion" title="gpsea.model.genome._genome.GenomicRegion"><span class="pre">GenomicRegion</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#GenomicRegion.overlaps_with"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.GenomicRegion.overlaps_with" title="Link to this definition"></a></dt>
 <dd><p>Test if this <cite>GenomicRegion</cite> overlaps with the other <cite>GenomicRegion</cite>.</p>
 <p>Empty intervals are NOT considered as overlapping if they are at the boundaries of the other interval.
 However, two empty intervals with the same start and end coordinates are considered as overlapping.
@@ -369,7 +369,7 @@ Genomic regions located on different contigs do not overlap.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.model.genome.GenomicRegion.contains">
-<span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#GenomicRegion.contains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.GenomicRegion.contains" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.GenomicRegion" title="gpsea.model.genome._genome.GenomicRegion"><span class="pre">GenomicRegion</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#GenomicRegion.contains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.GenomicRegion.contains" title="Link to this definition"></a></dt>
 <dd><p>Check if this <cite>GenomicRegion</cite> contains the <cite>other</cite> genomic region.</p>
 <p>Empty interval <cite>other</cite> is considered as being contained in <cite>self</cite> if <cite>other</cite> lies on either boundary of <cite>self</cite>.
 Genomic region located on a different contig is never contained.</p>
@@ -382,7 +382,7 @@ Genomic region located on a different contig is never contained.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.model.genome.GenomicRegion.distance_to">
-<span class="sig-name descname"><span class="pre">distance_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#GenomicRegion.distance_to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.GenomicRegion.distance_to" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">distance_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.GenomicRegion" title="gpsea.model.genome._genome.GenomicRegion"><span class="pre">GenomicRegion</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#GenomicRegion.distance_to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.GenomicRegion.distance_to" title="Link to this definition"></a></dt>
 <dd><p>Calculate the number of bases present between this <cite>GenomicRegion</cite> and the <cite>other</cite> genomic region.</p>
 <p>The distance is zero if the regions are adjacent or if they overlap.
 The distance is positive if this is upstream (left) of <cite>other</cite>

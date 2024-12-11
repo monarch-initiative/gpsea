@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.predicate.genotype._variant &mdash; GPSEA 0.7.1 documentation</title>
+  <title>gpsea.analysis.predicate.genotype._variant &mdash; GPSEA 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../../../../../_static/documentation_options.js?v=486e5634"></script>
       <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -43,9 +43,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../setup.html">Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../user-guide/index.html">User guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../apidocs/modules.html">API reference</a></li>
@@ -80,7 +80,7 @@
 
 <span class="kn">import</span> <span class="nn">hpotk</span>
 
-<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">FeatureType</span><span class="p">,</span> <span class="n">VariantClass</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="n">ProteinMetadata</span>
+<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantClass</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="n">ProteinMetadata</span><span class="p">,</span> <span class="n">FeatureType</span>
 <span class="kn">from</span> <span class="nn">gpsea.model.genome</span> <span class="kn">import</span> <span class="n">Region</span>
 <span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">VariantPredicate</span><span class="p">,</span> <span class="n">AllVariantPredicate</span><span class="p">,</span> <span class="n">AnyVariantPredicate</span>
 <span class="kn">from</span> <span class="nn">._predicates</span> <span class="kn">import</span> <span class="p">(</span>
@@ -536,7 +536,7 @@
 <a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates.protein_feature_type">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">protein_feature_type</span><span class="p">(</span>
-        <span class="n">feature_type</span><span class="p">:</span> <span class="n">FeatureType</span><span class="p">,</span>
+        <span class="n">feature_type</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">FeatureType</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
         <span class="n">protein_metadata</span><span class="p">:</span> <span class="n">ProteinMetadata</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -548,6 +548,9 @@
 <span class="sd">                (e.g. :class:`~gpsea.model.FeatureType.DOMAIN`).</span>
 <span class="sd">            protein_metadata: the information about the protein.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">feature_type</span><span class="p">,</span> <span class="n">FeatureType</span><span class="p">):</span>
+            <span class="n">FeatureType</span><span class="o">.</span><span class="n">deprecation_warning</span><span class="p">()</span>
+            <span class="n">feature_type</span> <span class="o">=</span> <span class="n">feature_type</span><span class="o">.</span><span class="n">name</span>
         <span class="k">return</span> <span class="n">ProteinFeatureTypePredicate</span><span class="p">(</span>
             <span class="n">feature_type</span><span class="o">=</span><span class="n">feature_type</span><span class="p">,</span>
             <span class="n">protein_metadata</span><span class="o">=</span><span class="n">protein_metadata</span><span class="p">,</span>

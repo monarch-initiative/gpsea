@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.util module &mdash; GPSEA 0.7.1 documentation</title>
+  <title>gpsea.util module &mdash; GPSEA 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../_static/documentation_options.js?v=486e5634"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -45,9 +45,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user-guide/index.html">User guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">API reference</a><ul class="current">
@@ -129,6 +129,15 @@ If <cite>fh</cite> is an IO wrapper, the function ensures we get a text wrapper 
 <dd class="field-even"><p>the <a class="reference external" href="https://docs.python.org/3/library/io.html#io.TextIOWrapper" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">io.TextIOWrapper</span></code></a> wrapper.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.util.open_resource">
+<span class="sig-prename descclassname"><span class="pre">gpsea.util.</span></span><span class="sig-name descname"><span class="pre">open_resource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">package</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.IO" title="(in Python v3.13)"><span class="pre">IO</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/util.html#open_resource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.util.open_resource" title="Link to this definition"></a></dt>
+<dd><p>Get an IO handle for reading a package resource on the current platform.</p>
+<p>The returned callable expects two arguments:
+:param package: a <cite>str</cite> with package name (e.g. <cite>gpsea.model.genome</cite>)
+:param path: a <cite>str</cite> with the file name that is located in the package (e.g. <cite>GCF_000001405.25_GRCh37.p13_assembly_report.tsv</cite>)</p>
 </dd></dl>
 
 </section>

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.predicate.genotype._gt_predicates &mdash; GPSEA 0.7.1 documentation</title>
+  <title>gpsea.analysis.predicate.genotype._gt_predicates &mdash; GPSEA 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../../../../../_static/documentation_options.js?v=486e5634"></script>
       <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -43,9 +43,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../setup.html">Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../user-guide/index.html">User guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../apidocs/modules.html">API reference</a></li>
@@ -92,11 +92,18 @@
 
 
 <span class="k">def</span> <span class="nf">_fixate_partitions</span><span class="p">(</span>
-    <span class="n">partitions</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+    <span class="n">partitions</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]]],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
     <span class="n">fixed</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">partition</span> <span class="ow">in</span> <span class="n">partitions</span><span class="p">:</span>
-        <span class="n">fixed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">partition</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">partition</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">partitions</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">partition</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">fixed</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">partition</span><span class="p">,))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">partition</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">):</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">partition</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">),</span> <span class="s1">&#39;All indices must be `int`s!&#39;</span>
+            <span class="n">fixed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Partition </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1"> is neither an `int` nor an iterable of `int`s: </span><span class="si">{</span><span class="n">partition</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">fixed</span>
 
 
@@ -357,7 +364,7 @@
     <span class="n">b_predicate</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">VariantPredicate</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">a_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span>
     <span class="n">b_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span>
-    <span class="n">partitions</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">((</span><span class="mi">0</span><span class="p">,),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,)),</span>
+    <span class="n">partitions</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePolyPredicate</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The predicate bins patient into one of the three groups,</span>
@@ -374,7 +381,7 @@
 <span class="sd">        of `a_predicate` should be used (named `B` by default).</span>
 <span class="sd">    :param a_label: display name of the `a_predicate` (default ``&quot;A&quot;``).</span>
 <span class="sd">    :param b_label: display name of the `b_predicate` (default ``&quot;B&quot;``).</span>
-<span class="sd">    :param partitions: a sequence with partition identifiers (default ``((0,), (1,), (2,))``).</span>
+<span class="sd">    :param partitions: a sequence with partition identifiers (default ``(0, 1, 2)``).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Q/C</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a_label</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
@@ -421,18 +428,18 @@
 <div class="viewcode-block" id="allele_count">
 <a class="viewcode-back" href="../../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.allele_count">[docs]</a>
 <span class="k">def</span> <span class="nf">allele_count</span><span class="p">(</span>
-    <span class="n">counts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+    <span class="n">counts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="nb">int</span><span class="p">]]],</span>
     <span class="n">target</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">VariantPredicate</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenotypePolyPredicate</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a predicate to assign the patient into a group based on the allele count</span>
 <span class="sd">    of the target variants.</span>
 
-<span class="sd">    The `counts` option takes a collection of `int` collections.</span>
-<span class="sd">    Each inner collection corresponds to an allele count partition</span>
-<span class="sd">    and the outer collection includes all partitions.</span>
-<span class="sd">    The `int` represents the target allele count.</span>
-<span class="sd">    A count can be included only in one partition.</span>
+<span class="sd">    The `counts` option takes an `int` collection or a collection of `int` collections.</span>
+<span class="sd">    An `int` value represents a target allele count and several counts can be grouped in a partition.</span>
+<span class="sd">    A standalone `int` is assumed to represent a partition.</span>
+<span class="sd">    The outer collection includes all partitions.</span>
+<span class="sd">    An allele count can be included only in one partition.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -441,15 +448,24 @@
 <span class="sd">    with zero allele or one target allele:</span>
 
 <span class="sd">    &gt;&gt;&gt; from gpsea.analysis.predicate.genotype import allele_count</span>
-<span class="sd">    &gt;&gt;&gt; zero_vs_one = allele_count(counts=({0,}, {1,}))</span>
+<span class="sd">    &gt;&gt;&gt; zero_vs_one = allele_count(counts=(0, 1))</span>
 <span class="sd">    &gt;&gt;&gt; zero_vs_one.summarize_groups()</span>
 <span class="sd">    &#39;Allele count: 0, 1&#39;</span>
-<span class="sd">    </span>
+
 <span class="sd">    These counts will create three groups for individuals with zero, one or two alleles:</span>
 
-<span class="sd">    &gt;&gt;&gt; zero_vs_one_vs_two = allele_count(counts=({0,}, {1,}, {2,}))</span>
+<span class="sd">    &gt;&gt;&gt; zero_vs_one_vs_two = allele_count(counts=(0, 1, 2))</span>
 <span class="sd">    &gt;&gt;&gt; zero_vs_one_vs_two.summarize_groups()</span>
 <span class="sd">    &#39;Allele count: 0, 1, 2&#39;</span>
+
+<span class="sd">    Last, the counts below will create two groups, one for the individuals with zero target variant type alleles,</span>
+<span class="sd">    and one for the individuals with one or two alleles:</span>
+
+<span class="sd">    &gt;&gt;&gt; zero_vs_one_vs_two = allele_count(counts=(0, {1, 2}))</span>
+<span class="sd">    &gt;&gt;&gt; zero_vs_one_vs_two.summarize_groups()</span>
+<span class="sd">    &#39;Allele count: 0, 1 OR 2&#39;</span>
+
+<span class="sd">    Note that we wrap the last two allele counts in a set.</span>
 
 <span class="sd">    :param counts: a sequence with allele count partitions.</span>
 <span class="sd">    :param target: a predicate for choosing the variants for testing</span>

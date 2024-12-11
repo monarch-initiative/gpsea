@@ -4,28 +4,38 @@
 Cohort exploratory analysis
 ===========================
 
+.. doctest::
+  :hide:
+
+  >>> from gpsea import _overwrite
+
+
+**********
+Background
+**********
+
 As a general rule for statistical testing, it is preferable to formulate one or several hypotheses and to test
 these in a targeted way. Performing numerous tests without any specific plan comes with an increased
-danger of false-positive results (although it many be appropriate to generate hypotheses if a validation cohort is
+danger of false-positive results (although it may be appropriate to generate hypotheses if a validation cohort is
 available).
 
-*************************
-Types of statistical test
-*************************
 
-GPSEA offers four statistical tests.
+Types of statistical tests
+--------------------------
 
-- Fisher Exact Test (FET): Association between two categorical variables. In this case, the first categorical variable is presence/absense of a genotype and the second is presence/absense of annotation to an HPO term.
-- Mann Whitney U test: Association between presence/absence of a genotype with a phenotype score (e.g., :ref:`devries`).
-- t test: Association between presence/absence of a genotype with a numerical test result (e.g., potassium level)
-- log rank score: Association between presence/absence of a genotype with age-of-onset of disease or of an HPO feature or with mortality
+GPSEA offers four statistical tests:
+
+- Fisher Exact Test (FET): Association between two categorical variables.
+  In this case, the first categorical variable is presence/absense of a genotype and the second is presence/absense of annotation to an HPO term.
+- Mann Whitney U test: Association between presence/absence of a genotype with a phenotype score (e.g., :ref:`devries-scorer`).
+- t test: Association between presence/absence of a genotype with a numerical test result (e.g., potassium level).
+- log rank test: Association between presence/absence of a genotype with age-of-onset of a disease or of an HPO feature or with mortality.
 
 Please consult the documentation pages for each of these tests if you are unsure which to use.
 
 
-*****
 Power
-*****
+-----
 
 Two things must be true to identify a valid genotype-phenotype correlation. First, and obviously,
 the correlation must actually exist in the dataset being analyzed. Second, there must be statistical power to
@@ -63,20 +73,19 @@ We start by loading the cohort from the JSON file:
 156
 
 
-then we will choose the transcript and protein identifiers, and we fetch the corresponding data:
+Then we choose the transcript and protein identifiers, and we fetch the corresponding data:
 (see :ref:`choose-tx-and-protein` for more info):
 
->>> from gpsea.model.genome import GRCh38
->>> from gpsea.preprocessing import VVMultiCoordinateService, configure_default_protein_metadata_service
+>>> from gpsea.preprocessing import configure_default_tx_coordinate_service, configure_default_protein_metadata_service
 >>> tx_id = "NM_181486.4"
 >>> pt_id = "NP_852259.1"
->>> tx_service = VVMultiCoordinateService(genome_build=GRCh38)
+>>> tx_service = configure_default_tx_coordinate_service(genome_build="GRCh38.p13")
 >>> tx_coordinates = tx_service.fetch(tx_id)
 >>> pm_service = configure_default_protein_metadata_service()
 >>> protein_meta = pm_service.annotate(pt_id)
 
 
-and we will load HPO `v2024-07-01` for using in the exploratory analysis:
+Last, we load HPO `v2024-07-01` to use in the exploratory analysis:
 
 >>> import hpotk
 >>> store = hpotk.configure_ontology_store()
@@ -86,19 +95,19 @@ and we will load HPO `v2024-07-01` for using in the exploratory analysis:
 Interactive exploration
 -----------------------
 
-We designed GPSEA to integrate with interactive Python with a widespread use
-in contemporary scientific workflows.
-
-The code for exploration is located in :mod:`gpsea.view` module.
-As a rule of thumb, the reports are provided as :class:`~gpsea.view.GpseaReport`
-which leverages IPython's "magic" to integrate with environments such as Jupyter notebook.
+The code for generating reports with tables and figures is located in :mod:`gpsea.view` module.
+As a rule of thumb, the reports leverage IPython's "magic"
+to integrate with the environments such as Jupyter notebook.
+Returning the report object as the last cell expression will render the report in the cell output.
 
 
 Cohort summary
 --------------
 
 We recommend that users start be generating a cohort summary
-with an overview about the HPO terms, variants, diseases, and variant effects that occur most frequently:
+with an overview about the HPO terms, variants, diseases, and variant effects that occur most frequently.
+We create the `viewer` and we generate the `report` for a cohort and transcript.
+The implicit return of the `report` at the end of the cell renders the report in the cell output:
 
 >>> from gpsea.view import CohortViewer
 >>> viewer = CohortViewer(hpo)
@@ -111,7 +120,7 @@ with an overview about the HPO terms, variants, diseases, and variant effects th
 .. doctest:: exploratory
     :hide:
 
-    >>> report.write('docs/user-guide/reports/tbx5_cohort_info.html')  # doctest: +SKIP
+    >>> if _overwrite: report.write('docs/user-guide/reports/tbx5_cohort_info.html')
 
 
 Distribution of variants across protein domains
@@ -119,7 +128,7 @@ Distribution of variants across protein domains
 
 GPSEA gathers information about protein domains from the UniProt API, and alternatively allows users to
 enter domain information manually (See :ref:`fetch-protein-data`).
-Protein domains are  distinct functional or structural units in a protein. For instance, the following graphic shows domains of
+Protein domains are distinct functional or structural units in a protein. For instance, the following graphic shows domains of
 the *PLD1* protein. The HKD domains contribute to the catalytic activity of the protein whereas the PX and PH domains
 regulation PLD1 localization within the cell. Observations such as this may suggest testable hypotheses.
 
@@ -149,7 +158,7 @@ with variants in the *TBX5* gene:
 .. doctest:: exploratory
     :hide:
 
-    >>> report.write('docs/user-guide/reports/tbx5_protein_info.html')  # doctest: +SKIP
+    >>> if _overwrite: report.write('docs/user-guide/reports/tbx5_protein_info.html')
 
 
 Plot distribution of variants with respect to the protein sequence
@@ -176,6 +185,7 @@ We use Matplotlib to plot the distribution of variants on a protein diagram:
 .. doctest:: exploratory
     :hide:
 
-    >>> fig.tight_layout()
-    >>> fig.savefig('docs/user-guide/img/TBX5_protein_diagram.png')  # doctest: +SKIP
+    >>> if _overwrite:
+    ...     fig.tight_layout()
+    ...     fig.savefig('docs/user-guide/img/TBX5_protein_diagram.png')
 

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis._base &mdash; GPSEA 0.7.1 documentation</title>
+  <title>gpsea.analysis._base &mdash; GPSEA 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../../../_static/documentation_options.js?v=486e5634"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -43,9 +43,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup.html">Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user-guide/index.html">User guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../apidocs/modules.html">API reference</a></li>
@@ -89,6 +89,96 @@
 <span class="kn">from</span> <span class="nn">._partition</span> <span class="kn">import</span> <span class="n">Partitioning</span>
 
 
+<div class="viewcode-block" id="StatisticResult">
+<a class="viewcode-back" href="../../../apidocs/gpsea.analysis.html#gpsea.analysis.StatisticResult">[docs]</a>
+<span class="k">class</span> <span class="nc">StatisticResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `StatisticResult` reports result of a :class:`~gpsea.analysis.Statistic`.</span>
+
+<span class="sd">    It includes a statistic (optional) and a corresponding p value.</span>
+<span class="sd">    The p value can be `NaN` if it is impossible to compute for a given dataset.</span>
+
+<span class="sd">    Raises an :class:`AssertionError` for an invalid input.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">statistic</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
+        <span class="n">pval</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">statistic</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">statistic</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">statistic</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pval</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">pval</span><span class="p">)</span> <span class="ow">or</span> <span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">pval</span> <span class="o">&lt;=</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pval</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">pval</span><span class="p">)</span>
+        
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">statistic</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a `float` with the test statistic or `None` if not available.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a p value (a value or a `NaN`).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pval</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">StatisticResult</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_statistic</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pval</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_pval</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pval</span><span class="p">,))</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;StatisticResult(statistic=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span><span class="si">}</span><span class="s2">, pval=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_pval</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="AnalysisException">
+<a class="viewcode-back" href="../../../apidocs/gpsea.analysis.html#gpsea.analysis.AnalysisException">[docs]</a>
+<span class="k">class</span> <span class="nc">AnalysisException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reports analysis issues that need user&#39;s attention.</span>
+
+<span class="sd">    To aid troubleshooting, the exception includes :attr:`~gpsea.analysis.AnalysisException.data` -</span>
+<span class="sd">    a mapping with any data that has been computed prior encountering the issues.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a mapping with (partial) data to aid troubleshooting.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+    
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;AnalysisException(args=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">, data=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="Statistic">
+<a class="viewcode-back" href="../../../apidocs/gpsea.analysis.html#gpsea.analysis.Statistic">[docs]</a>
 <span class="k">class</span> <span class="nc">Statistic</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mixin for classes that are used to compute a nominal p value for a genotype-phenotype association.</span>
@@ -113,7 +203,8 @@
         <span class="k">return</span> <span class="bp">NotImplemented</span>
     
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,))</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,))</span></div>
+
 
 
 <div class="viewcode-block" id="AnalysisResult">
@@ -176,7 +267,7 @@
         <span class="n">statistic</span><span class="p">:</span> <span class="n">Statistic</span><span class="p">,</span>
         <span class="n">n_usable</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
         <span class="n">all_counts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
-        <span class="n">pvals</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">statistic_results</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">StatisticResult</span><span class="p">],</span>
         <span class="n">corrected_pvals</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
         <span class="n">mtc_correction</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="p">):</span>
@@ -190,7 +281,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_n_usable</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">n_usable</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_all_counts</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">all_counts</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pvals</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">pvals</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_statistic_results</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">statistic_results</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span> <span class="o">=</span> <span class="p">(</span>
             <span class="kc">None</span> <span class="k">if</span> <span class="n">corrected_pvals</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">corrected_pvals</span><span class="p">)</span>
         <span class="p">)</span>
@@ -208,7 +299,7 @@
         <span class="k">for</span> <span class="n">seq</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span>
             <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_usable</span><span class="p">,</span> <span class="s1">&#39;n_usable&#39;</span><span class="p">),</span>
             <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_counts</span><span class="p">,</span> <span class="s1">&#39;all_counts&#39;</span><span class="p">),</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pvals</span><span class="p">,</span> <span class="s1">&#39;pvals&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_statistic_results</span><span class="p">,</span> <span class="s1">&#39;statistic_results&#39;</span><span class="p">),</span>
         <span class="p">):</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pheno_predicates</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="p">):</span>
                 <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -274,12 +365,20 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_counts</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">statistic_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">StatisticResult</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a sequence of :class:`~gpsea.analysis.StatisticResult` items with nominal p values and the associated statistic values</span>
+<span class="sd">        for each tested phenotype or `None` for the untested phenotypes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statistic_results</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">pvals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a sequence of nominal p values for each tested phenotype.</span>
 <span class="sd">        The sequence includes a `NaN` value for each phenotype that was *not* tested.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pvals</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">r</span><span class="o">.</span><span class="n">pval</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statistic_results</span> <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">corrected_pvals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
@@ -337,13 +436,12 @@
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span> <span class="k">if</span> <span class="n">selected</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span></div>
 
 
-
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">total_tests</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get total count of genotype-phenotype associations that were tested in this analysis.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">pval</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pvals</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">pval</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statistic_results</span> <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mtc_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
@@ -359,7 +457,7 @@
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pheno_predicates</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_pheno_predicates</span> \
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_usable</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_n_usable</span> \
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_counts</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_all_counts</span> \
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pvals</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_pvals</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statistic_results</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_statistic_results</span> \
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_corrected_pvals</span> \
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_correction</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_mtc_correction</span>
     
@@ -369,7 +467,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_pheno_predicates</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_n_usable</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_all_counts</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_pvals</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_statistic_results</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_corrected_pvals</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_mtc_correction</span><span class="p">,</span>
         <span class="p">))</span></div>
@@ -405,7 +503,7 @@
         <span class="n">phenotype</span><span class="p">:</span> <span class="n">Partitioning</span><span class="p">,</span>
         <span class="n">statistic</span><span class="p">:</span> <span class="n">Statistic</span><span class="p">,</span>
         <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="n">pval</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">statistic_result</span><span class="p">:</span> <span class="n">StatisticResult</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">gt_predicate</span><span class="p">,</span> <span class="n">statistic</span><span class="p">)</span>
 
@@ -417,12 +515,8 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pval</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">and</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">pval</span><span class="p">)</span> <span class="ow">and</span> <span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">pval</span> <span class="o">&lt;=</span> <span class="mf">1.0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_pval</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">pval</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;`pval` must be a finite float in range [0, 1] but it was </span><span class="si">{</span><span class="n">pval</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">statistic_result</span><span class="p">,</span> <span class="n">StatisticResult</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_statistic_result</span> <span class="o">=</span> <span class="n">statistic_result</span>
         
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">phenotype</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Partitioning</span><span class="p">:</span>
@@ -456,7 +550,7 @@
 <a class="viewcode-back" href="../../../apidocs/gpsea.analysis.html#gpsea.analysis.MonoPhenotypeAnalysisResult.complete_records">[docs]</a>
     <span class="k">def</span> <span class="nf">complete_records</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the :attr:`~gpsea.analysis.temporal.MonoPhenotypeAnalysisResult.data` rows</span>
+<span class="sd">        Get the :attr:`~gpsea.analysis.MonoPhenotypeAnalysisResult.data` rows</span>
 <span class="sd">        where both `genotype` and `phenotype` columns are available (i.e. not `None` or `NaN`).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
@@ -465,25 +559,34 @@
         <span class="p">]</span></div>
 
 
+<div class="viewcode-block" id="MonoPhenotypeAnalysisResult.statistic_result">
+<a class="viewcode-back" href="../../../apidocs/gpsea.analysis.html#gpsea.analysis.MonoPhenotypeAnalysisResult.statistic_result">[docs]</a>
+    <span class="k">def</span> <span class="nf">statistic_result</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StatisticResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get statistic result with the nominal p value and the associated statistics.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statistic_result</span></div>
+
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">pval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the p value of the test.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pval</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statistic_result</span><span class="o">.</span><span class="n">pval</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="p">)</span> \
             <span class="ow">and</span> <span class="nb">super</span><span class="p">(</span><span class="n">AnalysisResult</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> \
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_phenotype</span> \
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pval</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_pval</span> \
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statistic_result</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_statistic_result</span> \
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span>
             <span class="nb">super</span><span class="p">(</span><span class="n">AnalysisResult</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">(),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_phenotype</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_pval</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_statistic_result</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span>
         <span class="p">))</span></div>
 

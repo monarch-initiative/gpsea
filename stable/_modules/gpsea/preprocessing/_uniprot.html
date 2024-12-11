@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.preprocessing._uniprot &mdash; GPSEA 0.7.1 documentation</title>
+  <title>gpsea.preprocessing._uniprot &mdash; GPSEA 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../../../_static/documentation_options.js?v=486e5634"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -43,9 +43,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup.html">Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user-guide/index.html">User guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../apidocs/modules.html">API reference</a></li>
@@ -80,7 +80,7 @@
 <span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">typing</span>
 
-<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">FeatureInfo</span><span class="p">,</span> <span class="n">FeatureType</span><span class="p">,</span> <span class="n">ProteinFeature</span><span class="p">,</span> <span class="n">ProteinMetadata</span>
+<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">FeatureInfo</span><span class="p">,</span> <span class="n">ProteinFeature</span><span class="p">,</span> <span class="n">ProteinMetadata</span>
 <span class="kn">from</span> <span class="nn">gpsea.model.genome</span> <span class="kn">import</span> <span class="n">Region</span>
 
 <span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">ProteinMetadataService</span>
@@ -99,10 +99,40 @@
         <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">30.</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Content-type&#39;</span><span class="p">:</span> <span class="s1">&#39;application/json&#39;</span><span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">=</span> <span class="s1">&#39;https://rest.uniprot.org/uniprotkb/search?query=(</span><span class="si">%s</span><span class="s1">)AND(reviewed:true)&amp;(organism_id:9606)&#39;</span> \
-            <span class="s1">&#39;&amp;fields=accession,id,gene_names,gene_primary,protein_name,ft_domain,ft_motif,ft_region,ft_repeat,&#39;</span> \
-            <span class="s1">&#39;xref_refseq,length&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Content-type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">}</span>
+        
+        <span class="c1"># Query is parameterized during lookup</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;(</span><span class="si">%s</span><span class="s2">)AND(reviewed:true)&amp;(organism_id:9606)&quot;</span>
+        
+        <span class="c1"># An opinionated list of fields of interest.</span>
+        <span class="c1"># Reference: https://rest.uniprot.org/configure/uniprotkb/result-fields</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;accession&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;gene_names&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;gene_primary&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;protein_name&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;xref_refseq&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;length&quot;</span><span class="p">,</span>
+                <span class="c1"># Family &amp; Domains</span>
+                <span class="s2">&quot;ft_coiled&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ft_compbias&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ft_domain&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ft_motif&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ft_region&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ft_repeat&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ft_zn_fing&quot;</span><span class="p">,</span>
+                <span class="c1"># Sequences</span>
+                <span class="s2">&quot;ft_non_std&quot;</span><span class="p">,</span>
+                <span class="c1"># Function</span>
+                <span class="s2">&quot;ft_act_site&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ft_binding&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;cc_cofactor&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ft_dna_bind&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://rest.uniprot.org/uniprotkb/search?query=</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&amp;fields=</span><span class="si">{</span><span class="n">fields</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span> <span class="o">=</span> <span class="n">timeout</span>
 
 <div class="viewcode-block" id="UniprotProteinMetadataService.parse_uniprot_json">
@@ -144,7 +174,10 @@
 
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_extract_metadata</span><span class="p">(</span><span class="n">protein_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ProteinMetadata</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_extract_metadata</span><span class="p">(</span>
+        <span class="n">protein_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProteinMetadata</span><span class="p">:</span>
         <span class="c1"># `protein` has a cross-reference to the `protein_id` of interest</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">protein_name</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;proteinDescription&#39;</span><span class="p">][</span><span class="s1">&#39;recommendedName&#39;</span><span class="p">][</span><span class="s1">&#39;fullName&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
@@ -153,15 +186,15 @@
 
         <span class="n">all_features_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">]:</span>
-                <span class="n">feature_start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">feature</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">][</span><span class="s1">&#39;start&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
-                <span class="n">feature_end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">feature</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">][</span><span class="s1">&#39;end&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
-                <span class="n">feature_name</span> <span class="o">=</span> <span class="n">feature</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]:</span>
+                <span class="n">feature_start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">feature</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">][</span><span class="s2">&quot;start&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
+                <span class="n">feature_end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">feature</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">][</span><span class="s2">&quot;end&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
+                <span class="n">feature_name</span> <span class="o">=</span> <span class="n">feature</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span>
                 <span class="n">feature_info</span> <span class="o">=</span> <span class="n">FeatureInfo</span><span class="p">(</span>
                     <span class="n">feature_name</span><span class="p">,</span>
                     <span class="n">Region</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">feature_start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">feature_end</span><span class="p">),</span>
                 <span class="p">)</span>
-                <span class="n">feature_type</span> <span class="o">=</span> <span class="n">FeatureType</span><span class="p">[</span><span class="n">feature</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span>
+                <span class="n">feature_type</span> <span class="o">=</span> <span class="n">feature</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
                 <span class="n">protein_feature</span> <span class="o">=</span> <span class="n">ProteinFeature</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">feature_info</span><span class="p">,</span> <span class="n">feature_type</span><span class="p">)</span>
                 <span class="n">all_features_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">protein_feature</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
@@ -172,7 +205,12 @@
         <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">ProteinMetadata</span><span class="p">(</span><span class="n">protein_id</span><span class="p">,</span> <span class="n">protein_name</span><span class="p">,</span> <span class="n">all_features_list</span><span class="p">,</span> <span class="n">protein_length</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ProteinMetadata</span><span class="p">(</span>
+            <span class="n">protein_id</span><span class="p">,</span>
+            <span class="n">protein_name</span><span class="p">,</span>
+            <span class="n">all_features_list</span><span class="p">,</span>
+            <span class="n">protein_length</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_fetch_uniprot_response</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -200,11 +238,15 @@
 <span class="sd">            ValueError: in case of issues with `protein_id`, I/O issues, or parsing the REST response.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">protein_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Protein ID must be a str but it was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">protein_id</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Protein ID must be a str but it was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">protein_id</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">protein_id</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">protein_id</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Please remove whitespace from protein id: </span><span class="se">\&quot;</span><span class="si">{</span><span class="n">protein_id</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2"> and try again!&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Please remove whitespace from protein id: `</span><span class="si">{</span><span class="n">protein_id</span><span class="si">}</span><span class="s2">` and try again!&quot;</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">protein_id</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;NP_&quot;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;only works with a RefSeq database ID (e.g. NP_037407.4), but we got </span><span class="si">{</span><span class="n">protein_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;only works with a RefSeq database ID (e.g. NP_037407.4), but we got </span><span class="si">{</span><span class="n">protein_id</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_uniprot_response</span><span class="p">(</span><span class="n">protein_id</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">UniprotProteinMetadataService</span><span class="o">.</span><span class="n">parse_uniprot_json</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">protein_id</span><span class="p">)</span></div>

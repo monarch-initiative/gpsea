@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Compare measurement values &mdash; GPSEA 0.7.1 documentation</title>
+  <title>Compare measurement values &mdash; GPSEA 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../../_static/documentation_options.js?v=486e5634"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -46,16 +46,17 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation &amp; Tutorial</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup.html">Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">User guide</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../input-data.html">Input data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../exploratory.html">Cohort exploratory analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../predicates/index.html">Predicates</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">Statistical analyses</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="partitioning/index.html">Partitioning</a></li>
 <li class="toctree-l3"><a class="reference internal" href="phenotype-groups.html">Compare genotype and phenotype groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mtc.html">Multiple-testing correction</a></li>
 <li class="toctree-l3"><a class="reference internal" href="phenotype-scores.html">Compare phenotype scores in genotype groups</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Compare measurement values</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#example-analysis">Example analysis</a></li>
@@ -64,8 +65,6 @@
 <li class="toctree-l3"><a class="reference internal" href="survival.html">Survival analysis</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../mtc.html">Multiple-testing correction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../general_hpo_terms.html">General HPO terms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary.html">Glossary</a></li>
 </ul>
 </li>
@@ -98,9 +97,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <p><a href="#id1"><span class="problematic" id="id2">`</span></a>.. _measurement-stat:</p>
-<section id="compare-measurement-values">
-<h1>Compare measurement values<a class="headerlink" href="#compare-measurement-values" title="Link to this heading"></a></h1>
+  <section id="compare-measurement-values">
+<span id="measurement-stat"></span><h1>Compare measurement values<a class="headerlink" href="#compare-measurement-values" title="Link to this heading"></a></h1>
 <section id="example-analysis">
 <h2>Example analysis<a class="headerlink" href="#example-analysis" title="Link to this heading"></a></h2>
 <p>We will analyze 69 individuals reported by
@@ -112,7 +110,7 @@ and other clinical signs and symptoms encoded as HPO terms.</p>
 <h3>Load cohort<a class="headerlink" href="#load-cohort" title="Link to this heading"></a></h3>
 <p>For the purpose of this analysis, we will load the <a class="reference internal" href="../../apidocs/gpsea.model.html#gpsea.model.Cohort" title="gpsea.model.Cohort"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cohort</span></code></a>
 from a <a class="reference external" href="https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/CYP21A2.0.1.20.json">JSON file</a>.
-The cohort was prepared from phenopackets as described in <a class="reference internal" href="../input-data.html#create-cohort-from-phenopackets"><span class="std std-ref">Create a cohort from GA4GH phenopackets</span></a> section,
+The cohort was prepared from phenopackets as described in <a class="reference internal" href="../input-data.html#create-a-cohort"><span class="std std-ref">Create a cohort</span></a> section,
 and then serialized as a JSON file following the instructions in <a class="reference internal" href="../input-data.html#cohort-persistence"><span class="std std-ref">Persist the cohort for later</span></a> section.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">json</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.io</span> <span class="kn">import</span> <span class="n">GpseaJSONDecoder</span>
