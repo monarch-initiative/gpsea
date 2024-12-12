@@ -42,8 +42,8 @@ A typical GPSEA analysis will consist of several steps. Starting with a collecti
 we perform input Q/C and functional variant annotation to prepare a cohort.
 With the cohort on hand, we generate reports with summary statistics, variant distributions,
 and most common Human Phenotype Ontology (HPO) terms or measurements.
-We then configure the methods for partitioning the cohort into genotype and phenotype groups,
-to test for possible associations between the groups.
+We then configure the methods for partitioning the cohort into genotype and phenotype classes,
+to test for possible associations between the classes.
 We finalize the analysis by statistical testing and evaluation of the results.
 
 
@@ -240,54 +240,56 @@ with one or more variant alleles (*Count*):
 Partition the cohort by genotype and phenotype
 ==============================================
 
-To test for genotype-phenotype associations, we need to partition the cohort into subsets.
-In GPSEA, we always assign a cohort member into a genotype group,
-where each individual is assigned into a single group and the groups do not overlap.
-The phenotype is then used to either assign into a group or to calculate a numeric score. 
+To test for genotype-phenotype associations, we need to divide the cohort into classes.
+In GPSEA, we always assign a cohort member into a genotype class,
+where each individual is assigned into a single class and the classes do not overlap.
+The phenotype is then used to either assign an individual into a class,
+or to calculate a numeric score or survival.
 
 
 Partition by genotype
 ---------------------
 
-In context of the tutorial, we assign each cohort member into a group
+In context of the tutorial, we assign each cohort member into a class
 depending on presence of a single allele of a missense or truncating variant
 (e.g. frameshift, stop gain, or splice site region):
 
 >>> from gpsea.model import VariantEffect
->>> from gpsea.analysis.predicate.genotype import VariantPredicates, monoallelic_predicate
->>> is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id)
+>>> from gpsea.analysis.predicate import variant_effect, anyof
+>>> from gpsea.analysis.clf import monoallelic_classifier
+>>> is_missense = variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id)
 >>> truncating_effects = (
 ...    VariantEffect.FRAMESHIFT_VARIANT,
 ...    VariantEffect.STOP_GAINED,
 ...    VariantEffect.SPLICE_DONOR_VARIANT,
 ...    VariantEffect.SPLICE_ACCEPTOR_VARIANT,
 ... )
->>> is_truncating = VariantPredicates.any(VariantPredicates.variant_effect(e, tx_id) for e in truncating_effects)
->>> gt_predicate = monoallelic_predicate(
+>>> is_truncating = anyof(variant_effect(e, tx_id) for e in truncating_effects)
+>>> gt_clf = monoallelic_classifier(
 ...     a_predicate=is_missense,
 ...     b_predicate=is_truncating,
 ...     a_label="Missense", b_label="Truncating",
 ... )
->>> gt_predicate.group_labels
+>>> gt_clf.class_labels
 ('Missense', 'Truncating')
 
 This is a lot of code, and detailed explanations and examples are available in the :ref:`partitioning` section.
-For now, it is enough to know that the `gt_predicate` will assign the individuals
-into `Missense` or `Truncating` group. The individuals with the number of missense (or truncating) variants
+For now, it is enough to know that the `gt_clf` will assign the individuals
+into `Missense` or `Truncating` class. The individuals with the number of missense (or truncating) variants
 different than one will be omitted from the analysis.
 
 
 Partition by phenotype
 ----------------------
 
-We use HPO terms to assign the individuals into phenotype groups,
+We use HPO terms to assign the individuals into phenotype classes,
 according to the term's presence or exclusion.
 The testing leverages the :ref:`true-path-rule` of ontologies.
 
-We now prepare the predicates for assigning into phenotype groups:
+We now prepare the classifiers for assigning into phenotype classes:
 
->>> from gpsea.analysis.predicate.phenotype import prepare_predicates_for_terms_of_interest
->>> pheno_predicates = prepare_predicates_for_terms_of_interest(
+>>> from gpsea.analysis.clf import prepare_classifiers_for_terms_of_interest
+>>> pheno_clfs = prepare_classifiers_for_terms_of_interest(
 ...     cohort=cohort,
 ...     hpo=hpo,
 ... )
@@ -299,7 +301,7 @@ Multiple testing correction
 By default, GPSEA performs a test for each HPO term used to annotate at least one individual in the cohort,
 and there are 369 such terms in *TBX5* cohort:
 
->>> len(pheno_predicates)
+>>> len(pheno_clfs)
 369
 
 However, testing multiple hypothesis on the same dataset increases the chance of receiving false positive result.
@@ -329,8 +331,8 @@ Now we can perform the testing and evaluate the results.
 
 >>> result = analysis.compare_genotype_vs_phenotypes(
 ...     cohort=cohort,
-...     gt_predicate=gt_predicate,
-...     pheno_predicates=pheno_predicates,
+...     gt_clf=gt_clf,
+...     pheno_clfs=pheno_clfs,
 ... )
 >>> result.total_tests
 17

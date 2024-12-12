@@ -25,7 +25,7 @@
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Genotype predicates" href="genotype/index.html" />
+    <link rel="next" title="Genotype classifiers" href="genotype/index.html" />
     <link rel="prev" title="Statistical analyses" href="../index.html" /> 
 </head>
 
@@ -57,15 +57,15 @@
 <li class="toctree-l2"><a class="reference internal" href="../../exploratory.html">Cohort exploratory analysis</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html">Statistical analyses</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Partitioning</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="genotype/index.html">Genotype predicates</a></li>
-<li class="toctree-l4"><a class="reference internal" href="phenotype/index.html">Phenotype predicates and scorers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="genotype/index.html">Genotype classifiers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="phenotype/index.html">Phenotype classifiers and scorers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gallery.html">Gallery</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../phenotype-groups.html">Compare genotype and phenotype groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../phenotype-classes.html">Compare genotype and phenotype classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../mtc.html">Multiple-testing correction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../phenotype-scores.html">Compare phenotype scores in genotype groups</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../measurements.html">Compare measurement values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../phenotype-scores.html">Compare phenotype scores</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../measurements.html">Compare measurements</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../survival.html">Survival analysis</a></li>
 </ul>
 </li>
@@ -103,32 +103,35 @@
              
   <section id="partitioning">
 <span id="id1"></span><h1>Partitioning<a class="headerlink" href="#partitioning" title="Link to this heading"></a></h1>
-<p>Searching for G/P associations usually requires to partition the individuals
-into two or more discrete groups, to allow testing for the inter-group differences.
-GPSEA reflects these requirements with its predicate API.</p>
-<p>A <em>predicate</em> partitions an individual (<a class="reference internal" href="../../../apidocs/gpsea.model.html#gpsea.model.Patient" title="gpsea.model.Patient"><code class="xref py py-class docutils literal notranslate"><span class="pre">Patient</span></code></a>) into one of several groups.
-The groups must be <em>exclusive</em> - each individual must be assigned at most into one group.
-In general, it is desirable that the groups cover all or at least the majority of the cohort being analyzed to maximize statistical power.
-However, the predicate is allowed to return <cite>None</cite> if the individual cannot be assigned.
+<p>Searching for G/P associations usually requires to assign the individuals
+into two or more discrete classes, to allow testing for the inter-class differences.
+GPSEA reflects these requirements with its classifier API.</p>
+<p>A <em>classifier</em> assigns an individual (<a class="reference internal" href="../../../apidocs/gpsea.model.html#gpsea.model.Patient" title="gpsea.model.Patient"><code class="xref py py-class docutils literal notranslate"><span class="pre">Patient</span></code></a>) into one of several classes.
+The classes must be <em>exclusive</em> - each individual must be assigned at most into one class.
+In general, it is desirable that the classes cover all or at least the majority
+of the cohort being analyzed to maximize statistical power.
+However, the classifier is allowed to return <cite>None</cite> if the individual cannot be assigned.
 As a result, the individual will be omitted from the downstream analysis.</p>
-<p>Predicates can be applied on both <em>genotype</em> and <em>phenotype</em>.
-Genotype predicates (<a class="reference internal" href="../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.GenotypePolyPredicate" title="gpsea.analysis.predicate.genotype.GenotypePolyPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenotypePolyPredicate</span></code></a>)
-assign the individual into a group (mostly) based on the variant information,
-while the phenotype predicates (<a class="reference internal" href="../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate" title="gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypePolyPredicate</span></code></a>)
-decide on the group based on the HPO terms or a diagnosis.</p>
-<p>Besides assigning an individual into a discrete group,
-a continuous score (typically for phenotype) can also be computed.
+<p>Classifiers can be applied on both <em>genotype</em> and <em>phenotype</em>.
+Genotype classifiers (<a class="reference internal" href="../../../apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.GenotypeClassifier" title="gpsea.analysis.clf.GenotypeClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenotypeClassifier</span></code></a>)
+classify the individual (mostly) based on the variant information,
+while the phenotype classifiers (<a class="reference internal" href="../../../apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.PhenotypeClassifier" title="gpsea.analysis.clf.PhenotypeClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeClassifier</span></code></a>)
+decide on the class based on the HPO terms or a diagnosis.</p>
+<p>Besides assigning an individual into a discrete phenotype class,
+a continuous score or a survival can also be computed.
 A <a class="reference internal" href="../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.PhenotypeScorer" title="gpsea.analysis.pscore.PhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeScorer</span></code></a> computes a phenotype score
 for an individual, and the differences in score distributions of genotype groups
-can be tested e.g. with Mann-Whitney U test.</p>
-<p>Any GPSEA analysis needs a genotype predicate and a phenotype predicate/scorer.
-The following sections show how to prepare the predicates and scorers
-for your analyses. We also show a gallery with examples.</p>
+can be tested e.g. with Mann-Whitney U test.
+An <a class="reference internal" href="../../../apidocs/gpsea.analysis.temporal.html#gpsea.analysis.temporal.Endpoint" title="gpsea.analysis.temporal.Endpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">Endpoint</span></code></a> computes a survival
+as time until death, disease onset, or onset of an HPO term.</p>
+<p>Any GPSEA analysis needs a genotype clasifier and a phenotype classifier/scorer/endpoint.
+The following sections show how to prepare the classifiers, scorers, and endpoints
+for your analysis. We also show a gallery with examples.</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="genotype/index.html">Genotype predicates</a></li>
-<li class="toctree-l1"><a class="reference internal" href="phenotype/index.html">Phenotype predicates and scorers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="genotype/index.html">Genotype classifiers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="phenotype/index.html">Phenotype classifiers and scorers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Gallery</a></li>
 </ul>
 </div>
@@ -139,7 +142,7 @@ for your analyses. We also show a gallery with examples.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../index.html" class="btn btn-neutral float-left" title="Statistical analyses" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="genotype/index.html" class="btn btn-neutral float-right" title="Genotype predicates" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="genotype/index.html" class="btn btn-neutral float-right" title="Genotype classifiers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

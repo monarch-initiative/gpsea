@@ -129,8 +129,8 @@ The phenopackets are published in <a class="reference external" href="https://gi
 we perform input Q/C and functional variant annotation to prepare a cohort.
 With the cohort on hand, we generate reports with summary statistics, variant distributions,
 and most common Human Phenotype Ontology (HPO) terms or measurements.
-We then configure the methods for partitioning the cohort into genotype and phenotype groups,
-to test for possible associations between the groups.
+We then configure the methods for partitioning the cohort into genotype and phenotype classes,
+to test for possible associations between the classes.
 We finalize the analysis by statistical testing and evaluation of the results.</p>
 <nav class="contents local" id="gpsea-analysis-workflow">
 <p class="topic-title">GPSEA analysis workflow</p>
@@ -1339,47 +1339,49 @@ with one or more variant alleles (<em>Count</em>):</p>
 </section>
 <section id="partition-the-cohort-by-genotype-and-phenotype">
 <h3><a class="toc-backref" href="#id14" role="doc-backlink">Partition the cohort by genotype and phenotype</a><a class="headerlink" href="#partition-the-cohort-by-genotype-and-phenotype" title="Link to this heading"></a></h3>
-<p>To test for genotype-phenotype associations, we need to partition the cohort into subsets.
-In GPSEA, we always assign a cohort member into a genotype group,
-where each individual is assigned into a single group and the groups do not overlap.
-The phenotype is then used to either assign into a group or to calculate a numeric score.</p>
+<p>To test for genotype-phenotype associations, we need to divide the cohort into classes.
+In GPSEA, we always assign a cohort member into a genotype class,
+where each individual is assigned into a single class and the classes do not overlap.
+The phenotype is then used to either assign an individual into a class,
+or to calculate a numeric score or survival.</p>
 <section id="partition-by-genotype">
 <h4><a class="toc-backref" href="#id15" role="doc-backlink">Partition by genotype</a><a class="headerlink" href="#partition-by-genotype" title="Link to this heading"></a></h4>
-<p>In context of the tutorial, we assign each cohort member into a group
+<p>In context of the tutorial, we assign each cohort member into a class
 depending on presence of a single allele of a missense or truncating variant
 (e.g. frameshift, stop gain, or splice site region):</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span><span class="p">,</span> <span class="n">monoallelic_predicate</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_missense</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate</span> <span class="kn">import</span> <span class="n">variant_effect</span><span class="p">,</span> <span class="n">anyof</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.clf</span> <span class="kn">import</span> <span class="n">monoallelic_classifier</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_missense</span> <span class="o">=</span> <span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">truncating_effects</span> <span class="o">=</span> <span class="p">(</span>
 <span class="gp">... </span>   <span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">,</span>
 <span class="gp">... </span>   <span class="n">VariantEffect</span><span class="o">.</span><span class="n">STOP_GAINED</span><span class="p">,</span>
 <span class="gp">... </span>   <span class="n">VariantEffect</span><span class="o">.</span><span class="n">SPLICE_DONOR_VARIANT</span><span class="p">,</span>
 <span class="gp">... </span>   <span class="n">VariantEffect</span><span class="o">.</span><span class="n">SPLICE_ACCEPTOR_VARIANT</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_truncating</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">truncating_effects</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">monoallelic_predicate</span><span class="p">(</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_truncating</span> <span class="o">=</span> <span class="n">anyof</span><span class="p">(</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">truncating_effects</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span> <span class="o">=</span> <span class="n">monoallelic_classifier</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">a_predicate</span><span class="o">=</span><span class="n">is_missense</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">b_predicate</span><span class="o">=</span><span class="n">is_truncating</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">a_label</span><span class="o">=</span><span class="s2">&quot;Missense&quot;</span><span class="p">,</span> <span class="n">b_label</span><span class="o">=</span><span class="s2">&quot;Truncating&quot;</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">group_labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span><span class="o">.</span><span class="n">class_labels</span>
 <span class="go">(&#39;Missense&#39;, &#39;Truncating&#39;)</span>
 </pre></div>
 </div>
 <p>This is a lot of code, and detailed explanations and examples are available in the <a class="reference internal" href="user-guide/analyses/partitioning/index.html#partitioning"><span class="std std-ref">Partitioning</span></a> section.
-For now, it is enough to know that the <cite>gt_predicate</cite> will assign the individuals
-into <cite>Missense</cite> or <cite>Truncating</cite> group. The individuals with the number of missense (or truncating) variants
+For now, it is enough to know that the <cite>gt_clf</cite> will assign the individuals
+into <cite>Missense</cite> or <cite>Truncating</cite> class. The individuals with the number of missense (or truncating) variants
 different than one will be omitted from the analysis.</p>
 </section>
 <section id="partition-by-phenotype">
 <h4><a class="toc-backref" href="#id16" role="doc-backlink">Partition by phenotype</a><a class="headerlink" href="#partition-by-phenotype" title="Link to this heading"></a></h4>
-<p>We use HPO terms to assign the individuals into phenotype groups,
+<p>We use HPO terms to assign the individuals into phenotype classes,
 according to the term’s presence or exclusion.
 The testing leverages the <a class="reference internal" href="user-guide/glossary.html#true-path-rule"><span class="std std-ref">True path rule</span></a> of ontologies.</p>
-<p>We now prepare the predicates for assigning into phenotype groups:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.phenotype</span> <span class="kn">import</span> <span class="n">prepare_predicates_for_terms_of_interest</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_predicates</span> <span class="o">=</span> <span class="n">prepare_predicates_for_terms_of_interest</span><span class="p">(</span>
+<p>We now prepare the classifiers for assigning into phenotype classes:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.clf</span> <span class="kn">import</span> <span class="n">prepare_classifiers_for_terms_of_interest</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_clfs</span> <span class="o">=</span> <span class="n">prepare_classifiers_for_terms_of_interest</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
@@ -1390,7 +1392,7 @@ The testing leverages the <a class="reference internal" href="user-guide/glossar
 <h4><a class="toc-backref" href="#id17" role="doc-backlink">Multiple testing correction</a><a class="headerlink" href="#multiple-testing-correction" title="Link to this heading"></a></h4>
 <p>By default, GPSEA performs a test for each HPO term used to annotate at least one individual in the cohort,
 and there are 369 such terms in <em>TBX5</em> cohort:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">pheno_predicates</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">pheno_clfs</span><span class="p">)</span>
 <span class="go">369</span>
 </pre></div>
 </div>
@@ -1418,8 +1420,8 @@ Fisher Exact test for computing nominal p values, and Benjamini-Hochberg for mul
 <p>Now we can perform the testing and evaluate the results.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">compare_genotype_vs_phenotypes</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">gt_predicate</span><span class="o">=</span><span class="n">gt_predicate</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">pheno_predicates</span><span class="o">=</span><span class="n">pheno_predicates</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">gt_clf</span><span class="o">=</span><span class="n">gt_clf</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">pheno_clfs</span><span class="o">=</span><span class="n">pheno_clfs</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">total_tests</span>
 <span class="go">17</span>

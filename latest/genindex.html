@@ -112,8 +112,6 @@
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Status.ALIVE">ALIVE (gpsea.model.Status attribute)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates.all">all() (gpsea.analysis.predicate.genotype.VariantPredicates static method)</a>
-</li>
       <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.MultiPhenotypeAnalysisResult.all_counts">all_counts (gpsea.analysis.MultiPhenotypeAnalysisResult property)</a>
 
       <ul>
@@ -132,13 +130,15 @@
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Cohort.all_variant_infos">all_variant_infos() (gpsea.model.Cohort method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Cohort.all_variants">all_variants() (gpsea.model.Cohort method)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.allele_count">allele_count() (in module gpsea.analysis.predicate.genotype)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.allele_count">allele_count() (in module gpsea.analysis.clf)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.AlleleCounter">AlleleCounter (class in gpsea.analysis.predicate.genotype)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.AlleleCounter">AlleleCounter (class in gpsea.analysis.clf)</a>
+</li>
+      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.allof">allof() (in module gpsea.analysis.predicate)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.VariantCoordinates.alt">alt (gpsea.model.VariantCoordinates property)</a>
 </li>
@@ -160,9 +160,9 @@
         <li><a href="apidocs/gpsea.preprocessing.html#gpsea.preprocessing.VepFunctionalAnnotator.annotate">(gpsea.preprocessing.VepFunctionalAnnotator method)</a>
 </li>
       </ul></li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates.any">any() (gpsea.analysis.predicate.genotype.VariantPredicates static method)</a>
+      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.anyof">anyof() (in module gpsea.analysis.predicate)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.apply_predicates_on_patients">apply_predicates_on_patients() (in module gpsea.analysis.pcats)</a>
+      <li><a href="apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.apply_classifiers_on_individuals">apply_classifiers_on_individuals() (in module gpsea.analysis.pcats)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -174,7 +174,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.biallelic_predicate">biallelic_predicate() (in module gpsea.analysis.predicate.genotype)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.biallelic_classifier">biallelic_classifier() (in module gpsea.analysis.clf)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Age.birth">birth() (gpsea.model.Age static method)</a>
 </li>
@@ -186,11 +186,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/gpsea.config.html#gpsea.config.CACHE_ENV">CACHE_ENV (in module gpsea.config)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.PatientCategory.cat_id">cat_id (gpsea.analysis.predicate.PatientCategory property)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.PatientCategory.cat_id">cat_id (gpsea.analysis.clf.PatientCategory property)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.Categorization">Categorization (class in gpsea.analysis.predicate)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.Categorization">Categorization (class in gpsea.analysis.clf)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.Categorization.category">category (gpsea.analysis.predicate.Categorization property)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.Categorization.category">category (gpsea.analysis.clf.Categorization property)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.TranscriptCoordinates.cds_end">cds_end (gpsea.model.TranscriptCoordinates property)</a>
 </li>
@@ -198,9 +198,13 @@
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.VariantCoordinates.change_length">change_length (gpsea.model.VariantCoordinates property)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates.change_length">change_length() (gpsea.analysis.predicate.genotype.VariantPredicates static method)</a>
+      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.change_length">change_length() (in module gpsea.analysis.predicate)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.VariantCoordinates.chrom">chrom (gpsea.model.VariantCoordinates property)</a>
+</li>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.Classifier.class_labels">class_labels (gpsea.analysis.clf.Classifier property)</a>
+</li>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.Classifier">Classifier (class in gpsea.analysis.clf)</a>
 </li>
       <li><a href="apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcIssue.code">code (gpsea.analysis.mtc_filter.PhenotypeMtcIssue attribute)</a>
 
@@ -252,10 +256,10 @@
 </li>
       <li><a href="apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_cohort_creator">configure_cohort_creator() (in module gpsea.preprocessing)</a>
 </li>
-      <li><a href="apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_default_functional_annotator">configure_default_functional_annotator() (in module gpsea.preprocessing)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_default_functional_annotator">configure_default_functional_annotator() (in module gpsea.preprocessing)</a>
+</li>
       <li><a href="apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_default_protein_metadata_service">configure_default_protein_metadata_service() (in module gpsea.preprocessing)</a>
 </li>
       <li><a href="apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_default_tx_coordinate_service">configure_default_tx_coordinate_service() (in module gpsea.preprocessing)</a>
@@ -288,7 +292,7 @@
         <li><a href="apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.MultiPhenotypeAnalysisResult.corrected_pvals">(gpsea.analysis.pcats.MultiPhenotypeAnalysisResult property)</a>
 </li>
       </ul></li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.AlleleCounter.count">count() (gpsea.analysis.predicate.genotype.AlleleCounter method)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.AlleleCounter.count">count() (gpsea.analysis.clf.AlleleCounter method)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Cohort.count_alive">count_alive() (gpsea.model.Cohort method)</a>
 </li>
@@ -368,14 +372,14 @@
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.FeatureType.deprecation_warning">deprecation_warning() (gpsea.model.FeatureType static method)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.Partitioning.description">description (gpsea.analysis.Partitioning property)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.DiseasePresenceClassifier.description">description (gpsea.analysis.clf.DiseasePresenceClassifier property)</a>
 
       <ul>
-        <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.PatientCategory.description">(gpsea.analysis.predicate.PatientCategory property)</a>
+        <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.HpoClassifier.description">(gpsea.analysis.clf.HpoClassifier property)</a>
 </li>
-        <li><a href="apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.DiseasePresencePredicate.description">(gpsea.analysis.predicate.phenotype.DiseasePresencePredicate property)</a>
+        <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.PatientCategory.description">(gpsea.analysis.clf.PatientCategory property)</a>
 </li>
-        <li><a href="apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.HpoPredicate.description">(gpsea.analysis.predicate.phenotype.HpoPredicate property)</a>
+        <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.Partitioning.description">(gpsea.analysis.Partitioning property)</a>
 </li>
         <li><a href="apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.CountingPhenotypeScorer.description">(gpsea.analysis.pscore.CountingPhenotypeScorer property)</a>
 </li>
@@ -388,7 +392,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.DeVriesPhenotypeScorer">DeVriesPhenotypeScorer (class in gpsea.analysis.pscore)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.diagnosis_predicate">diagnosis_predicate() (in module gpsea.analysis.predicate.genotype)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.diagnosis_classifier">diagnosis_classifier() (in module gpsea.analysis.clf)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Disease">Disease (class in gpsea.model)</a>
 </li>
@@ -398,7 +402,7 @@
 </li>
       <li><a href="apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.DiseaseAnalysis">DiseaseAnalysis (class in gpsea.analysis.pcats)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.DiseasePresencePredicate">DiseasePresencePredicate (class in gpsea.analysis.predicate.phenotype)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.DiseasePresenceClassifier">DiseasePresenceClassifier (class in gpsea.analysis.clf)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Patient.diseases">diseases (gpsea.model.Patient property)</a>
 </li>
@@ -454,7 +458,7 @@
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Patient.excluded_phenotypes">excluded_phenotypes() (gpsea.model.Patient method)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates.exon">exon() (gpsea.analysis.predicate.genotype.VariantPredicates static method)</a>
+      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.exon">exon() (in module gpsea.analysis.predicate)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.TranscriptCoordinates.exons">exons (gpsea.model.TranscriptCoordinates property)</a>
 </li>
@@ -552,7 +556,7 @@
 </li>
       <li><a href="apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.CountingPhenotypeScorer.from_query_curies">from_query_curies() (gpsea.analysis.pscore.CountingPhenotypeScorer static method)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.Categorization.from_raw_parts">from_raw_parts() (gpsea.analysis.predicate.Categorization static method)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.Categorization.from_raw_parts">from_raw_parts() (gpsea.analysis.clf.Categorization static method)</a>
 
       <ul>
         <li><a href="apidocs/gpsea.model.html#gpsea.model.Disease.from_raw_parts">(gpsea.model.Disease static method)</a>
@@ -584,7 +588,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/gpsea.model.genome.html#gpsea.model.genome.Contig.genbank_acc">genbank_acc (gpsea.model.genome.Contig property)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates.gene">gene() (gpsea.analysis.predicate.genotype.VariantPredicates static method)</a>
+      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.gene">gene() (in module gpsea.analysis.predicate)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.ImpreciseSvInfo.gene_id">gene_id (gpsea.model.ImpreciseSvInfo property)</a>
 
@@ -610,9 +614,9 @@
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Genotyped.genotype_for_sample">genotype_for_sample() (gpsea.model.Genotyped method)</a>
 </li>
-      <li><a href="apidocs/gpsea.model.html#gpsea.model.Genotyped">Genotyped (class in gpsea.model)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.GenotypeClassifier">GenotypeClassifier (class in gpsea.analysis.clf)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.GenotypePolyPredicate">GenotypePolyPredicate (class in gpsea.analysis.predicate.genotype)</a>
+      <li><a href="apidocs/gpsea.model.html#gpsea.model.Genotyped">Genotyped (class in gpsea.model)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Genotypes">Genotypes (class in gpsea.model)</a>
 </li>
@@ -630,19 +634,19 @@
 </li>
       <li><a href="apidocs/gpsea.config.html#gpsea.config.get_cache_dir_path">get_cache_dir_path() (in module gpsea.config)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate.get_categories">get_categories() (gpsea.analysis.predicate.PolyPredicate method)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.Classifier.get_categories">get_categories() (gpsea.analysis.clf.Classifier method)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.DiseasePresencePredicate.get_categorizations">get_categorizations() (gpsea.analysis.predicate.phenotype.DiseasePresencePredicate method)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.Classifier.get_categorizations">get_categorizations() (gpsea.analysis.clf.Classifier method)</a>
 
       <ul>
-        <li><a href="apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.HpoPredicate.get_categorizations">(gpsea.analysis.predicate.phenotype.HpoPredicate method)</a>
+        <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.DiseasePresenceClassifier.get_categorizations">(gpsea.analysis.clf.DiseasePresenceClassifier method)</a>
 </li>
-        <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate.get_categorizations">(gpsea.analysis.predicate.PolyPredicate method)</a>
+        <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.HpoClassifier.get_categorizations">(gpsea.analysis.clf.HpoClassifier method)</a>
 </li>
       </ul></li>
-      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate.get_category">get_category() (gpsea.analysis.predicate.PolyPredicate method)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.Classifier.get_category">get_category() (gpsea.analysis.clf.Classifier method)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate.get_category_name">get_category_name() (gpsea.analysis.predicate.PolyPredicate method)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.Classifier.get_category_name">get_category_name() (gpsea.analysis.clf.Classifier method)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.TranscriptCoordinates.get_cds_regions">get_cds_regions() (gpsea.model.TranscriptCoordinates method)</a>
 </li>
@@ -666,10 +670,10 @@
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.FunctionalAnnotationAware.get_preferred_tx_annotation">get_preferred_tx_annotation() (gpsea.model.FunctionalAnnotationAware method)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.AlleleCounter.get_question">get_question() (gpsea.analysis.predicate.genotype.AlleleCounter method)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.AlleleCounter.get_question">get_question() (gpsea.analysis.clf.AlleleCounter method)</a>
 
       <ul>
-        <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicate.get_question">(gpsea.analysis.predicate.genotype.VariantPredicate method)</a>
+        <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.VariantPredicate.get_question">(gpsea.analysis.predicate.VariantPredicate method)</a>
 </li>
       </ul></li>
       <li><a href="apidocs/gpsea.preprocessing.html#gpsea.preprocessing.VVMultiCoordinateService.get_response">get_response() (gpsea.preprocessing.VVMultiCoordinateService method)</a>
@@ -680,8 +684,6 @@
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Cohort.get_variant_by_key">get_variant_by_key() (gpsea.model.Cohort method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     gpsea
 
@@ -689,11 +691,20 @@
         <li><a href="apidocs/gpsea.html#module-gpsea">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     gpsea.analysis
 
       <ul>
         <li><a href="apidocs/gpsea.analysis.html#module-gpsea.analysis">module</a>
+</li>
+      </ul></li>
+      <li>
+    gpsea.analysis.clf
+
+      <ul>
+        <li><a href="apidocs/gpsea.analysis.clf.html#module-gpsea.analysis.clf">module</a>
 </li>
       </ul></li>
       <li>
@@ -828,11 +839,9 @@
 </li>
       <li><a href="apidocs/gpsea.view.html#gpsea.view.GpseaReport">GpseaReport (class in gpsea.view)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate.group_labels">group_labels (gpsea.analysis.predicate.PolyPredicate property)</a>
+      <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.AnalysisResult.gt_clf">gt_clf (gpsea.analysis.AnalysisResult property)</a>
 </li>
       <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.MonoPhenotypeAnalysisResult.GT_COL">GT_COL (gpsea.analysis.MonoPhenotypeAnalysisResult attribute)</a>
-</li>
-      <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.AnalysisResult.gt_predicate">gt_predicate (gpsea.analysis.AnalysisResult property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -860,9 +869,9 @@
 </li>
       <li><a href="apidocs/gpsea.analysis.temporal.endpoint.html#gpsea.analysis.temporal.endpoint.hpo_onset">hpo_onset() (in module gpsea.analysis.temporal.endpoint)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter">HpoMtcFilter (class in gpsea.analysis.mtc_filter)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.HpoClassifier">HpoClassifier (class in gpsea.analysis.clf)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.HpoPredicate">HpoPredicate (class in gpsea.analysis.predicate.phenotype)</a>
+      <li><a href="apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter">HpoMtcFilter (class in gpsea.analysis.mtc_filter)</a>
 </li>
       <li><a href="apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.HpoTermAnalysis">HpoTermAnalysis (class in gpsea.analysis.pcats)</a>
 </li>
@@ -926,7 +935,7 @@
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Age.is_gestational">is_gestational (gpsea.model.Age property)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates.is_large_imprecise_sv">is_large_imprecise_sv() (gpsea.analysis.predicate.genotype.VariantPredicates static method)</a>
+      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.is_large_imprecise_sv">is_large_imprecise_sv() (in module gpsea.analysis.predicate)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Sex.is_male">is_male() (gpsea.model.Sex method)</a>
 </li>
@@ -962,9 +971,9 @@
         <li><a href="apidocs/gpsea.model.html#gpsea.model.VariantInfo.is_structural">(gpsea.model.VariantInfo method)</a>
 </li>
       </ul></li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates.is_structural_deletion">is_structural_deletion() (gpsea.analysis.predicate.genotype.VariantPredicates static method)</a>
+      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.is_structural_deletion">is_structural_deletion() (in module gpsea.analysis.predicate)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates.is_structural_variant">is_structural_variant() (gpsea.analysis.predicate.genotype.VariantPredicates static method)</a>
+      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.is_structural_variant">is_structural_variant() (in module gpsea.analysis.predicate)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.VitalStatus.is_unknown">is_unknown (gpsea.model.VitalStatus property)</a>
 </li>
@@ -1050,6 +1059,8 @@
 </li>
         <li><a href="apidocs/gpsea.analysis.html#module-gpsea.analysis">gpsea.analysis</a>
 </li>
+        <li><a href="apidocs/gpsea.analysis.clf.html#module-gpsea.analysis.clf">gpsea.analysis.clf</a>
+</li>
         <li><a href="apidocs/gpsea.analysis.mtc_filter.html#module-gpsea.analysis.mtc_filter">gpsea.analysis.mtc_filter</a>
 </li>
         <li><a href="apidocs/gpsea.analysis.pcats.html#module-gpsea.analysis.pcats">gpsea.analysis.pcats</a>
@@ -1089,7 +1100,7 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.monoallelic_predicate">monoallelic_predicate() (in module gpsea.analysis.predicate.genotype)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.monoallelic_classifier">monoallelic_classifier() (in module gpsea.analysis.clf)</a>
 </li>
       <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.MonoPhenotypeAnalysisResult">MonoPhenotypeAnalysisResult (class in gpsea.analysis)</a>
 </li>
@@ -1125,7 +1136,7 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate.n_categorizations">n_categorizations() (gpsea.analysis.predicate.PolyPredicate method)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.Classifier.n_categorizations">n_categorizations() (gpsea.analysis.clf.Classifier method)</a>
 </li>
       <li><a href="apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.HpoTermAnalysisResult.n_filtered_out">n_filtered_out() (gpsea.analysis.pcats.HpoTermAnalysisResult method)</a>
 </li>
@@ -1141,14 +1152,14 @@
         <li><a href="apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.MultiPhenotypeAnalysisResult.n_usable">(gpsea.analysis.pcats.MultiPhenotypeAnalysisResult property)</a>
 </li>
       </ul></li>
-      <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.Partitioning.name">name (gpsea.analysis.Partitioning property)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.DiseasePresenceClassifier.name">name (gpsea.analysis.clf.DiseasePresenceClassifier property)</a>
 
       <ul>
-        <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.PatientCategory.name">(gpsea.analysis.predicate.PatientCategory property)</a>
+        <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.HpoClassifier.name">(gpsea.analysis.clf.HpoClassifier property)</a>
 </li>
-        <li><a href="apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.DiseasePresencePredicate.name">(gpsea.analysis.predicate.phenotype.DiseasePresencePredicate property)</a>
+        <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.PatientCategory.name">(gpsea.analysis.clf.PatientCategory property)</a>
 </li>
-        <li><a href="apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.HpoPredicate.name">(gpsea.analysis.predicate.phenotype.HpoPredicate property)</a>
+        <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.Partitioning.name">(gpsea.analysis.Partitioning property)</a>
 </li>
         <li><a href="apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.CountingPhenotypeScorer.name">(gpsea.analysis.pscore.CountingPhenotypeScorer property)</a>
 </li>
@@ -1251,16 +1262,16 @@
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Patient.patient_id">patient_id (gpsea.model.Patient property)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.PatientCategory">PatientCategory (class in gpsea.analysis.predicate)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.PatientCategory">PatientCategory (class in gpsea.analysis.clf)</a>
 </li>
       <li><a href="apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PatientCreator">PatientCreator (class in gpsea.preprocessing)</a>
 </li>
       <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.MonoPhenotypeAnalysisResult.PH_COL">PH_COL (gpsea.analysis.MonoPhenotypeAnalysisResult attribute)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.MultiPhenotypeAnalysisResult.pheno_predicates">pheno_predicates (gpsea.analysis.MultiPhenotypeAnalysisResult property)</a>
+      <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.MultiPhenotypeAnalysisResult.pheno_clfs">pheno_clfs (gpsea.analysis.MultiPhenotypeAnalysisResult property)</a>
 
       <ul>
-        <li><a href="apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.MultiPhenotypeAnalysisResult.pheno_predicates">(gpsea.analysis.pcats.MultiPhenotypeAnalysisResult property)</a>
+        <li><a href="apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.MultiPhenotypeAnalysisResult.pheno_clfs">(gpsea.analysis.pcats.MultiPhenotypeAnalysisResult property)</a>
 </li>
       </ul></li>
       <li><a href="apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PhenopacketOntologyTermOnsetParser">PhenopacketOntologyTermOnsetParser (class in gpsea.preprocessing)</a>
@@ -1271,31 +1282,31 @@
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Phenotype">Phenotype (class in gpsea.model)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.MonoPhenotypeAnalysisResult.phenotype">phenotype (gpsea.analysis.MonoPhenotypeAnalysisResult property)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.DiseasePresenceClassifier.phenotype">phenotype (gpsea.analysis.clf.DiseasePresenceClassifier property)</a>
 
       <ul>
-        <li><a href="apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.DiseasePresencePredicate.phenotype">(gpsea.analysis.predicate.phenotype.DiseasePresencePredicate property)</a>
+        <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.HpoClassifier.phenotype">(gpsea.analysis.clf.HpoClassifier property)</a>
 </li>
-        <li><a href="apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.HpoPredicate.phenotype">(gpsea.analysis.predicate.phenotype.HpoPredicate property)</a>
+        <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.PhenotypeCategorization.phenotype">(gpsea.analysis.clf.PhenotypeCategorization property)</a>
 </li>
-        <li><a href="apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PhenotypeCategorization.phenotype">(gpsea.analysis.predicate.phenotype.PhenotypeCategorization property)</a>
+        <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.PhenotypeClassifier.phenotype">(gpsea.analysis.clf.PhenotypeClassifier property)</a>
 </li>
-        <li><a href="apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate.phenotype">(gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate property)</a>
+        <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.MonoPhenotypeAnalysisResult.phenotype">(gpsea.analysis.MonoPhenotypeAnalysisResult property)</a>
 </li>
       </ul></li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Patient.phenotype_by_id">phenotype_by_id() (gpsea.model.Patient method)</a>
 </li>
       <li><a href="apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.PhenotypeScoreAnalysisResult.phenotype_scorer">phenotype_scorer() (gpsea.analysis.pscore.PhenotypeScoreAnalysisResult method)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PhenotypeCategorization">PhenotypeCategorization (class in gpsea.analysis.predicate.phenotype)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.PhenotypeCategorization">PhenotypeCategorization (class in gpsea.analysis.clf)</a>
+</li>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.PhenotypeClassifier">PhenotypeClassifier (class in gpsea.analysis.clf)</a>
 </li>
       <li><a href="apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcFilter">PhenotypeMtcFilter (class in gpsea.analysis.mtc_filter)</a>
 </li>
       <li><a href="apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcIssue">PhenotypeMtcIssue (class in gpsea.analysis.mtc_filter)</a>
 </li>
       <li><a href="apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcResult">PhenotypeMtcResult (class in gpsea.analysis.mtc_filter)</a>
-</li>
-      <li><a href="apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate">PhenotypePolyPredicate (class in gpsea.analysis.predicate.phenotype)</a>
 </li>
       <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.MultiPhenotypeAnalysisResult.phenotypes">phenotypes (gpsea.analysis.MultiPhenotypeAnalysisResult property)</a>
 
@@ -1319,8 +1330,6 @@
 </li>
       <li><a href="apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PreprocessingValidationResult.policy">policy (gpsea.preprocessing.PreprocessingValidationResult property)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate">PolyPredicate (class in gpsea.analysis.predicate)</a>
-</li>
       <li><a href="apidocs/gpsea.model.genome.html#gpsea.model.genome.Strand.POSITIVE">POSITIVE (gpsea.model.genome.Strand attribute)</a>
 </li>
       <li><a href="apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter.possible_results">possible_results() (gpsea.analysis.mtc_filter.HpoMtcFilter method)</a>
@@ -1337,29 +1346,29 @@
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Age.postnatal">postnatal() (gpsea.model.Age static method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Age.postnatal_days">postnatal_days() (gpsea.model.Age static method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Age.postnatal_years">postnatal_years() (gpsea.model.Age static method)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.prepare_hpo_terms_of_interest">prepare_hpo_terms_of_interest() (in module gpsea.analysis.predicate.phenotype)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.prepare_classifiers_for_terms_of_interest">prepare_classifiers_for_terms_of_interest() (in module gpsea.analysis.clf)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.prepare_predicates_for_terms_of_interest">prepare_predicates_for_terms_of_interest() (in module gpsea.analysis.predicate.phenotype)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.prepare_hpo_terms_of_interest">prepare_hpo_terms_of_interest() (in module gpsea.analysis.clf)</a>
 </li>
       <li><a href="apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PreprocessingValidationResult">PreprocessingValidationResult (class in gpsea.preprocessing)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Patient.present_diseases">present_diseases() (gpsea.model.Patient method)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.DiseasePresencePredicate.present_phenotype_categorization">present_phenotype_categorization (gpsea.analysis.predicate.phenotype.DiseasePresencePredicate property)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.DiseasePresenceClassifier.present_phenotype_categorization">present_phenotype_categorization (gpsea.analysis.clf.DiseasePresenceClassifier property)</a>
 
       <ul>
-        <li><a href="apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.HpoPredicate.present_phenotype_categorization">(gpsea.analysis.predicate.phenotype.HpoPredicate property)</a>
+        <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.HpoClassifier.present_phenotype_categorization">(gpsea.analysis.clf.HpoClassifier property)</a>
 </li>
-        <li><a href="apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate.present_phenotype_categorization">(gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate property)</a>
+        <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.PhenotypeClassifier.present_phenotype_categorization">(gpsea.analysis.clf.PhenotypeClassifier property)</a>
 </li>
       </ul></li>
-      <li><a href="apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate.present_phenotype_category">present_phenotype_category (gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate property)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.PhenotypeClassifier.present_phenotype_category">present_phenotype_category (gpsea.analysis.clf.PhenotypeClassifier property)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Patient.present_phenotypes">present_phenotypes() (gpsea.model.Patient method)</a>
 </li>
@@ -1389,7 +1398,7 @@
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.TranscriptAnnotation.protein_effect_location">protein_effect_location (gpsea.model.TranscriptAnnotation property)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates.protein_feature">protein_feature() (gpsea.analysis.predicate.genotype.VariantPredicates static method)</a>
+      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.protein_feature">protein_feature() (in module gpsea.analysis.predicate)</a>
 </li>
       <li><a href="apidocs/gpsea.view.html#gpsea.view.ProteinVisualizable.protein_feature_ends">protein_feature_ends (gpsea.view.ProteinVisualizable property)</a>
 </li>
@@ -1397,7 +1406,7 @@
 </li>
       <li><a href="apidocs/gpsea.view.html#gpsea.view.ProteinVisualizable.protein_feature_starts">protein_feature_starts (gpsea.view.ProteinVisualizable property)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates.protein_feature_type">protein_feature_type() (gpsea.analysis.predicate.genotype.VariantPredicates static method)</a>
+      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.protein_feature_type">protein_feature_type() (in module gpsea.analysis.predicate)</a>
 </li>
       <li><a href="apidocs/gpsea.view.html#gpsea.view.ProteinVisualizable.protein_feature_types">protein_feature_types (gpsea.view.ProteinVisualizable property)</a>
 </li>
@@ -1418,6 +1427,8 @@
 </li>
       </ul></li>
       <li><a href="apidocs/gpsea.view.html#gpsea.view.ProteinVisualizable.protein_metadata">protein_metadata (gpsea.view.ProteinVisualizable property)</a>
+</li>
+      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.protein_region">protein_region() (in module gpsea.analysis.predicate)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.ProteinFeature">ProteinFeature (class in gpsea.model)</a>
 </li>
@@ -1457,7 +1468,7 @@
       </ul></li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.VariantCoordinates.ref">ref (gpsea.model.VariantCoordinates property)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates.ref_length">ref_length() (gpsea.analysis.predicate.genotype.VariantPredicates static method)</a>
+      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.ref_length">ref_length() (in module gpsea.analysis.predicate)</a>
 </li>
       <li><a href="apidocs/gpsea.model.genome.html#gpsea.model.genome.Contig.refseq_name">refseq_name (gpsea.model.genome.Contig property)</a>
 </li>
@@ -1475,8 +1486,6 @@
         <li><a href="apidocs/gpsea.model.html#gpsea.model.VariantCoordinates.region">(gpsea.model.VariantCoordinates property)</a>
 </li>
       </ul></li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates.region">region() (gpsea.analysis.predicate.genotype.VariantPredicates static method)</a>
-</li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.ProteinMetadata.regions">regions() (gpsea.model.ProteinMetadata method)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.VariantEffect.REGULATORY_REGION_ABLATION">REGULATORY_REGION_ABLATION (gpsea.model.VariantEffect attribute)</a>
@@ -1515,7 +1524,7 @@
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Patient.sex">sex (gpsea.model.Patient property)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.sex_predicate">sex_predicate() (in module gpsea.analysis.predicate.genotype)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.sex_classifier">sex_classifier() (in module gpsea.analysis.clf)</a>
 </li>
       <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.MultiPhenotypeAnalysisResult.significant_phenotype_indices">significant_phenotype_indices() (gpsea.analysis.MultiPhenotypeAnalysisResult method)</a>
 
@@ -1607,21 +1616,21 @@
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.ImpreciseSvInfo.structural_type">structural_type (gpsea.model.ImpreciseSvInfo property)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates.structural_type">structural_type() (gpsea.analysis.predicate.genotype.VariantPredicates static method)</a>
+      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.structural_type">structural_type() (in module gpsea.analysis.predicate)</a>
 </li>
       <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.Summarizable">Summarizable (class in gpsea.analysis)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.Partitioning.summarize">summarize() (gpsea.analysis.Partitioning method)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.Classifier.summarize">summarize() (gpsea.analysis.clf.Classifier method)</a>
 
       <ul>
-        <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate.summarize">(gpsea.analysis.predicate.PolyPredicate method)</a>
+        <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.Partitioning.summarize">(gpsea.analysis.Partitioning method)</a>
 </li>
         <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.Summarizable.summarize">(gpsea.analysis.Summarizable method)</a>
 </li>
         <li><a href="apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PreprocessingValidationResult.summarize">(gpsea.preprocessing.PreprocessingValidationResult method)</a>
 </li>
       </ul></li>
-      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate.summarize_groups">summarize_groups() (gpsea.analysis.predicate.PolyPredicate method)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.Classifier.summarize_classes">summarize_classes() (gpsea.analysis.clf.Classifier method)</a>
 </li>
       <li><a href="apidocs/gpsea.view.html#gpsea.view.summarize_hpo_analysis">summarize_hpo_analysis() (in module gpsea.view)</a>
 </li>
@@ -1657,14 +1666,14 @@
 </li>
       <li><a href="apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter.terms_to_test">terms_to_test (gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter property)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicate.test">test() (gpsea.analysis.predicate.genotype.VariantPredicate method)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.Classifier.test">test() (gpsea.analysis.clf.Classifier method)</a>
 
       <ul>
-        <li><a href="apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.DiseasePresencePredicate.test">(gpsea.analysis.predicate.phenotype.DiseasePresencePredicate method)</a>
+        <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.DiseasePresenceClassifier.test">(gpsea.analysis.clf.DiseasePresenceClassifier method)</a>
 </li>
-        <li><a href="apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.HpoPredicate.test">(gpsea.analysis.predicate.phenotype.HpoPredicate method)</a>
+        <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.HpoClassifier.test">(gpsea.analysis.clf.HpoClassifier method)</a>
 </li>
-        <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.PolyPredicate.test">(gpsea.analysis.predicate.PolyPredicate method)</a>
+        <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.VariantPredicate.test">(gpsea.analysis.predicate.VariantPredicate method)</a>
 </li>
       </ul></li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Measurement.test_result">test_result (gpsea.model.Measurement property)</a>
@@ -1703,7 +1712,7 @@
         <li><a href="apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.MultiPhenotypeAnalysisResult.total_tests">(gpsea.analysis.pcats.MultiPhenotypeAnalysisResult property)</a>
 </li>
       </ul></li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates.transcript">transcript() (gpsea.analysis.predicate.genotype.VariantPredicates static method)</a>
+      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.transcript">transcript() (in module gpsea.analysis.predicate)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.VariantEffect.TRANSCRIPT_ABLATION">TRANSCRIPT_ABLATION (gpsea.model.VariantEffect attribute)</a>
 </li>
@@ -1735,7 +1744,7 @@
 </li>
       <li><a href="apidocs/gpsea.model.genome.html#gpsea.model.genome.transpose_coordinate">transpose_coordinate() (in module gpsea.model.genome)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates.true">true() (gpsea.analysis.predicate.genotype.VariantPredicates static method)</a>
+      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.true">true() (in module gpsea.analysis.predicate)</a>
 </li>
       <li><a href="apidocs/gpsea.analysis.pscore.stats.html#gpsea.analysis.pscore.stats.TTestStatistic">TTestStatistic (class in gpsea.analysis.pscore.stats)</a>
 </li>
@@ -1775,12 +1784,12 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/gpsea.analysis.temporal.html#gpsea.analysis.temporal.Survival.value">value (gpsea.analysis.temporal.Survival attribute)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.Partitioning.variable_name">variable_name (gpsea.analysis.Partitioning property)</a>
+      <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.DiseasePresenceClassifier.variable_name">variable_name (gpsea.analysis.clf.DiseasePresenceClassifier property)</a>
 
       <ul>
-        <li><a href="apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.DiseasePresencePredicate.variable_name">(gpsea.analysis.predicate.phenotype.DiseasePresencePredicate property)</a>
+        <li><a href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.HpoClassifier.variable_name">(gpsea.analysis.clf.HpoClassifier property)</a>
 </li>
-        <li><a href="apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.HpoPredicate.variable_name">(gpsea.analysis.predicate.phenotype.HpoPredicate property)</a>
+        <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.Partitioning.variable_name">(gpsea.analysis.Partitioning property)</a>
 </li>
         <li><a href="apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.CountingPhenotypeScorer.variable_name">(gpsea.analysis.pscore.CountingPhenotypeScorer property)</a>
 </li>
@@ -1799,11 +1808,11 @@
         <li><a href="apidocs/gpsea.model.html#gpsea.model.VariantInfo.variant_class">(gpsea.model.VariantInfo property)</a>
 </li>
       </ul></li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates.variant_class">variant_class() (gpsea.analysis.predicate.genotype.VariantPredicates static method)</a>
+      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.variant_class">variant_class() (in module gpsea.analysis.predicate)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.VariantInfo.variant_coordinates">variant_coordinates (gpsea.model.VariantInfo property)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates.variant_effect">variant_effect() (gpsea.analysis.predicate.genotype.VariantPredicates static method)</a>
+      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.variant_effect">variant_effect() (in module gpsea.analysis.predicate)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Cohort.variant_effect_count_by_tx">variant_effect_count_by_tx() (gpsea.model.Cohort method)</a>
 </li>
@@ -1829,7 +1838,7 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates.variant_key">variant_key() (gpsea.analysis.predicate.genotype.VariantPredicates static method)</a>
+      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.variant_key">variant_key() (in module gpsea.analysis.predicate)</a>
 </li>
       <li><a href="apidocs/gpsea.view.html#gpsea.view.ProteinVisualizable.variant_locations">variant_locations (gpsea.view.ProteinVisualizable property)</a>
 </li>
@@ -1849,9 +1858,7 @@
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.VariantInfoAware">VariantInfoAware (class in gpsea.model)</a>
 </li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicate">VariantPredicate (class in gpsea.analysis.predicate.genotype)</a>
-</li>
-      <li><a href="apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates">VariantPredicates (class in gpsea.analysis.predicate.genotype)</a>
+      <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.VariantPredicate">VariantPredicate (class in gpsea.analysis.predicate)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Patient.variants">variants (gpsea.model.Patient property)</a>
 </li>

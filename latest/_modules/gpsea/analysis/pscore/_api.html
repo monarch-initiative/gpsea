@@ -82,7 +82,7 @@
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Patient</span>
-<span class="kn">from</span> <span class="nn">..predicate.genotype</span> <span class="kn">import</span> <span class="n">GenotypePolyPredicate</span>
+<span class="kn">from</span> <span class="nn">..clf</span> <span class="kn">import</span> <span class="n">GenotypeClassifier</span>
 <span class="kn">from</span> <span class="nn">.stats</span> <span class="kn">import</span> <span class="n">PhenotypeScoreStatistic</span>
 
 <span class="kn">from</span> <span class="nn">.._base</span> <span class="kn">import</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="p">,</span> <span class="n">Statistic</span><span class="p">,</span> <span class="n">StatisticResult</span>
@@ -146,6 +146,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `FunctionPhenotypeScorer` computes the phenotype score using the provided function/closure.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># NOT PART OF THE PUBLIC API</span>
 
     <span class="nd">@property</span>
@@ -184,7 +185,7 @@
 
 <span class="sd">    The :attr:`~gpsea.analysis.MonoPhenotypeAnalysisResult.data`</span>
 <span class="sd">    property provides a data frame with phenotype score for each tested individual:</span>
-<span class="sd">    </span>
+
 <span class="sd">    ==========  ========  =========</span>
 <span class="sd">    patient_id  genotype  phenotype</span>
 <span class="sd">    ==========  ========  =========</span>
@@ -198,22 +199,22 @@
 <span class="sd">    The DataFrame index includes the identifiers of the tested individuals and the values are stored</span>
 <span class="sd">    in `genotype` and `phenotype` columns.</span>
 
-<span class="sd">    The `genotype` includes the genotype category ID (:attr:`~gpsea.analysis.predicate.PatientCategory.cat_id`)</span>
+<span class="sd">    The `genotype` includes the genotype category ID (:attr:`~gpsea.analysis.clf.PatientCategory.cat_id`)</span>
 <span class="sd">    or `None` if the patient cannot be assigned into any genotype category.</span>
-<span class="sd">    </span>
+
 <span class="sd">    The `phenotype` contains a `float` with the phenotype score. A `NaN` value is used</span>
 <span class="sd">    if the phenotype score is impossible to compute.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
+        <span class="n">gt_clf</span><span class="p">:</span> <span class="n">GenotypeClassifier</span><span class="p">,</span>
         <span class="n">phenotype</span><span class="p">:</span> <span class="n">PhenotypeScorer</span><span class="p">,</span>
         <span class="n">statistic</span><span class="p">:</span> <span class="n">Statistic</span><span class="p">,</span>
         <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">statistic_result</span><span class="p">:</span> <span class="n">StatisticResult</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">gt_predicate</span><span class="p">,</span> <span class="n">phenotype</span><span class="p">,</span> <span class="n">statistic</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">statistic_result</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">gt_clf</span><span class="p">,</span> <span class="n">phenotype</span><span class="p">,</span> <span class="n">statistic</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">statistic_result</span><span class="p">)</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">phenotype</span><span class="p">,</span> <span class="n">PhenotypeScorer</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PhenotypeScoreAnalysisResult.phenotype_scorer">
@@ -244,25 +245,24 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># skip the patients with unassigned genotype group</span>
         <span class="n">bla</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span>
-        <span class="n">not_na_gts</span> <span class="o">=</span> <span class="n">bla</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;columns&#39;</span><span class="p">)</span>
+        <span class="n">not_na_gts</span> <span class="o">=</span> <span class="n">bla</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">)</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">not_na_gts</span><span class="p">]</span>
-        
+
         <span class="c1"># Check that the provided genotype predicate defines the same categories</span>
         <span class="c1"># as those found in `data.`</span>
         <span class="n">actual</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
-        <span class="n">expected</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">cat_id</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gt_predicate</span><span class="o">.</span><span class="n">get_categories</span><span class="p">())</span>
-        <span class="k">assert</span> <span class="n">actual</span> <span class="o">==</span> <span class="n">expected</span><span class="p">,</span> <span class="s1">&#39;Mismatch in the genotype categories&#39;</span>
-        
+        <span class="n">expected</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">cat_id</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gt_clf</span><span class="o">.</span><span class="n">get_categories</span><span class="p">())</span>
+        <span class="k">assert</span> <span class="n">actual</span> <span class="o">==</span> <span class="n">expected</span><span class="p">,</span> <span class="s2">&quot;Mismatch in the genotype classes&quot;</span>
+
         <span class="n">x</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-                <span class="n">data</span><span class="p">[</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span> <span class="o">==</span> <span class="n">c</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">cat_id</span><span class="p">,</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">PH_COL</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span> <span class="o">==</span> <span class="n">c</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">cat_id</span><span class="p">,</span>
+                <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">PH_COL</span><span class="p">,</span>
             <span class="p">]</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gt_predicate</span><span class="o">.</span><span class="n">get_categorizations</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gt_clf</span><span class="o">.</span><span class="n">get_categorizations</span><span class="p">()</span>
         <span class="p">]</span>
-        
-        <span class="n">gt_cat_names</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">c</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gt_predicate</span><span class="o">.</span><span class="n">get_categorizations</span><span class="p">()</span>
-        <span class="p">]</span>
+
+        <span class="n">gt_cat_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gt_clf</span><span class="o">.</span><span class="n">get_categorizations</span><span class="p">()]</span>
         <span class="n">bplot</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span>
             <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
             <span class="n">patch_artist</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -274,16 +274,17 @@
 
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">PhenotypeScoreAnalysisResult</span><span class="p">)</span> \
-            <span class="ow">and</span> <span class="nb">super</span><span class="p">(</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-    
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">PhenotypeScoreAnalysisResult</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">super</span><span class="p">(</span>
+            <span class="n">MonoPhenotypeAnalysisResult</span><span class="p">,</span> <span class="bp">self</span>
+        <span class="p">)</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="s2">&quot;PhenotypeScoreAnalysisResult(&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;gt_predicate=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_gt_predicate</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;gt_clf=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_gt_clf</span><span class="si">}</span><span class="s2">, &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;phenotype_scorer=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_phenotype</span><span class="si">}</span><span class="s2">, &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;statistic=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span><span class="si">}</span><span class="s2">, &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;data=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="si">}</span><span class="s2">, &quot;</span>
@@ -299,11 +300,11 @@
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.PhenotypeScoreAnalysis">[docs]</a>
 <span class="k">class</span> <span class="nc">PhenotypeScoreAnalysis</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `PhenotypeScoreAnalysis` tests the association between two or more genotype groups</span>
+<span class="sd">    `PhenotypeScoreAnalysis` tests the association between two or more genotype classes</span>
 <span class="sd">    and a phenotype score.</span>
 
-<span class="sd">    The genotype groups are created by a :class:`~gpsea.analysis.predicate.genotype.GenotypePolyPredicate`</span>
-<span class="sd">    and the phenotype score is computed with :class:`~gpsea.analysis.pscore.PhenotypeScorer`.</span>
+<span class="sd">    A genotype class is assigned by a :class:`~gpsea.analysis.clf.GenotypeClassifier`</span>
+<span class="sd">    and the phenotype score is computed with a :class:`~gpsea.analysis.pscore.PhenotypeScorer`.</span>
 
 <span class="sd">    The association is tested with a :class:`~gpsea.analysis.pscore.stats.PhenotypeScoreStatistic`</span>
 <span class="sd">    and the results are reported as a :class:`PhenotypeScoreAnalysisResult`.</span>
@@ -321,18 +322,18 @@
     <span class="k">def</span> <span class="nf">compare_genotype_vs_phenotype_score</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cohort</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Patient</span><span class="p">],</span>
-        <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
+        <span class="n">gt_clf</span><span class="p">:</span> <span class="n">GenotypeClassifier</span><span class="p">,</span>
         <span class="n">pheno_scorer</span><span class="p">:</span> <span class="n">PhenotypeScorer</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PhenotypeScoreAnalysisResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the association between genotype groups and phenotype score.</span>
 
 <span class="sd">        :param cohort: the cohort to analyze.</span>
-<span class="sd">        :param gt_predicate: a predicate for assigning an individual into a genotype group.</span>
+<span class="sd">        :param gt_clf: a classifier for assigning an individual into a genotype class.</span>
 <span class="sd">        :param pheno_scorer: the scorer to compute phenotype score.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="p">(</span>
-            <span class="n">gt_predicate</span><span class="o">.</span><span class="n">n_categorizations</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span>
+            <span class="n">gt_clf</span><span class="o">.</span><span class="n">n_categorizations</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span>
         <span class="p">),</span> <span class="s2">&quot;We only support 2 genotype categories at this point&quot;</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pheno_scorer</span><span class="p">,</span> <span class="n">PhenotypeScorer</span><span class="p">)</span>
 
@@ -343,29 +344,37 @@
             <span class="n">columns</span><span class="o">=</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">DATA_COLUMNS</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="c1"># Apply the predicates on the patients</span>
-        <span class="k">for</span> <span class="n">patient</span> <span class="ow">in</span> <span class="n">cohort</span><span class="p">:</span>
-            <span class="n">gt_cat</span> <span class="o">=</span> <span class="n">gt_predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
+        <span class="c1"># Apply the classifier and scorer on the individuals</span>
+        <span class="k">for</span> <span class="n">individual</span> <span class="ow">in</span> <span class="n">cohort</span><span class="p">:</span>
+            <span class="n">gt_cat</span> <span class="o">=</span> <span class="n">gt_clf</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">individual</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">gt_cat</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">patient</span><span class="o">.</span><span class="n">patient_id</span><span class="p">,</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">individual</span><span class="o">.</span><span class="n">patient_id</span><span class="p">,</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">patient</span><span class="o">.</span><span class="n">patient_id</span><span class="p">,</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span> <span class="o">=</span> <span class="n">gt_cat</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">cat_id</span>
-            
-            <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">patient</span><span class="o">.</span><span class="n">patient_id</span><span class="p">,</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">PH_COL</span><span class="p">]</span> <span class="o">=</span> <span class="n">pheno_scorer</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">individual</span><span class="o">.</span><span class="n">patient_id</span><span class="p">,</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">gt_cat</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">cat_id</span>
+                <span class="p">)</span>
+
+            <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">individual</span><span class="o">.</span><span class="n">patient_id</span><span class="p">,</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">PH_COL</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">pheno_scorer</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">individual</span><span class="p">)</span>
+            <span class="p">)</span>
 
         <span class="c1"># Sort by PatientCategory.cat_id and unpack.</span>
         <span class="c1"># For now, we only allow to have up to 2 groups.</span>
-        <span class="n">x_key</span><span class="p">,</span> <span class="n">y_key</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+        <span class="n">x_key</span><span class="p">,</span> <span class="n">y_key</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+        <span class="p">)</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-            <span class="n">data</span><span class="p">[</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span> <span class="o">==</span> <span class="n">x_key</span><span class="p">,</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">PH_COL</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span> <span class="o">==</span> <span class="n">x_key</span><span class="p">,</span>
+            <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">PH_COL</span><span class="p">,</span>
         <span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-            <span class="n">data</span><span class="p">[</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span> <span class="o">==</span> <span class="n">y_key</span><span class="p">,</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">PH_COL</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span> <span class="o">==</span> <span class="n">y_key</span><span class="p">,</span>
+            <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">PH_COL</span><span class="p">,</span>
         <span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span><span class="o">.</span><span class="n">compute_pval</span><span class="p">(</span><span class="n">scores</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">PhenotypeScoreAnalysisResult</span><span class="p">(</span>
-            <span class="n">gt_predicate</span><span class="o">=</span><span class="n">gt_predicate</span><span class="p">,</span>
+            <span class="n">gt_clf</span><span class="o">=</span><span class="n">gt_clf</span><span class="p">,</span>
             <span class="n">phenotype</span><span class="o">=</span><span class="n">pheno_scorer</span><span class="p">,</span>
             <span class="n">statistic</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span><span class="p">,</span>
             <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>

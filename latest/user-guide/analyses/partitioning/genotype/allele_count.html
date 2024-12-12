@@ -25,7 +25,7 @@
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
-    <link rel="next" title="Phenotype predicates and scorers" href="../phenotype/index.html" />
+    <link rel="next" title="Phenotype classifiers and scorers" href="../phenotype/index.html" />
     <link rel="prev" title="Group by variant category" href="variant_category.html" /> 
 </head>
 
@@ -57,15 +57,15 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../exploratory.html">Cohort exploratory analysis</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../../index.html">Statistical analyses</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../index.html">Partitioning</a><ul class="current">
-<li class="toctree-l4 current"><a class="reference internal" href="index.html">Genotype predicates</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../phenotype/index.html">Phenotype predicates and scorers</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="index.html">Genotype classifiers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../phenotype/index.html">Phenotype classifiers and scorers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../gallery.html">Gallery</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../phenotype-groups.html">Compare genotype and phenotype groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../phenotype-classes.html">Compare genotype and phenotype classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../mtc.html">Multiple-testing correction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../phenotype-scores.html">Compare phenotype scores in genotype groups</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../measurements.html">Compare measurement values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../phenotype-scores.html">Compare phenotype scores</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../measurements.html">Compare measurements</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../survival.html">Survival analysis</a></li>
 </ul>
 </li>
@@ -92,7 +92,7 @@
           <li class="breadcrumb-item"><a href="../../../index.html">User guide</a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Statistical analyses</a></li>
           <li class="breadcrumb-item"><a href="../index.html">Partitioning</a></li>
-          <li class="breadcrumb-item"><a href="index.html">Genotype predicates</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Genotype classifiers</a></li>
       <li class="breadcrumb-item active">Group by allele count</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../../_sources/user-guide/analyses/partitioning/genotype/allele_count.rst.txt" rel="nofollow"> View page source</a>
@@ -114,58 +114,60 @@ can lead to different diseases.</p>
 with the variant category analysis described in the <a class="reference internal" href="variant_category.html#variant-category"><span class="std std-ref">Group by variant category</span></a> section.
 The allele count analysis compares the allele counts while keeping the variant type constant,
 whereas the variant category analysis compares variant types while keeping the total allele count constant.</p>
-<p>A predicate for the allele count analysis is created with
-the <a class="reference internal" href="../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.allele_count" title="gpsea.analysis.predicate.genotype.allele_count"><code class="xref py py-func docutils literal notranslate"><span class="pre">allele_count()</span></code></a> function.
+<p>A classifier for the allele count analysis is created with
+the <a class="reference internal" href="../../../../apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.allele_count" title="gpsea.analysis.clf.allele_count"><code class="xref py py-func docutils literal notranslate"><span class="pre">allele_count()</span></code></a> function.
 The function needs two arguments:
-<code class="docutils literal notranslate"><span class="pre">target</span></code> with a <a class="reference internal" href="../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> for selecting the target variant type,
+<code class="docutils literal notranslate"><span class="pre">target</span></code> with a <a class="reference internal" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> for selecting the target variant type,
 and <code class="docutils literal notranslate"><span class="pre">counts</span></code> with the target allele counts.
 The <code class="docutils literal notranslate"><span class="pre">target</span></code> variant predicate typically selects a broad variant types - for instance, all variants that affect a gene of interest.
-The <code class="docutils literal notranslate"><span class="pre">counts</span></code> take the allele counts to compare.
-The inputs are best illustrated on a few examples.</p>
+The <code class="docutils literal notranslate"><span class="pre">counts</span></code> take the allele counts to compare.</p>
+<p>Let’s show a few examples.</p>
 <section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
 <section id="compare-the-individuals-with-egfr-mutation">
 <h3>Compare the individuals with <em>EGFR</em> mutation<a class="headerlink" href="#compare-the-individuals-with-egfr-mutation" title="Link to this heading"></a></h3>
-<p>We can use the allele count analysis to test for G/P associations between the individuals with no mutation in <em>EGFR</em>
+<p>We can use the allele count analysis to test for G/P associations
+between the individuals with no mutation in <em>EGFR</em>
 and the individuals harboring 1 variant allele.</p>
-<p>First, let’s create a <a class="reference internal" href="../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a>
+<p>First, let’s create a <a class="reference internal" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a>
 to select variants that affect <em>EGFR</em>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">affects_egfr</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">gene</span><span class="p">(</span><span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;EGFR&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate</span> <span class="kn">import</span> <span class="n">gene</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">affects_egfr</span> <span class="o">=</span> <span class="n">gene</span><span class="p">(</span><span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;EGFR&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">affects_egfr</span><span class="o">.</span><span class="n">description</span>
 <span class="go">&#39;affects EGFR&#39;</span>
 </pre></div>
 </div>
-<p>Next, we create allele count predicate to partition the individuals
+<p>Next, we create allele count classifier to partition the individuals
 based on presence of zero or one <em>EGFR</em> mutation allele:</p>
 <figure class="align-center">
 <a class="reference internal image-reference" href="../../../../_images/allele-count-zero-one.png"><img alt="No mutation vs. monoallelic mutation" src="../../../../_images/allele-count-zero-one.png" style="width: 600px;" />
 </a>
 </figure>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">allele_count</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">allele_count</span><span class="p">(</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.clf</span> <span class="kn">import</span> <span class="n">allele_count</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span> <span class="o">=</span> <span class="n">allele_count</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">counts</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
 <span class="gp">... </span>    <span class="n">target</span><span class="o">=</span><span class="n">affects_egfr</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">group_labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span><span class="o">.</span><span class="n">class_labels</span>
 <span class="go">(&#39;0&#39;, &#39;1&#39;)</span>
 </pre></div>
 </div>
-<p>We create the predicate with two arguments.
-The <code class="docutils literal notranslate"><span class="pre">counts</span></code> argument takes a tuple of the target allele counts,
-to partition the individuals based on zero or one allele.
-The <code class="docutils literal notranslate"><span class="pre">target</span></code> takes a <a class="reference internal" href="../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a>
-selecting the target variants. The <code class="docutils literal notranslate"><span class="pre">target</span></code> is particularly important
+<p>The <code class="docutils literal notranslate"><span class="pre">allele_count</span></code> needs two inputs.
+The <code class="docutils literal notranslate"><span class="pre">counts</span></code> takes a tuple of the target allele counts,
+in order to partition the individuals based on zero or one allele.
+The <code class="docutils literal notranslate"><span class="pre">target</span></code> takes a <a class="reference internal" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a>
+to select the target variants.
+The <code class="docutils literal notranslate"><span class="pre">target</span></code> is particularly important
 if the cohort members include variants in other genes than <em>EGFR</em>.</p>
-<p>The resulting <code class="docutils literal notranslate"><span class="pre">gt_predicate</span></code> can partition a cohort along the genotype axis,
+<p>The resulting <code class="docutils literal notranslate"><span class="pre">gt_clf</span></code> can partition a cohort along the genotype axis,
 e.g. to compare the patient survivals in a <cite>survival analysis &lt;survival&gt;</cite>.</p>
 </section>
 <section id="compare-the-individuals-with-monoallelic-and-biallelic-mutations">
 <h3>Compare the individuals with monoallelic and biallelic mutations<a class="headerlink" href="#compare-the-individuals-with-monoallelic-and-biallelic-mutations" title="Link to this heading"></a></h3>
 <p>As another example, let’s partition individuals based on one or two alleles of a target mutation.</p>
 <p>For this example, the target mutation is any mutation that affects <em>LMNA</em>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">affects_lmna</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">gene</span><span class="p">(</span><span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;LMNA&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate</span> <span class="kn">import</span> <span class="n">gene</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">affects_lmna</span> <span class="o">=</span> <span class="n">gene</span><span class="p">(</span><span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;LMNA&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">affects_lmna</span><span class="o">.</span><span class="n">description</span>
 <span class="go">&#39;affects LMNA&#39;</span>
 </pre></div>
@@ -175,18 +177,17 @@ e.g. to compare the patient survivals in a <cite>survival analysis &lt;survival&
 <a class="reference internal image-reference" href="../../../../_images/allele-count-one-two.png"><img alt="Monoallelic vs biallelic mutations" src="../../../../_images/allele-count-one-two.png" style="width: 600px;" />
 </a>
 </figure>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">allele_count</span><span class="p">(</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span> <span class="o">=</span> <span class="n">allele_count</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">counts</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
 <span class="gp">... </span>    <span class="n">target</span><span class="o">=</span><span class="n">affects_lmna</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">group_labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span><span class="o">.</span><span class="n">class_labels</span>
 <span class="go">(&#39;1&#39;, &#39;2&#39;)</span>
 </pre></div>
 </div>
-<p>The predicate will partition the individuals into two groups:
+<p>The classifier assigns the individuals into one of two classes:
 those with one <em>LMNA</em> variant allele and those with two <em>LMNA</em> variant alleles.
-The individual with other allele counts (e.g. <cite>0</cite> or <cite>3</cite>) will be excluded
-from the analysis.</p>
+Any cohort member with other allele counts (e.g. <cite>0</cite> or <cite>3</cite>) is ignored.</p>
 </section>
 </section>
 </section>
@@ -196,7 +197,7 @@ from the analysis.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="variant_category.html" class="btn btn-neutral float-left" title="Group by variant category" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../phenotype/index.html" class="btn btn-neutral float-right" title="Phenotype predicates and scorers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../phenotype/index.html" class="btn btn-neutral float-right" title="Phenotype classifiers and scorers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

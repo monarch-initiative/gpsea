@@ -1,0 +1,604 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gpsea.analysis.predicate._variant &mdash; GPSEA 0.8.1.dev0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/gpsea.css?v=547657ed" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=2556cadf"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../../_static/copybutton.js?v=6dbb43f8"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GPSEA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user-guide/index.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../apidocs/modules.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GPSEA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gpsea.analysis.predicate._variant</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gpsea.analysis.predicate._variant</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="kn">import</span> <span class="nn">hpotk</span>
+
+<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantClass</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="n">ProteinMetadata</span><span class="p">,</span> <span class="n">FeatureType</span>
+<span class="kn">from</span> <span class="nn">gpsea.model.genome</span> <span class="kn">import</span> <span class="n">Region</span>
+<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">VariantPredicate</span><span class="p">,</span> <span class="n">AllVariantPredicate</span><span class="p">,</span> <span class="n">AnyVariantPredicate</span>
+<span class="kn">from</span> <span class="nn">._predicates</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AlwaysTrueVariantPredicate</span><span class="p">,</span>
+    <span class="n">ChangeLengthPredicate</span><span class="p">,</span>
+    <span class="n">IsLargeImpreciseStructuralVariantPredicate</span><span class="p">,</span>
+    <span class="n">ProteinFeaturePredicate</span><span class="p">,</span>
+    <span class="n">ProteinFeatureTypePredicate</span><span class="p">,</span>
+    <span class="n">ProteinRegionPredicate</span><span class="p">,</span>
+    <span class="n">RefAlleleLengthPredicate</span><span class="p">,</span>
+    <span class="n">StructuralTypePredicate</span><span class="p">,</span>
+    <span class="n">VariantClassPredicate</span><span class="p">,</span>
+    <span class="n">VariantEffectPredicate</span><span class="p">,</span>
+    <span class="n">VariantExonPredicate</span><span class="p">,</span>
+    <span class="n">VariantGenePredicate</span><span class="p">,</span>
+    <span class="n">VariantKeyPredicate</span><span class="p">,</span>
+    <span class="n">VariantTranscriptPredicate</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="c1"># We do not need more than just one instance of these predicates.</span>
+<span class="n">IS_TRANSLOCATION</span> <span class="o">=</span> <span class="n">VariantClassPredicate</span><span class="p">(</span><span class="n">VariantClass</span><span class="o">.</span><span class="n">TRANSLOCATION</span><span class="p">)</span>
+<span class="n">IS_LARGE_IMPRECISE_SV</span> <span class="o">=</span> <span class="n">IsLargeImpreciseStructuralVariantPredicate</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="true">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.true">[docs]</a>
+<span class="k">def</span> <span class="nf">true</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The most inclusive variant predicate - returns `True` for any variant whatsoever.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">AlwaysTrueVariantPredicate</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="allof">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.allof">[docs]</a>
+<span class="k">def</span> <span class="nf">allof</span><span class="p">(</span><span class="n">predicates</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">VariantPredicate</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare a :class:`VariantPredicate` that returns `True` if ALL `predicates` evaluate to `True`.</span>
+
+<span class="sd">    This is useful for building compound predicates programmatically.</span>
+
+<span class="sd">    **Example**</span>
+
+<span class="sd">    Build a predicate to test if variant has a functional annotation to genes *SURF1* and *SURF2*:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gpsea.analysis.predicate import allof, gene</span>
+
+<span class="sd">    &gt;&gt;&gt; genes = (&#39;SURF1&#39;, &#39;SURF2&#39;,)</span>
+<span class="sd">    &gt;&gt;&gt; predicate = allof(gene(g) for g in genes)</span>
+<span class="sd">    &gt;&gt;&gt; predicate.description</span>
+<span class="sd">    &#39;(affects SURF1 AND affects SURF2)&#39;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        predicates: an iterable of predicates to test</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">predicates</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">predicates</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">predicates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># No need to wrap one predicate into a logical predicate.</span>
+        <span class="k">return</span> <span class="n">predicates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">AllVariantPredicate</span><span class="p">(</span><span class="o">*</span><span class="n">predicates</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="anyof">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.anyof">[docs]</a>
+<span class="k">def</span> <span class="nf">anyof</span><span class="p">(</span><span class="n">predicates</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">VariantPredicate</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare a :class:`VariantPredicate` that returns `True` if ANY of the `predicates` evaluates to `True`.</span>
+
+<span class="sd">    This can be useful for building compound predicates programmatically.</span>
+
+<span class="sd">    **Example**</span>
+
+<span class="sd">    Build a predicate to test if variant leads to a missense</span>
+<span class="sd">    or nonsense change on a fictional transcript `NM_123456.7`:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gpsea.model import VariantEffect</span>
+<span class="sd">    &gt;&gt;&gt; from gpsea.analysis.predicate import anyof, variant_effect</span>
+
+<span class="sd">    &gt;&gt;&gt; tx_id = &#39;NM_123456.7&#39;</span>
+<span class="sd">    &gt;&gt;&gt; effects = (VariantEffect.MISSENSE_VARIANT, VariantEffect.STOP_GAINED,)</span>
+<span class="sd">    &gt;&gt;&gt; predicate = anyof(variant_effect(e, tx_id) for e in effects)</span>
+<span class="sd">    &gt;&gt;&gt; predicate.description</span>
+<span class="sd">    &#39;(MISSENSE_VARIANT on NM_123456.7 OR STOP_GAINED on NM_123456.7)&#39;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        predicates: an iterable of predicates to test</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">predicates</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">predicates</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">predicates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># No need to wrap one predicate into a logical predicate.</span>
+        <span class="k">return</span> <span class="n">predicates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">AnyVariantPredicate</span><span class="p">(</span><span class="o">*</span><span class="n">predicates</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="variant_effect">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.variant_effect">[docs]</a>
+<span class="k">def</span> <span class="nf">variant_effect</span><span class="p">(</span>
+    <span class="n">effect</span><span class="p">:</span> <span class="n">VariantEffect</span><span class="p">,</span>
+    <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare a :class:`VariantPredicate` to test if the functional annotation predicts the variant to lead to</span>
+<span class="sd">    a certain variant effect.</span>
+
+<span class="sd">    **Example**</span>
+
+<span class="sd">    Make a predicate for testing if the variant leads to a missense change on transcript `NM_123.4`:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gpsea.model import VariantEffect</span>
+<span class="sd">    &gt;&gt;&gt; from gpsea.analysis.predicate import variant_effect</span>
+<span class="sd">    &gt;&gt;&gt; predicate = variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id=&#39;NM_123.4&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; predicate.description</span>
+<span class="sd">    &#39;MISSENSE_VARIANT on NM_123.4&#39;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        effect: the target :class:`~gpsea.model.VariantEffect`</span>
+<span class="sd">        tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">VariantEffectPredicate</span><span class="p">(</span><span class="n">effect</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="variant_key">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.variant_key">[docs]</a>
+<span class="k">def</span> <span class="nf">variant_key</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare a :class:`VariantPredicate` that tests if the variant matches the provided `key`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        key: a `str` with the variant key (e.g. `X_12345_12345_C_G` or `22_10001_20000_INV`)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">VariantKeyPredicate</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="gene">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.gene">[docs]</a>
+<span class="k">def</span> <span class="nf">gene</span><span class="p">(</span><span class="n">symbol</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare a :class:`VariantPredicate` that tests if the variant affects a given gene.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        symbol: a `str` with the gene symbol (e.g. ``&#39;FBN1&#39;``).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">VariantGenePredicate</span><span class="p">(</span><span class="n">symbol</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="transcript">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.transcript">[docs]</a>
+<span class="k">def</span> <span class="nf">transcript</span><span class="p">(</span><span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare a :class:`VariantPredicate` that tests if the variant affects a transcript.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">VariantTranscriptPredicate</span><span class="p">(</span><span class="n">tx_id</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="exon">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.exon">[docs]</a>
+<span class="k">def</span> <span class="nf">exon</span><span class="p">(</span>
+    <span class="n">exon</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare a :class:`VariantPredicate` that tests if the variant overlaps with an exon of a specific transcript.</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">        We use 1-based numbering to number the exons,</span>
+<span class="sd">        not the usual 0-based numbering of the computer science.</span>
+<span class="sd">        Therefore, the first exon of the transcript</span>
+<span class="sd">        has ``exon_number==1``, the second exon is ``2``, and so on ...</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">        We do not check if the `exon_number` spans</span>
+<span class="sd">        beyond the number of exons of the given `transcript_id`!</span>
+<span class="sd">        Therefore, ``exon_number==10,000`` will effectively return `False`</span>
+<span class="sd">        for *all* variants!!! 😱</span>
+<span class="sd">        Well, at least the genome variants of the *Homo sapiens sapiens* taxon...</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        exon: a positive `int` with the index of the target exon</span>
+<span class="sd">            (e.g. `1` for the 1st exon, `2` for the 2nd, ...)</span>
+<span class="sd">        tx_id: a `str` with the accession ID of the target transcript (e.g. `NM_123.4`)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">VariantExonPredicate</span><span class="p">(</span><span class="n">exon</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="protein_region">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.protein_region">[docs]</a>
+<span class="k">def</span> <span class="nf">protein_region</span><span class="p">(</span>
+    <span class="n">region</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">Region</span><span class="p">],</span>
+    <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare a :class:`VariantPredicate` that tests if the variant</span>
+<span class="sd">    overlaps with a region on a protein of a specific transcript.</span>
+
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    Create a predicate to test if the variant overlaps with the 5th aminoacid</span>
+<span class="sd">    of the protein encoded by a fictional transcript `NM_1234.5`:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gpsea.analysis.predicate import protein_region</span>
+<span class="sd">    &gt;&gt;&gt; overlaps_with_fifth_aa = protein_region(region=(5, 5), tx_id=&quot;NM_1234.5&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; overlaps_with_fifth_aa.description</span>
+<span class="sd">    &#39;overlaps with [5,5] region of the protein encoded by NM_1234.5&#39;</span>
+
+<span class="sd">    Create a predicate to test if the variant overlaps with the first 20 aminoacid residues of the same transcript:</span>
+
+<span class="sd">    &gt;&gt;&gt; overlaps_with_first_20 = protein_region(region=(1, 20), tx_id=&quot;NM_1234.5&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; overlaps_with_first_20.description</span>
+<span class="sd">    &#39;overlaps with [1,20] region of the protein encoded by NM_1234.5&#39;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        region: a :class:`~gpsea.model.genome.Region` that gives the start and end coordinate</span>
+<span class="sd">            of the region of interest on a protein strand or a tuple with 1-based coordinates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">Region</span><span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="p">(</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">region</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">r</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">region</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">region</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># Convert to 0-based</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">region</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">region</span> <span class="o">=</span> <span class="n">Region</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;region must be a `Region` or a tuple with two positive `int`s, but got </span><span class="si">{</span><span class="n">region</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ProteinRegionPredicate</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="is_large_imprecise_sv">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.is_large_imprecise_sv">[docs]</a>
+<span class="k">def</span> <span class="nf">is_large_imprecise_sv</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare a :class:`VariantPredicate` for testing if the variant is a large structural variant (SV)</span>
+<span class="sd">    without exact breakpoint coordinates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">IS_LARGE_IMPRECISE_SV</span></div>
+
+
+
+<div class="viewcode-block" id="is_structural_variant">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.is_structural_variant">[docs]</a>
+<span class="k">def</span> <span class="nf">is_structural_variant</span><span class="p">(</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare a :class:`VariantPredicate` for testing if the variant is a structural variant (SV).</span>
+
+<span class="sd">    SVs are usually defined as variant affecting more than a certain number of base pairs.</span>
+<span class="sd">    The thresholds vary in the literature, but here we use 50bp as a default.</span>
+
+<span class="sd">    Any variant that affects at least `threshold` base pairs is considered an SV.</span>
+<span class="sd">    Large SVs with unknown breakpoint coordinates or translocations</span>
+<span class="sd">    (:class:`~gpsea.model.VariantClass.TRANSLOCATION`) are always considered as an SV.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        threshold: a non-negative `int` with the number of base pairs that must be affected</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">threshold</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;`threshold` must be non-negative!&quot;</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">change_length</span><span class="p">(</span><span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="o">-</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="o">|</span> <span class="n">change_length</span><span class="p">(</span><span class="s2">&quot;&gt;=&quot;</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+        <span class="o">|</span> <span class="n">is_large_imprecise_sv</span><span class="p">()</span>
+        <span class="o">|</span> <span class="n">IS_TRANSLOCATION</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="structural_type">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.structural_type">[docs]</a>
+<span class="k">def</span> <span class="nf">structural_type</span><span class="p">(</span>
+    <span class="n">curie</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare a :class:`VariantPredicate` for testing if the variant has a certain structural type.</span>
+
+<span class="sd">    We recommend using a descendant of `structural_variant`</span>
+<span class="sd">    (`SO:0001537 &lt;https://purl.obolibrary.org/obo/SO_0001537&gt;`_)</span>
+<span class="sd">    as the structural type.</span>
+
+<span class="sd">    **Example**</span>
+
+<span class="sd">    Make a predicate for testing if the variant is a chromosomal deletion (`SO:1000029`):</span>
+
+<span class="sd">    &gt;&gt;&gt; from gpsea.analysis.predicate import structural_type</span>
+<span class="sd">    &gt;&gt;&gt; predicate = structural_type(&#39;SO:1000029&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; predicate.description</span>
+<span class="sd">    &#39;structural type is SO:1000029&#39;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        curie: compact uniform resource identifier (CURIE) with the structural type to test.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">StructuralTypePredicate</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">curie</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="variant_class">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.variant_class">[docs]</a>
+<span class="k">def</span> <span class="nf">variant_class</span><span class="p">(</span>
+    <span class="n">variant_class</span><span class="p">:</span> <span class="n">VariantClass</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare a :class:`VariantPredicate` for testing if the variant</span>
+<span class="sd">    is of a certain :class:`~gpsea.model.VariantClass`.</span>
+
+<span class="sd">    **Example**</span>
+
+<span class="sd">    Make a predicate to test if the variant is a deletion:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gpsea.model import VariantClass</span>
+<span class="sd">    &gt;&gt;&gt; from gpsea.analysis.predicate import variant_class</span>
+<span class="sd">    &gt;&gt;&gt; predicate = variant_class(VariantClass.DEL)</span>
+<span class="sd">    &gt;&gt;&gt; predicate.description</span>
+<span class="sd">    &#39;variant class is DEL&#39;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        variant_class: the variant class to test.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">VariantClassPredicate</span><span class="p">(</span>
+        <span class="n">query</span><span class="o">=</span><span class="n">variant_class</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ref_length">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.ref_length">[docs]</a>
+<span class="k">def</span> <span class="nf">ref_length</span><span class="p">(</span>
+    <span class="n">operator</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="s2">&quot;!=&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">],</span>
+    <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare a :class:`VariantPredicate` for testing if the reference (REF) allele</span>
+<span class="sd">    of variant is above, below, or (not) equal to certain `length`.</span>
+
+<span class="sd">    .. seealso::</span>
+
+<span class="sd">        See :ref:`length-of-the-reference-allele` for more info.</span>
+
+<span class="sd">    **Example**</span>
+
+<span class="sd">    Prepare a predicate that tests that the REF allele includes more than 5 base pairs:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gpsea.analysis.predicate import ref_length</span>
+<span class="sd">    &gt;&gt;&gt; predicate = ref_length(&#39;&gt;&#39;, 5)</span>
+<span class="sd">    &gt;&gt;&gt; predicate.description</span>
+<span class="sd">    &#39;reference allele length &gt; 5&#39;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        operator: a `str` with the desired test. Must be one of ``{ &#39;&lt;&#39;, &#39;&lt;=&#39;, &#39;==&#39;, &#39;!=&#39;, &#39;&gt;=&#39;, &#39;&gt;&#39; }``.</span>
+<span class="sd">        length: a non-negative `int` with the length threshold.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">RefAlleleLengthPredicate</span><span class="p">(</span><span class="n">operator</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="change_length">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.change_length">[docs]</a>
+<span class="k">def</span> <span class="nf">change_length</span><span class="p">(</span>
+    <span class="n">operator</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="s2">&quot;!=&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">],</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare a :class:`VariantPredicate` for testing if the variant&#39;s change length</span>
+<span class="sd">    is above, below, or (not) equal to certain `threshold`.</span>
+
+<span class="sd">    .. seealso::</span>
+
+<span class="sd">        See :ref:`change-length-of-an-allele` for more info.</span>
+
+<span class="sd">    **Example**</span>
+
+<span class="sd">    Make a predicate for testing if the change length is less than or equal to `-10`,</span>
+<span class="sd">    e.g. to test if a variant is a *deletion* leading to removal of at least 10 base pairs:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gpsea.analysis.predicate import change_length</span>
+<span class="sd">    &gt;&gt;&gt; predicate = change_length(&#39;&lt;=&#39;, -10)</span>
+<span class="sd">    &gt;&gt;&gt; predicate.description</span>
+<span class="sd">    &#39;change length &lt;= -10&#39;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        operator: a `str` with the desired test. Must be one of ``{ &#39;&lt;&#39;, &#39;&lt;=&#39;, &#39;==&#39;, &#39;!=&#39;, &#39;&gt;=&#39;, &#39;&gt;&#39; }``.</span>
+<span class="sd">        threshold: an `int` with the threshold. Can be negative, zero, or positive.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ChangeLengthPredicate</span><span class="p">(</span><span class="n">operator</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="is_structural_deletion">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.is_structural_deletion">[docs]</a>
+<span class="k">def</span> <span class="nf">is_structural_deletion</span><span class="p">(</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">50</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare a :class:`VariantPredicate` for testing if the variant</span>
+<span class="sd">    is a `chromosomal deletion &lt;https://purl.obolibrary.org/obo/SO_1000029&gt;`_ or a structural variant deletion</span>
+<span class="sd">    that leads to removal of at least *n* base pairs (50bp by default).</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        The predicate uses :meth:`~gpsea.model.VariantCoordinates.change_length`</span>
+<span class="sd">        to determine if the length of the variant is above or below `threshold`.</span>
+
+<span class="sd">        **IMPORTANT**: the change lengths of deletions are *negative*, since the alternate allele</span>
+<span class="sd">        is shorter than the reference allele. See :ref:`change-length-of-an-allele` for more info.</span>
+
+<span class="sd">    **Example**</span>
+
+<span class="sd">    Prepare a predicate for testing if the variant is a chromosomal deletion that removes at least 20 base pairs:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gpsea.analysis.predicate import is_structural_deletion</span>
+<span class="sd">    &gt;&gt;&gt; predicate = is_structural_deletion(-20)</span>
+<span class="sd">    &gt;&gt;&gt; predicate.description</span>
+<span class="sd">    &#39;(structural type is SO:1000029 OR (variant class is DEL AND change length &lt;= -20))&#39;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        threshold: an `int` with the change length threshold to determine if a variant is &quot;structural&quot;</span>
+<span class="sd">            (-50 bp by default).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">chromosomal_deletion</span> <span class="o">=</span> <span class="s2">&quot;SO:1000029&quot;</span>
+    <span class="k">return</span> <span class="n">structural_type</span><span class="p">(</span><span class="n">chromosomal_deletion</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span>
+        <span class="n">variant_class</span><span class="p">(</span><span class="n">VariantClass</span><span class="o">.</span><span class="n">DEL</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">change_length</span><span class="p">(</span><span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="protein_feature_type">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.protein_feature_type">[docs]</a>
+<span class="k">def</span> <span class="nf">protein_feature_type</span><span class="p">(</span>
+    <span class="n">feature_type</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">FeatureType</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="n">protein_metadata</span><span class="p">:</span> <span class="n">ProteinMetadata</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare a :class:`~gpsea.analysis.predicate.VariantPredicate`</span>
+<span class="sd">    to test if the variant affects a `feature_type` of a protein.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        feature_type: the target protein :class:`~gpsea.model.FeatureType`</span>
+<span class="sd">            (e.g. :class:`~gpsea.model.FeatureType.DOMAIN`).</span>
+<span class="sd">        protein_metadata: the information about the protein.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">feature_type</span><span class="p">,</span> <span class="n">FeatureType</span><span class="p">):</span>
+        <span class="n">FeatureType</span><span class="o">.</span><span class="n">deprecation_warning</span><span class="p">()</span>
+        <span class="n">feature_type</span> <span class="o">=</span> <span class="n">feature_type</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">return</span> <span class="n">ProteinFeatureTypePredicate</span><span class="p">(</span>
+        <span class="n">feature_type</span><span class="o">=</span><span class="n">feature_type</span><span class="p">,</span>
+        <span class="n">protein_metadata</span><span class="o">=</span><span class="n">protein_metadata</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="protein_feature">
+<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.protein_feature">[docs]</a>
+<span class="k">def</span> <span class="nf">protein_feature</span><span class="p">(</span>
+    <span class="n">feature_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">protein_metadata</span><span class="p">:</span> <span class="n">ProteinMetadata</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantPredicate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare a :class:`VariantPredicate` to test if the variant affects a protein feature</span>
+<span class="sd">    labeled with the provided `feature_id`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        feature_id: the id of the target protein feature (e.g. `ANK 1`)</span>
+<span class="sd">        protein_metadata: the information about the protein.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ProteinFeaturePredicate</span><span class="p">(</span>
+        <span class="n">feature_id</span><span class="o">=</span><span class="n">feature_id</span><span class="p">,</span>
+        <span class="n">protein_metadata</span><span class="o">=</span><span class="n">protein_metadata</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

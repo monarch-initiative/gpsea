@@ -90,13 +90,9 @@
 <div class="viewcode-block" id="VepFunctionalAnnotator">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.VepFunctionalAnnotator">[docs]</a>
 <span class="k">class</span> <span class="nc">VepFunctionalAnnotator</span><span class="p">(</span><span class="n">FunctionalAnnotator</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A `FunctionalAnnotator` that uses Variant Effect Predictor (VEP) REST API to</span>
-<span class="sd">    do functional variant annotation.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        include_computational_txs (bool): Include computational transcripts, such as</span>
-<span class="sd">        RefSeq `XM_`.</span>
-<span class="sd">        timeout (int): Timeout in seconds</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `VepFunctionalAnnotator` uses the Variant Effect Predictor (VEP) REST API </span>
+<span class="sd">    to perform functional variant annotation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">NONCODING_EFFECTS</span> <span class="o">=</span> <span class="p">{</span>
@@ -133,16 +129,6 @@
 <div class="viewcode-block" id="VepFunctionalAnnotator.annotate">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.VepFunctionalAnnotator.annotate">[docs]</a>
     <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant_coordinates</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform functional annotation using Variant Effect Predictor (VEP) REST API.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            variant_coordinates (VariantCoordinates): A VariantCoordinates object</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            typing.Sequence[TranscriptAnnotation]: A sequence of transcript</span>
-<span class="sd">            annotations for the variant coordinates</span>
-<span class="sd">        Raises:</span>
-<span class="sd">            ValueError if VEP times out or does not return a response or if the response is not formatted as we expect.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch_response</span><span class="p">(</span><span class="n">variant_coordinates</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_response</span><span class="p">(</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">variant_key</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span></div>
 

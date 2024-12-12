@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Compare genotype and phenotype groups &mdash; GPSEA 0.8.1.dev0 documentation</title>
+  <title>Compare genotype and phenotype classes &mdash; GPSEA 0.8.1.dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -57,14 +57,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../exploratory.html">Cohort exploratory analysis</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">Statistical analyses</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="partitioning/index.html">Partitioning</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Compare genotype and phenotype groups</a><ul>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Compare genotype and phenotype classes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#fisher-exact-test">Fisher exact test</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#example-analysis">Example analysis</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="mtc.html">Multiple-testing correction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="phenotype-scores.html">Compare phenotype scores in genotype groups</a></li>
-<li class="toctree-l3"><a class="reference internal" href="measurements.html">Compare measurement values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phenotype-scores.html">Compare phenotype scores</a></li>
+<li class="toctree-l3"><a class="reference internal" href="measurements.html">Compare measurements</a></li>
 <li class="toctree-l3"><a class="reference internal" href="survival.html">Survival analysis</a></li>
 </ul>
 </li>
@@ -90,9 +90,9 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">User guide</a></li>
           <li class="breadcrumb-item"><a href="index.html">Statistical analyses</a></li>
-      <li class="breadcrumb-item active">Compare genotype and phenotype groups</li>
+      <li class="breadcrumb-item active">Compare genotype and phenotype classes</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/user-guide/analyses/phenotype-groups.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/user-guide/analyses/phenotype-classes.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -100,13 +100,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="compare-genotype-and-phenotype-groups">
-<span id="genotype-phenotype-groups"></span><h1>Compare genotype and phenotype groups<a class="headerlink" href="#compare-genotype-and-phenotype-groups" title="Link to this heading"></a></h1>
-<p>In this section, we show how to test the association between genotype and phenotype categories.
+  <section id="compare-genotype-and-phenotype-classes">
+<span id="genotype-phenotype-classes"></span><h1>Compare genotype and phenotype classes<a class="headerlink" href="#compare-genotype-and-phenotype-classes" title="Link to this heading"></a></h1>
+<p>In this section, we show how to test the association between genotype and phenotype classes.
 We assume a cohort was preprocessed following the <a class="reference internal" href="../input-data.html#input-data"><span class="std std-ref">Input data</span></a> section,
-and we use predicates described in the <a class="reference internal" href="partitioning/index.html#partitioning"><span class="std std-ref">Partitioning</span></a> to assign each cohort member
-into a group along the genotype and phenotype axes.
-We use Fisher exact test (FET) to test for differences between the groups
+and we use classifiers described in the <a class="reference internal" href="partitioning/index.html#partitioning"><span class="std std-ref">Partitioning</span></a> to assign each cohort member
+into a class along the genotype and phenotype axes.
+We use Fisher exact test (FET) to test for differences between the classes
 and we apply multiple testing correction to mitigate finding significant associations by chance.</p>
 <section id="fisher-exact-test">
 <span id="id1"></span><h2>Fisher exact test<a class="headerlink" href="#fisher-exact-test" title="Link to this heading"></a></h2>
@@ -141,9 +141,9 @@ We are comparing the frequency of <em>strabismus</em> in individuals with missen
 <p>The Fisher exact test evaluates whether the observed frequencies in a contingency table significantly
 deviate from the frequencies we would expect if there were no association between the variables.
 We want to test whether the frequency of <cite>HP:0000486`</cite> is significantly higher or lower in
-one genotype group compared to what would be expected if there were no association.
+one genotype class compared to what would be expected if there were no association.
 Note that by default, the <em>two-tailed</em> Fisher exact test is performed, meaning we have no
-hypothesis as to whether there is a higher or lower frequency in one of the genotype groups.</p>
+hypothesis as to whether there is a higher or lower frequency in one of the genotype classes.</p>
 <p>However, we are typically interested in testing the associations between the genotype and multiple phenotypic features at once.
 GPSEA takes advantage of the HPO structure and simplifies the testing for all HPO terms encoded in the cohort.</p>
 </section>
@@ -176,62 +176,73 @@ and then serialized as a JSON file following the instructions in <a class="refer
 <section id="configure-analysis">
 <h3>Configure analysis<a class="headerlink" href="#configure-analysis" title="Link to this heading"></a></h3>
 <p>We want to test the association between frameshift <em>TBX5</em> variants and phenotypic abnormalities.
-GPSEA exposes a flexible predicate API that lets us create genotype and phenotype predicates
+GPSEA exposes a flexible classifier API that lets us create genotype and phenotype classifiers
 to assign the cohort members into genotype and phenotype categories based on the variants
-and the HPO terms. We need to create one genotype predicate and one or more phenotype predicates.</p>
-<section id="genotype-predicate">
-<h4>Genotype predicate<a class="headerlink" href="#genotype-predicate" title="Link to this heading"></a></h4>
-<p>We want to separate the patients into two groups: a group <em>with</em> a frameshift variant
-and a group <em>without</em> a frameshift variant (i.e. any other heterozygous variant).
+and the HPO terms.
+We need to create one genotype classifier and one or more phenotype classifiers.</p>
+<section id="genotype-classifier">
+<h4>Genotype classifier<a class="headerlink" href="#genotype-classifier" title="Link to this heading"></a></h4>
+<p>We want to separate the patients into two classes: a class <em>with</em> a frameshift variant
+and a class <em>without</em> a frameshift variant (i.e. any other heterozygous variant).
 We will use the <em>MANE</em> transcript for the analysis:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tx_id</span> <span class="o">=</span> <span class="s1">&#39;NM_181486.4&#39;</span>
 </pre></div>
 </div>
-<p>Building a genotype predicate is a two step process.
-First, we create a <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicate" title="gpsea.analysis.predicate.genotype.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a>
+<p>Building a genotype classifier is a two step process.
+First, we create a <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a>
 to test if the variant is predicted to lead to a frameshift in <cite>NM_181486.4</cite>:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_frameshift</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate</span> <span class="kn">import</span> <span class="n">variant_effect</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_frameshift</span> <span class="o">=</span> <span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">is_frameshift</span><span class="o">.</span><span class="n">description</span>
 <span class="go">&#39;FRAMESHIFT_VARIANT on NM_181486.4&#39;</span>
 </pre></div>
 </div>
-<p>and then we wrap <cite>is_frameshift</cite> in a <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.monoallelic_predicate" title="gpsea.analysis.predicate.genotype.monoallelic_predicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">monoallelic_predicate</span></code></a>
-to classify each <em>TBX5</em> cohort member either as an individual with one frameshift allele (<cite>Frameshift</cite>)
-or as an idividual with one non-frameshift allele (<cite>Other</cite>):</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">monoallelic_predicate</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">monoallelic_predicate</span><span class="p">(</span>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.html#module-gpsea.analysis.predicate" title="gpsea.analysis.predicate"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gpsea.analysis.predicate</span></code></a> documentation lists all available variant predicates
+and <a class="reference internal" href="partitioning/genotype/variant_predicates.html#variant-predicates"><span class="std std-ref">Variant Predicates</span></a> exemplifies their usage.</p>
+</div>
+<p>To build a genotype classifier, we wrap <cite>is_frameshift</cite>
+in a Monoallelic classifier (<a class="reference internal" href="../../apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.monoallelic_classifier" title="gpsea.analysis.clf.monoallelic_classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">monoallelic_classifier</span></code></a>),
+to classify each <em>TBX5</em> cohort member either as an individual with one <em>frameshift</em> allele (<cite>Frameshift</cite>)
+or as an individual with one <em>non-frameshift</em> allele (<cite>Other</cite>):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.clf</span> <span class="kn">import</span> <span class="n">monoallelic_classifier</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span> <span class="o">=</span> <span class="n">monoallelic_classifier</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">a_predicate</span><span class="o">=</span><span class="n">is_frameshift</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">a_label</span><span class="o">=</span><span class="s2">&quot;Frameshift&quot;</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">b_label</span><span class="o">=</span><span class="s2">&quot;Other&quot;</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">group_labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span><span class="o">.</span><span class="n">class_labels</span>
 <span class="go">(&#39;Frameshift&#39;, &#39;Other&#39;)</span>
 </pre></div>
 </div>
-<p>In the subsequent analysis, <cite>gt_predicate</cite> will assign a cohort member into the respective group.
-Note, any patient with <span class="math notranslate nohighlight">\(0\)</span> or <span class="math notranslate nohighlight">\(\ge 2\)</span> alleles will be <em>omitted</em> from the analysis.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>See the <a class="reference internal" href="partitioning/genotype/index.html#genotype-classifiers"><span class="std std-ref">Genotype classifiers</span></a> for other genotype classifier examples.</p>
+</div>
+<p>In the subsequent analysis, <cite>gt_clf</cite> assigns an individual into a genotype class.
+Note, any individual with <span class="math notranslate nohighlight">\(0\)</span> or <span class="math notranslate nohighlight">\(\ge 2\)</span> alleles will be <em>omitted</em> from the analysis.</p>
 </section>
-<section id="phenotype-predicates">
-<h4>Phenotype predicates<a class="headerlink" href="#phenotype-predicates" title="Link to this heading"></a></h4>
+<section id="phenotype-classifiers">
+<h4>Phenotype classifiers<a class="headerlink" href="#phenotype-classifiers" title="Link to this heading"></a></h4>
 <p>We recommend testing the genotype phenotype association for all HPO terms that annotate the cohort members,
 while taking advantage of the HPO graph structure and of the <a class="reference internal" href="../glossary.html#true-path-rule"><span class="std std-ref">True path rule</span></a>.
-We will use the <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.prepare_predicates_for_terms_of_interest" title="gpsea.analysis.predicate.phenotype.prepare_predicates_for_terms_of_interest"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_predicates_for_terms_of_interest()</span></code></a>
-utility function to generate phenotype predicates for all HPO terms.</p>
-<p>The function needs HPO to prepare predicates, hence we need to load HPO:</p>
+We will use the <a class="reference internal" href="../../apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.prepare_classifiers_for_terms_of_interest" title="gpsea.analysis.clf.prepare_classifiers_for_terms_of_interest"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_classifiers_for_terms_of_interest()</span></code></a>
+utility function to generate phenotype classifiers for all HPO terms.</p>
+<p>The function needs HPO to prepare classifiers, hence we need to load HPO:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">store</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">configure_ontology_store</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">load_minimal_hpo</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;v2024-07-01&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>and then we can create the predicates</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.phenotype</span> <span class="kn">import</span> <span class="n">prepare_predicates_for_terms_of_interest</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_predicates</span> <span class="o">=</span> <span class="n">prepare_predicates_for_terms_of_interest</span><span class="p">(</span>
+<p>and then we can create the classifiers</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.clf</span> <span class="kn">import</span> <span class="n">prepare_classifiers_for_terms_of_interest</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_clfs</span> <span class="o">=</span> <span class="n">prepare_classifiers_for_terms_of_interest</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">pheno_predicates</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">pheno_clfs</span><span class="p">)</span>
 <span class="go">369</span>
 </pre></div>
 </div>
@@ -239,9 +250,9 @@ utility function to generate phenotype predicates for all HPO terms.</p>
 including the <em>indirect</em> annotations whose presence is implied by the <a class="reference internal" href="../glossary.html#true-path-rule"><span class="std std-ref">True path rule</span></a>.</p>
 </section>
 <section id="statistical-analysis">
-<span id="phenotype-groups-statistical-analysis"></span><h4>Statistical analysis<a class="headerlink" href="#statistical-analysis" title="Link to this heading"></a></h4>
+<span id="phenotype-classes-statistical-analysis"></span><h4>Statistical analysis<a class="headerlink" href="#statistical-analysis" title="Link to this heading"></a></h4>
 <p>We will use <a class="reference internal" href="#fisher-exact-test"><span class="std std-ref">Fisher exact test</span></a> to test the association
-between genotype and phenotype groups, as described previously.</p>
+between genotype and phenotype classes, as described previously.</p>
 <p>In the case of this cohort, we can test association between having a frameshift variant and one of 369 HPO terms.
 However, testing multiple hypotheses on the same dataset increases the risk of finding
 a significant association solely by chance.
@@ -250,14 +261,14 @@ a phenotype multiple testing (MT) filter and multiple testing correction (MTC).<
 <p>Phenotype MT filter selects a (sub)set of HPO terms for testing,
 for instance only the user-selected terms (see <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter" title="gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecifiedTermsMtcFilter</span></code></a>)
 or the terms selected by <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter" title="gpsea.analysis.mtc_filter.HpoMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></a>.</p>
-<p>Multiple testing correction then adjusts the nominal p values for the increased risk
+<p>MTC then adjusts the nominal p values for the increased risk
 of false positive G/P associations.
 The available MTC procedures are listed in the <a class="reference internal" href="mtc.html#mtc-correction-procedures"><span class="std std-ref">Multiple-testing correction procedures</span></a> section.</p>
-<p>We must pick one of these to perform genotype-phenotype analysis.</p>
+<p>We must choose a phenotype MT filter as well as a MTC procedure to perform genotype-phenotype analysis.</p>
 <section id="default-analysis">
 <span id="default-hpo-analysis"></span><h5>Default analysis<a class="headerlink" href="#default-analysis" title="Link to this heading"></a></h5>
 <p>We recommend using HPO MT filter (<a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter" title="gpsea.analysis.mtc_filter.HpoMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></a>) as a phenotype MT filter
-and Benjamini-Hochberg for multiple testing correction.
+and Benjamini-Hochberg for MTC.
 The default analysis can be configured with <a class="reference internal" href="../../apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.configure_hpo_term_analysis" title="gpsea.analysis.pcats.configure_hpo_term_analysis"><code class="xref py py-func docutils literal notranslate"><span class="pre">configure_hpo_term_analysis()</span></code></a> convenience method.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pcats</span> <span class="kn">import</span> <span class="n">configure_hpo_term_analysis</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">analysis</span> <span class="o">=</span> <span class="n">configure_hpo_term_analysis</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
@@ -315,11 +326,11 @@ we can configure the analysis manually.</p>
 </section>
 <section id="analysis">
 <h3>Analysis<a class="headerlink" href="#analysis" title="Link to this heading"></a></h3>
-<p>We can now test associations between the genotype groups and the HPO terms:</p>
+<p>We can now test associations between the genotype classes and the HPO terms:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">compare_genotype_vs_phenotypes</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">gt_predicate</span><span class="o">=</span><span class="n">gt_predicate</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">pheno_predicates</span><span class="o">=</span><span class="n">pheno_predicates</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">gt_clf</span><span class="o">=</span><span class="n">gt_clf</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">pheno_clfs</span><span class="o">=</span><span class="n">pheno_clfs</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">phenotypes</span><span class="p">)</span>
 <span class="go">369</span>
@@ -327,8 +338,8 @@ we can configure the analysis manually.</p>
 <span class="go">24</span>
 </pre></div>
 </div>
-<p>We tested the <code class="docutils literal notranslate"><span class="pre">cohort</span></code> for association between the genotype groups (<code class="docutils literal notranslate"><span class="pre">gt_predicate</span></code>)
-and HPO terms (<code class="docutils literal notranslate"><span class="pre">pheno_predicates</span></code>).
+<p>We tested the <code class="docutils literal notranslate"><span class="pre">cohort</span></code> for association between the genotype classes (<code class="docutils literal notranslate"><span class="pre">gt_clf</span></code>)
+and HPO terms (<code class="docutils literal notranslate"><span class="pre">pheno_clfs</span></code>).
 Thanks to phenotype MT filter, we only tested 24 out of 369 terms.
 The MT filter report shows the filtering details:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">MtcStatsViewer</span>
