@@ -1,20 +1,20 @@
-.. _genotype-predicates:
+.. _genotype-classifiers:
 
-###################
-Genotype predicates
-###################
+####################
+Genotype classifiers
+####################
 
 
-A genotype predicate partitions the individuals based on their genotype.
-In GPSEA, genotype predicates leverage information from one of the three areas:
+A genotype classifier assigns an individual into a class based on their genotype.
+In GPSEA, genotype classifiers leverage information from one of the three areas:
 
 * Sex
 * Disease diagnosis
 * Presence of variant(s) that meet certain inclusion criteria (e.g. a missense variant in heterozygous genotype)
 
-Partitioning based on sex or disease diagnosis is relatively straightforward - the individuals
+Classification based on sex or disease diagnosis is relatively straightforward - the individuals
 are assigned by the biological sex or presence of a specific diagnosis.
-See :ref:`group-by-sex` and :ref:`group-by-diagnosis` for more details. 
+See :ref:`group-by-sex` and :ref:`group-by-diagnosis` for more details.
 
 Partitioning based on variants is, however, much more flexible,
 to support the analysis of the broad spectrum of pathomechanisms

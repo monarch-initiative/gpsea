@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Group by sex &mdash; GPSEA 0.8.0 documentation</title>
+  <title>Group by sex &mdash; GPSEA 0.9.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../_static/documentation_options.js?v=39bb1c6d"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -24,7 +24,7 @@
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
     <link rel="next" title="Group by diagnosis" href="diagnosis.html" />
-    <link rel="prev" title="Genotype predicates" href="index.html" /> 
+    <link rel="prev" title="Genotype classifiers" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -55,15 +55,15 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../exploratory.html">Cohort exploratory analysis</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../../index.html">Statistical analyses</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../index.html">Partitioning</a><ul class="current">
-<li class="toctree-l4 current"><a class="reference internal" href="index.html">Genotype predicates</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../phenotype/index.html">Phenotype predicates and scorers</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="index.html">Genotype classifiers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../phenotype/index.html">Phenotype classifiers and scorers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../gallery.html">Gallery</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../phenotype-groups.html">Compare genotype and phenotype groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../phenotype-classes.html">Compare genotype and phenotype classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../mtc.html">Multiple-testing correction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../phenotype-scores.html">Compare phenotype scores in genotype groups</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../measurements.html">Compare measurement values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../phenotype-scores.html">Compare phenotype scores</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../measurements.html">Compare measurements</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../survival.html">Survival analysis</a></li>
 </ul>
 </li>
@@ -90,7 +90,7 @@
           <li class="breadcrumb-item"><a href="../../../index.html">User guide</a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Statistical analyses</a></li>
           <li class="breadcrumb-item"><a href="../index.html">Partitioning</a></li>
-          <li class="breadcrumb-item"><a href="index.html">Genotype predicates</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Genotype classifiers</a></li>
       <li class="breadcrumb-item active">Group by sex</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../../_sources/user-guide/analyses/partitioning/genotype/sex.rst.txt" rel="nofollow"> View page source</a>
@@ -104,20 +104,20 @@
   <section id="group-by-sex">
 <span id="id1"></span><h1>Group by sex<a class="headerlink" href="#group-by-sex" title="Link to this heading"></a></h1>
 <figure class="align-center">
-<a class="reference internal image-reference" href="../../../../_images/sex-predicate.png"><img alt="Sex predicate" src="../../../../_images/sex-predicate.png" style="width: 600px;" />
+<a class="reference internal image-reference" href="../../../../_images/sex-classifier.png"><img alt="Sex classifier" src="../../../../_images/sex-classifier.png" style="width: 600px;" />
 </a>
 </figure>
 <p>It is easy to investigate the differences between males and females.
-The <a class="reference internal" href="../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.sex_predicate" title="gpsea.analysis.predicate.genotype.sex_predicate"><code class="xref py py-func docutils literal notranslate"><span class="pre">sex_predicate()</span></code></a> partitions
-the individuals based on their <a class="reference internal" href="../../../../apidocs/gpsea.model.html#gpsea.model.Sex" title="gpsea.model.Sex"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sex</span></code></a>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">sex_predicate</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">sex_predicate</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">group_labels</span>
+The <a class="reference internal" href="../../../../apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.sex_classifier" title="gpsea.analysis.clf.sex_classifier"><code class="xref py py-func docutils literal notranslate"><span class="pre">sex_classifier()</span></code></a> assigns
+an individual into a class based on the <a class="reference internal" href="../../../../apidocs/gpsea.model.html#gpsea.model.Sex" title="gpsea.model.Sex"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sex</span></code></a>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.clf</span> <span class="kn">import</span> <span class="n">sex_classifier</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span> <span class="o">=</span> <span class="n">sex_classifier</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span><span class="o">.</span><span class="n">class_labels</span>
 <span class="go">(&#39;FEMALE&#39;, &#39;MALE&#39;)</span>
 </pre></div>
 </div>
 <p>The individuals with <a class="reference internal" href="../../../../apidocs/gpsea.model.html#gpsea.model.Sex.UNKNOWN_SEX" title="gpsea.model.Sex.UNKNOWN_SEX"><code class="xref py py-class docutils literal notranslate"><span class="pre">UNKNOWN_SEX</span></code></a> will be omitted from the analysis.</p>
-<p>Note that we implemented this predicate as a genotype predicate.
+<p>Note that we implemented this classification as a <a class="reference internal" href="../../../../apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.GenotypeClassifier" title="gpsea.analysis.clf.GenotypeClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenotypeClassifier</span></code></a>.
 Currently, it is not possible to compare the distribution of genotypes across sexes.</p>
 </section>
 
@@ -125,7 +125,7 @@ Currently, it is not possible to compare the distribution of genotypes across se
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="Genotype predicates" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Genotype classifiers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="diagnosis.html" class="btn btn-neutral float-right" title="Group by diagnosis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

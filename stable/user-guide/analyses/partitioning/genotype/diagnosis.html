@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Group by diagnosis &mdash; GPSEA 0.8.0 documentation</title>
+  <title>Group by diagnosis &mdash; GPSEA 0.9.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../_static/documentation_options.js?v=39bb1c6d"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,15 +55,15 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../exploratory.html">Cohort exploratory analysis</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../../index.html">Statistical analyses</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../index.html">Partitioning</a><ul class="current">
-<li class="toctree-l4 current"><a class="reference internal" href="index.html">Genotype predicates</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../phenotype/index.html">Phenotype predicates and scorers</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="index.html">Genotype classifiers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../phenotype/index.html">Phenotype classifiers and scorers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../gallery.html">Gallery</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../phenotype-groups.html">Compare genotype and phenotype groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../phenotype-classes.html">Compare genotype and phenotype classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../mtc.html">Multiple-testing correction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../phenotype-scores.html">Compare phenotype scores in genotype groups</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../measurements.html">Compare measurement values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../phenotype-scores.html">Compare phenotype scores</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../measurements.html">Compare measurements</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../survival.html">Survival analysis</a></li>
 </ul>
 </li>
@@ -90,7 +90,7 @@
           <li class="breadcrumb-item"><a href="../../../index.html">User guide</a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Statistical analyses</a></li>
           <li class="breadcrumb-item"><a href="../index.html">Partitioning</a></li>
-          <li class="breadcrumb-item"><a href="index.html">Genotype predicates</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Genotype classifiers</a></li>
       <li class="breadcrumb-item active">Group by diagnosis</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../../_sources/user-guide/analyses/partitioning/genotype/diagnosis.rst.txt" rel="nofollow"> View page source</a>
@@ -104,23 +104,23 @@
   <section id="group-by-diagnosis">
 <span id="id1"></span><h1>Group by diagnosis<a class="headerlink" href="#group-by-diagnosis" title="Link to this heading"></a></h1>
 <figure class="align-center">
-<a class="reference internal image-reference" href="../../../../_images/diagnosis-predicate.png"><img alt="Diagnosis predicate" src="../../../../_images/diagnosis-predicate.png" style="width: 600px;" />
+<a class="reference internal image-reference" href="../../../../_images/diagnosis-classifier.png"><img alt="Diagnosis classifier" src="../../../../_images/diagnosis-classifier.png" style="width: 600px;" />
 </a>
 </figure>
 <p>We can easily compare individuals diagnosed with different diseases.
-<a class="reference internal" href="../../../../apidocs/gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.diagnosis_predicate" title="gpsea.analysis.predicate.genotype.diagnosis_predicate"><code class="xref py py-func docutils literal notranslate"><span class="pre">diagnosis_predicate()</span></code></a> groups the individuals
+<a class="reference internal" href="../../../../apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.diagnosis_classifier" title="gpsea.analysis.clf.diagnosis_classifier"><code class="xref py py-func docutils literal notranslate"><span class="pre">diagnosis_classifier()</span></code></a> groups the individuals
 based on a diagnosis presence.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">diagnosis_predicate</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">diagnosis_predicate</span><span class="p">(</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.clf</span> <span class="kn">import</span> <span class="n">diagnosis_classifier</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span> <span class="o">=</span> <span class="n">diagnosis_classifier</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">diagnoses</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;OMIM:154700&#39;</span><span class="p">,</span> <span class="s1">&#39;OMIM:129600&#39;</span><span class="p">),</span>
 <span class="gp">... </span>    <span class="n">labels</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Marfan syndrome&#39;</span><span class="p">,</span> <span class="s1">&#39;Ectopia lentis, familial&#39;</span><span class="p">),</span>
 <span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">group_labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span><span class="o">.</span><span class="n">class_labels</span>
 <span class="go">(&#39;OMIM:154700&#39;, &#39;OMIM:129600&#39;)</span>
 </pre></div>
 </div>
-<p>The predicate takes two or more disease identifiers (<cite>diagnoses</cite>) as well as their names (<cite>labels</cite>),
-and it assigns the individuals based on their diagnoses.</p>
+<p>The classifier takes two or more disease identifiers (<cite>diagnoses</cite>) as well as their names (<cite>labels</cite>),
+and it classifies the individuals based on their diagnoses.</p>
 <p>Note, the assignment must be unambiguous; any individual labeled with two or more target diagnoses
 (e.g. an individual diagnosed with both <em>Marfan syndrome</em> and <em>Ectopia lentis, familial</em> in the example above)
 will be <em>omitted</em> from the analysis.</p>

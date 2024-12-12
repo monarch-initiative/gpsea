@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HPO predicate &mdash; GPSEA 0.8.0 documentation</title>
+  <title>HPO classifier &mdash; GPSEA 0.9.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../_static/documentation_options.js?v=39bb1c6d"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -24,7 +24,7 @@
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
     <link rel="next" title="Counting phenotype scorer" href="counting.html" />
-    <link rel="prev" title="Phenotype predicates and scorers" href="index.html" /> 
+    <link rel="prev" title="Phenotype classifiers and scorers" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -55,15 +55,15 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../exploratory.html">Cohort exploratory analysis</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../../index.html">Statistical analyses</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../index.html">Partitioning</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../genotype/index.html">Genotype predicates</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="index.html">Phenotype predicates and scorers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../genotype/index.html">Genotype classifiers</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="index.html">Phenotype classifiers and scorers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../gallery.html">Gallery</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../phenotype-groups.html">Compare genotype and phenotype groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../phenotype-classes.html">Compare genotype and phenotype classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../mtc.html">Multiple-testing correction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../phenotype-scores.html">Compare phenotype scores in genotype groups</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../measurements.html">Compare measurement values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../phenotype-scores.html">Compare phenotype scores</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../measurements.html">Compare measurements</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../survival.html">Survival analysis</a></li>
 </ul>
 </li>
@@ -90,8 +90,8 @@
           <li class="breadcrumb-item"><a href="../../../index.html">User guide</a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Statistical analyses</a></li>
           <li class="breadcrumb-item"><a href="../index.html">Partitioning</a></li>
-          <li class="breadcrumb-item"><a href="index.html">Phenotype predicates and scorers</a></li>
-      <li class="breadcrumb-item active">HPO predicate</li>
+          <li class="breadcrumb-item"><a href="index.html">Phenotype classifiers and scorers</a></li>
+      <li class="breadcrumb-item active">HPO classifier</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../../_sources/user-guide/analyses/partitioning/phenotype/hpo_predicate.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -101,9 +101,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="hpo-predicate">
-<span id="id1"></span><h1>HPO predicate<a class="headerlink" href="#hpo-predicate" title="Link to this heading"></a></h1>
-<p>When testing for presence or absence of an HPO term, the <a class="reference internal" href="../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.HpoPredicate" title="gpsea.analysis.predicate.phenotype.HpoPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoPredicate</span></code></a>
+  <section id="hpo-classifier">
+<span id="id1"></span><h1>HPO classifier<a class="headerlink" href="#hpo-classifier" title="Link to this heading"></a></h1>
+<p>When testing for presence or absence of an HPO term, the <a class="reference internal" href="../../../../apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.HpoClassifier" title="gpsea.analysis.clf.HpoClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoClassifier</span></code></a>
 leverages the <a class="reference internal" href="../../../glossary.html#true-path-rule"><span class="std std-ref">True path rule</span></a> to take advantage of the HPO hierarchy.
 In result, an individual annotated with a term is implicitly annotated with all its ancestors.
 For instance, an individual annotated with <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0001083">Ectopia lentis</a>
@@ -114,7 +114,7 @@ is also annotated with <a class="reference external" href="https://hpo.jax.org/b
 are implicitly excluded.</p>
 <section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h2>
-<p>Here we show how to set up <a class="reference internal" href="../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.HpoPredicate" title="gpsea.analysis.predicate.phenotype.HpoPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoPredicate</span></code></a>
+<p>Here we show how to set up <a class="reference internal" href="../../../../apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.HpoClassifier" title="gpsea.analysis.clf.HpoClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoClassifier</span></code></a>
 to test for a presence of <a class="reference external" href="https://hpo.jax.org/browse/term/HP:0000517">Abnormal lens morphology</a>.</p>
 <p>We need to load <a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.ontology.html#hpotk.ontology.MinimalOntology" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">MinimalOntology</span></code></a> with HPO data to access the HPO hierarchy:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
@@ -122,36 +122,41 @@ to test for a presence of <a class="reference external" href="https://hpo.jax.or
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">load_minimal_hpo</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;v2024-07-01&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>and now we can set up a predicate to test for presence of <em>Abnormal lens morphology</em>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.phenotype</span> <span class="kn">import</span> <span class="n">HpoPredicate</span>
+<p>and now we can set up the classifier to test for presence of <em>Abnormal lens morphology</em>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.clf</span> <span class="kn">import</span> <span class="n">HpoClassifier</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">query</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="s1">&#39;HP:0000517&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_predicate</span> <span class="o">=</span> <span class="n">HpoPredicate</span><span class="p">(</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_clf</span> <span class="o">=</span> <span class="n">HpoClassifier</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_predicate</span><span class="o">.</span><span class="n">name</span>
-<span class="go">&#39;HPO Predicate&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_predicate</span><span class="o">.</span><span class="n">description</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_clf</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;HPO Classifier&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_clf</span><span class="o">.</span><span class="n">description</span>
 <span class="go">&#39;Test for presence of Abnormal lens morphology [HP:0000517]&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_predicate</span><span class="o">.</span><span class="n">group_labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_clf</span><span class="o">.</span><span class="n">class_labels</span>
 <span class="go">(&#39;Yes&#39;, &#39;No&#39;)</span>
 </pre></div>
 </div>
 </section>
 <section id="missing-implies-phenotype-excluded">
 <h2>missing_implies_phenotype_excluded<a class="headerlink" href="#missing-implies-phenotype-excluded" title="Link to this heading"></a></h2>
-<p>In many cases, published reports of clinical data about individuals with rare diseases describes phenotypic features that were observed, but do not
-provide a comprehensive list of features that were explicitly excluded. By default, GPSEA will only include features that are recorded as observed or excluded in a phenopacket.
-Setting this argument to True will cause “n/a” entries to be set to “excluded”. We provide this option for exploration but do not recommend its use for the
-final analysis unless the assumption behind it is known to be true.</p>
+<p>In many cases, published reports of clinical data about individuals with rare diseases
+describe phenotypic features that were observed, but do not provide
+a comprehensive list of features that were explicitly excluded.
+By default, GPSEA will only include features that are recorded as observed or excluded in a phenopacket.</p>
+<p>However, setting <code class="docutils literal notranslate"><span class="pre">missing_implies_excluded=True</span></code> will cause “n/a” entries to be set to “excluded”.
+We provide this option for exploration but do not recommend its use
+for the final analysis unless the assumption behind it is known to be true.</p>
 </section>
 </section>
-<section id="predicates-for-all-cohort-phenotypes">
-<h1>Predicates for all cohort phenotypes<a class="headerlink" href="#predicates-for-all-cohort-phenotypes" title="Link to this heading"></a></h1>
-<p>Constructing phenotype predicates for all HPO terms of a cohort sounds a bit tedious.
-The <a class="reference internal" href="../../../../apidocs/gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.prepare_predicates_for_terms_of_interest" title="gpsea.analysis.predicate.phenotype.prepare_predicates_for_terms_of_interest"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_predicates_for_terms_of_interest()</span></code></a>
+<section id="classifiers-for-all-cohort-phenotypes">
+<h1>Classifiers for all cohort phenotypes<a class="headerlink" href="#classifiers-for-all-cohort-phenotypes" title="Link to this heading"></a></h1>
+<p>Constructing phenotype classifiers for all HPO terms of a cohort sounds a bit tedious.
+The <a class="reference internal" href="../../../../apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.prepare_classifiers_for_terms_of_interest" title="gpsea.analysis.clf.prepare_classifiers_for_terms_of_interest"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_classifiers_for_terms_of_interest()</span></code></a>
 function cuts down the tedium.</p>
-<p>For a given phenopacket collection (e.g. 156 patients with mutations in <em>WWOX</em> gene included in Phenopacket Store version <cite>0.1.18</cite>)</p>
+<section id="id3">
+<h2>Example<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>For a phenopacket collection (e.g. 156 patients with mutations in <em>WWOX</em> gene included in Phenopacket Store version <cite>0.1.18</cite>)</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ppktstore.registry</span> <span class="kn">import</span> <span class="n">configure_phenopacket_registry</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">configure_phenopacket_registry</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">registry</span><span class="o">.</span><span class="n">open_phenopacket_store</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;0.1.18&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ps</span><span class="p">:</span>
@@ -167,24 +172,25 @@ function cuts down the tedium.</p>
 <span class="go">Individuals Processed: ...</span>
 </pre></div>
 </div>
-<p>we can create HPO predicates for testing all 369 HPO terms used in the cohort</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.phenotype</span> <span class="kn">import</span> <span class="n">prepare_predicates_for_terms_of_interest</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_predicates</span> <span class="o">=</span> <span class="n">prepare_predicates_for_terms_of_interest</span><span class="p">(</span>
+<p>we can create HPO classifiers for testing all 369 HPO terms used in the cohort:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.clf</span> <span class="kn">import</span> <span class="n">prepare_classifiers_for_terms_of_interest</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_clfs</span> <span class="o">=</span> <span class="n">prepare_classifiers_for_terms_of_interest</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">pheno_predicates</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">pheno_clfs</span><span class="p">)</span>
 <span class="go">369</span>
 </pre></div>
 </div>
 <p>and subject the predicates into further analysis, such as <a class="reference internal" href="../../../../apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.HpoTermAnalysis" title="gpsea.analysis.pcats.HpoTermAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoTermAnalysis</span></code></a>.</p>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="Phenotype predicates and scorers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Phenotype classifiers and scorers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="counting.html" class="btn btn-neutral float-right" title="Counting phenotype scorer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

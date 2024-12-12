@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Multiple-testing correction &mdash; GPSEA 0.8.0 documentation</title>
+  <title>Multiple-testing correction &mdash; GPSEA 0.9.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../_static/documentation_options.js?v=39bb1c6d"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -25,8 +25,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Compare phenotype scores in genotype groups" href="phenotype-scores.html" />
-    <link rel="prev" title="Compare genotype and phenotype groups" href="phenotype-groups.html" /> 
+    <link rel="next" title="Compare phenotype scores" href="phenotype-scores.html" />
+    <link rel="prev" title="Compare genotype and phenotype classes" href="phenotype-classes.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -57,14 +57,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../exploratory.html">Cohort exploratory analysis</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">Statistical analyses</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="partitioning/index.html">Partitioning</a></li>
-<li class="toctree-l3"><a class="reference internal" href="phenotype-groups.html">Compare genotype and phenotype groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phenotype-classes.html">Compare genotype and phenotype classes</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Multiple-testing correction</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#background">Background</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#implementation-in-gpsea">Implementation in GPSEA</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="phenotype-scores.html">Compare phenotype scores in genotype groups</a></li>
-<li class="toctree-l3"><a class="reference internal" href="measurements.html">Compare measurement values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phenotype-scores.html">Compare phenotype scores</a></li>
+<li class="toctree-l3"><a class="reference internal" href="measurements.html">Compare measurements</a></li>
 <li class="toctree-l3"><a class="reference internal" href="survival.html">Survival analysis</a></li>
 </ul>
 </li>
@@ -217,7 +217,7 @@ We provide three filtering strategies, each of which is a subclass
 of <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcFilter" title="gpsea.analysis.mtc_filter.PhenotypeMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeMtcFilter</span></code></a>
 and can, therefore, be used
 as a component of <a class="reference internal" href="../../apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.HpoTermAnalysis" title="gpsea.analysis.pcats.HpoTermAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoTermAnalysis</span></code></a>,
-as shown in <a class="reference internal" href="phenotype-groups.html#custom-hpo-analysis"><span class="std std-ref">Custom analysis</span></a>.</p>
+as shown in <a class="reference internal" href="phenotype-classes.html#custom-hpo-analysis"><span class="std std-ref">Custom analysis</span></a>.</p>
 <p>There are three phenotype MT filters:</p>
 <ul class="simple">
 <li><p>Use all terms</p></li>
@@ -375,8 +375,8 @@ with the default value of <cite>0.4</cite> (40%).</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="phenotype-groups.html" class="btn btn-neutral float-left" title="Compare genotype and phenotype groups" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="phenotype-scores.html" class="btn btn-neutral float-right" title="Compare phenotype scores in genotype groups" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="phenotype-classes.html" class="btn btn-neutral float-left" title="Compare genotype and phenotype classes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="phenotype-scores.html" class="btn btn-neutral float-right" title="Compare phenotype scores" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

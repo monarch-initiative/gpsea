@@ -1,9 +1,9 @@
 .. _phenotype-score-stats:
 
 
-###########################################
-Compare phenotype scores in genotype groups
-###########################################
+########################
+Compare phenotype scores
+########################
 
 .. doctest::
   :hide:
@@ -11,11 +11,11 @@ Compare phenotype scores in genotype groups
   >>> from gpsea import _overwrite
 
 
-In this section, we show how to test for an association between genotype group and a phenotype score.
+In this section, we show how to test for an association between a genotype class and a phenotype score.
 We assume a cohort was preprocessed following the :ref:`input-data` section,
-and we use a genotype predicate and a phenotype scorer from the :ref:`partitioning` section to assign each cohort member
-into a genotype group and to compute a phenotype score.
-We use Mann-Whitney U test to test for differences in phenotype score distributions between the groups.
+and we use a genotype classifier and a phenotype scorer from the :ref:`partitioning` section
+to obtain a genotype class and phenotype score for each cohort member.
+We use Mann-Whitney U test to test for differences in phenotype score distributions between the classes.
 
 
 .. _mann-whitney-u-test:
@@ -24,25 +24,25 @@ We use Mann-Whitney U test to test for differences in phenotype score distributi
 Mann-Whitney U Test
 *******************
 
-We may want to compare the total number of occurences of a specific set of phenotypic features between two different genotype groups.
+We may want to compare the total number of occurences of a specific set of phenotypic features between two different genotype classes.
 For instance, `Jordan et al (2018) <https://pubmed.ncbi.nlm.nih.gov/29330883/>`_ found that the total number of structural defects
-of the brain, eye, heart, and kidney and sensorineural hearing loss seen in individuals with point mutations in the Atrophin-1 domain of the RERE gene
+of the brain, eye, heart, and kidney and sensorineural hearing loss seen in individuals with point mutations in the Atrophin-1 domain of *RERE*
 is significantly higher than expected based on the number of similar defects seen in individuals with putative loss-of-function variants.
 Since there are five potential defects, each individual has a count ranging between 0 and 5.
 
-We perform a Mann-Whitney U Test (or Wilcoxon Rank-Sum Test) to compare the distribution of such counts between genotype groups.
-This is a non-parametric test that compares the medians of the two groups to determine if they come from the same distribution.
+We perform a Mann-Whitney U Test (or Wilcoxon Rank-Sum Test) to compare the distribution of such counts between genotype classes.
+This is a non-parametric test that compares the medians of the two classes to determine if they come from the same distribution.
 
 >>> import scipy.stats as stats
->>> group1 = [0, 0, 1, 0, 2, 0, 1, 1, 1, 0, 2, 0, 0, 3, 1, 1, 1, 0]
->>> group2 = [4, 5, 3, 4, 3, 3, 3, 4, 4, 5, 5, 2, 3, 0, 3, 5, 2, 3]
->>> r = stats.mannwhitneyu(x=group1, y=group2, alternative = 'two-sided')
+>>> class1 = [0, 0, 1, 0, 2, 0, 1, 1, 1, 0, 2, 0, 0, 3, 1, 1, 1, 0]
+>>> class2 = [4, 5, 3, 4, 3, 3, 3, 4, 4, 5, 5, 2, 3, 0, 3, 5, 2, 3]
+>>> r = stats.mannwhitneyu(x=class1, y=class2, alternative = 'two-sided')
 >>> p_value = r.pvalue
 >>> float(p_value)
 6.348081479150902e-06
 
 
-p value of `6.348081479150901e-06` suggests a significant difference between the groups.
+p value of `6.348081479150901e-06` suggests a significant difference between the classes.
 
 
 ****************
@@ -110,13 +110,13 @@ In this example, the point mutation is a mutation that meets the following condi
 * the :ref:`change-length-of-an-allele` is equal to `0`
 
 >>> from gpsea.model import VariantEffect
->>> from gpsea.analysis.predicate.genotype import VariantPredicates
+>>> from gpsea.analysis.predicate import change_length, ref_length, anyof, variant_effect
 >>> point_mutation_effects = (
 ...     VariantEffect.MISSENSE_VARIANT,
 ... )
->>> point_mutation = VariantPredicates.change_length('==', 0) \
-...     & VariantPredicates.ref_length('==', 1) \
-...     & VariantPredicates.any(VariantPredicates.variant_effect(effect, tx_id) for effect in point_mutation_effects)
+>>> point_mutation = change_length('==', 0) \
+...     & ref_length('==', 1) \
+...     & anyof(variant_effect(effect, tx_id) for effect in point_mutation_effects)
 >>> point_mutation.description
 '((change length == 0 AND reference allele length == 1) AND MISSENSE_VARIANT on NM_001042681.2)'
 
@@ -129,20 +129,20 @@ For the loss of function predicate, the following variant effects are considered
 ...     VariantEffect.START_LOST,
 ...     VariantEffect.STOP_GAINED,
 ... )
->>> lof_mutation = VariantPredicates.any(VariantPredicates.variant_effect(eff, tx_id) for eff in lof_effects)
+>>> lof_mutation = anyof(variant_effect(eff, tx_id) for eff in lof_effects)
 >>> lof_mutation.description
 '(TRANSCRIPT_ABLATION on NM_001042681.2 OR FRAMESHIFT_VARIANT on NM_001042681.2 OR START_LOST on NM_001042681.2 OR STOP_GAINED on NM_001042681.2)'
 
 
-The genotype predicate will bin the patient into two groups: a point mutation group or the loss of function group:
+The genotype predicate will bin the patient into two classes: a point mutation or the loss of function:
 
->>> from gpsea.analysis.predicate.genotype import monoallelic_predicate
->>> gt_predicate = monoallelic_predicate(
+>>> from gpsea.analysis.clf import monoallelic_classifier
+>>> gt_clf = monoallelic_classifier(
 ...     a_predicate=point_mutation,
 ...     b_predicate=lof_mutation,
 ...     a_label="Point", b_label="LoF",
 ... )
->>> gt_predicate.group_labels
+>>> gt_clf.class_labels
 ('Point', 'LoF')
 
 
@@ -234,7 +234,7 @@ We execute the analysis by running
 
 >>> result = score_analysis.compare_genotype_vs_phenotype_score(
 ...     cohort=cohort,
-...     gt_predicate=gt_predicate,
+...     gt_clf=gt_clf,
 ...     pheno_scorer=pheno_scorer,
 ... )
 
@@ -263,7 +263,7 @@ Subject 2[PMID_29330883_Subject_2]           1          1
 The data frame provides a `genotype` category and a `phenotype_score` for each patient.
 The genotype category should be interpreted in the context of the genotype predicate:
 
->>> gt_id_to_name = {c.category.cat_id: c.category.name for c in gt_predicate.get_categorizations()}
+>>> gt_id_to_name = {c.category.cat_id: c.category.name for c in gt_clf.get_categorizations()}
 >>> gt_id_to_name
 {0: 'Point', 1: 'LoF'}
 
@@ -285,7 +285,7 @@ to visualize the phenotype score distributions:
 ... )
 
 
-.. image:: /img/rere_phenotype_score_boxplot.png
+.. image:: report/rere_phenotype_score_boxplot.png
    :alt: Phenotype score distribution
    :align: center
    :width: 600px
@@ -293,7 +293,7 @@ to visualize the phenotype score distributions:
 .. doctest:: phenotype-scores
    :hide:
 
-   >>> if _overwrite: fig.savefig('docs/img/rere_phenotype_score_boxplot.png')
+   >>> if _overwrite: fig.savefig('docs/user-guide/analyses/report/rere_phenotype_score_boxplot.png')
 
 
 

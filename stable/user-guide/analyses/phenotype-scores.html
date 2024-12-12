@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Compare phenotype scores in genotype groups &mdash; GPSEA 0.8.0 documentation</title>
+  <title>Compare phenotype scores &mdash; GPSEA 0.9.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../_static/documentation_options.js?v=39bb1c6d"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -23,7 +23,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Compare measurement values" href="measurements.html" />
+    <link rel="next" title="Compare measurements" href="measurements.html" />
     <link rel="prev" title="Multiple-testing correction" href="mtc.html" /> 
 </head>
 
@@ -55,14 +55,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../exploratory.html">Cohort exploratory analysis</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">Statistical analyses</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="partitioning/index.html">Partitioning</a></li>
-<li class="toctree-l3"><a class="reference internal" href="phenotype-groups.html">Compare genotype and phenotype groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phenotype-classes.html">Compare genotype and phenotype classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mtc.html">Multiple-testing correction</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Compare phenotype scores in genotype groups</a><ul>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Compare phenotype scores</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mann-whitney-u-test">Mann-Whitney U Test</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#example-analysis">Example analysis</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="measurements.html">Compare measurement values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="measurements.html">Compare measurements</a></li>
 <li class="toctree-l3"><a class="reference internal" href="survival.html">Survival analysis</a></li>
 </ul>
 </li>
@@ -88,7 +88,7 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">User guide</a></li>
           <li class="breadcrumb-item"><a href="index.html">Statistical analyses</a></li>
-      <li class="breadcrumb-item active">Compare phenotype scores in genotype groups</li>
+      <li class="breadcrumb-item active">Compare phenotype scores</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/user-guide/analyses/phenotype-scores.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -98,32 +98,32 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="compare-phenotype-scores-in-genotype-groups">
-<span id="phenotype-score-stats"></span><h1>Compare phenotype scores in genotype groups<a class="headerlink" href="#compare-phenotype-scores-in-genotype-groups" title="Link to this heading"></a></h1>
-<p>In this section, we show how to test for an association between genotype group and a phenotype score.
+  <section id="compare-phenotype-scores">
+<span id="phenotype-score-stats"></span><h1>Compare phenotype scores<a class="headerlink" href="#compare-phenotype-scores" title="Link to this heading"></a></h1>
+<p>In this section, we show how to test for an association between a genotype class and a phenotype score.
 We assume a cohort was preprocessed following the <a class="reference internal" href="../input-data.html#input-data"><span class="std std-ref">Input data</span></a> section,
-and we use a genotype predicate and a phenotype scorer from the <a class="reference internal" href="partitioning/index.html#partitioning"><span class="std std-ref">Partitioning</span></a> section to assign each cohort member
-into a genotype group and to compute a phenotype score.
-We use Mann-Whitney U test to test for differences in phenotype score distributions between the groups.</p>
+and we use a genotype classifier and a phenotype scorer from the <a class="reference internal" href="partitioning/index.html#partitioning"><span class="std std-ref">Partitioning</span></a> section
+to obtain a genotype class and phenotype score for each cohort member.
+We use Mann-Whitney U test to test for differences in phenotype score distributions between the classes.</p>
 <section id="mann-whitney-u-test">
 <span id="id1"></span><h2>Mann-Whitney U Test<a class="headerlink" href="#mann-whitney-u-test" title="Link to this heading"></a></h2>
-<p>We may want to compare the total number of occurences of a specific set of phenotypic features between two different genotype groups.
+<p>We may want to compare the total number of occurences of a specific set of phenotypic features between two different genotype classes.
 For instance, <a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/29330883/">Jordan et al (2018)</a> found that the total number of structural defects
-of the brain, eye, heart, and kidney and sensorineural hearing loss seen in individuals with point mutations in the Atrophin-1 domain of the RERE gene
+of the brain, eye, heart, and kidney and sensorineural hearing loss seen in individuals with point mutations in the Atrophin-1 domain of <em>RERE</em>
 is significantly higher than expected based on the number of similar defects seen in individuals with putative loss-of-function variants.
 Since there are five potential defects, each individual has a count ranging between 0 and 5.</p>
-<p>We perform a Mann-Whitney U Test (or Wilcoxon Rank-Sum Test) to compare the distribution of such counts between genotype groups.
-This is a non-parametric test that compares the medians of the two groups to determine if they come from the same distribution.</p>
+<p>We perform a Mann-Whitney U Test (or Wilcoxon Rank-Sum Test) to compare the distribution of such counts between genotype classes.
+This is a non-parametric test that compares the medians of the two classes to determine if they come from the same distribution.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">stats</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">group1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">group2</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">mannwhitneyu</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">group1</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">group2</span><span class="p">,</span> <span class="n">alternative</span> <span class="o">=</span> <span class="s1">&#39;two-sided&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">class1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">class2</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">mannwhitneyu</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">class1</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">class2</span><span class="p">,</span> <span class="n">alternative</span> <span class="o">=</span> <span class="s1">&#39;two-sided&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">p_value</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">pvalue</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">float</span><span class="p">(</span><span class="n">p_value</span><span class="p">)</span>
 <span class="go">6.348081479150902e-06</span>
 </pre></div>
 </div>
-<p>p value of <cite>6.348081479150901e-06</cite> suggests a significant difference between the groups.</p>
+<p>p value of <cite>6.348081479150901e-06</cite> suggests a significant difference between the classes.</p>
 </section>
 <section id="example-analysis">
 <h2>Example analysis<a class="headerlink" href="#example-analysis" title="Link to this heading"></a></h2>
@@ -178,13 +178,13 @@ is a point mutation or a loss of function mutation.</p>
 <li><p>the <a class="reference internal" href="../glossary.html#change-length-of-an-allele"><span class="std std-ref">Change length of an allele</span></a> is equal to <cite>0</cite></p></li>
 </ul>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate</span> <span class="kn">import</span> <span class="n">change_length</span><span class="p">,</span> <span class="n">ref_length</span><span class="p">,</span> <span class="n">anyof</span><span class="p">,</span> <span class="n">variant_effect</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">point_mutation_effects</span> <span class="o">=</span> <span class="p">(</span>
 <span class="gp">... </span>    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">point_mutation</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">change_length</span><span class="p">(</span><span class="s1">&#39;==&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> \
-<span class="gp">... </span>    <span class="o">&amp;</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">ref_length</span><span class="p">(</span><span class="s1">&#39;==&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> \
-<span class="gp">... </span>    <span class="o">&amp;</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">effect</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">effect</span> <span class="ow">in</span> <span class="n">point_mutation_effects</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">point_mutation</span> <span class="o">=</span> <span class="n">change_length</span><span class="p">(</span><span class="s1">&#39;==&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> \
+<span class="gp">... </span>    <span class="o">&amp;</span> <span class="n">ref_length</span><span class="p">(</span><span class="s1">&#39;==&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> \
+<span class="gp">... </span>    <span class="o">&amp;</span> <span class="n">anyof</span><span class="p">(</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">effect</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">effect</span> <span class="ow">in</span> <span class="n">point_mutation_effects</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">point_mutation</span><span class="o">.</span><span class="n">description</span>
 <span class="go">&#39;((change length == 0 AND reference allele length == 1) AND MISSENSE_VARIANT on NM_001042681.2)&#39;</span>
 </pre></div>
@@ -196,19 +196,19 @@ is a point mutation or a loss of function mutation.</p>
 <span class="gp">... </span>    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">START_LOST</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">STOP_GAINED</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">lof_mutation</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">VariantPredicates</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">eff</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">eff</span> <span class="ow">in</span> <span class="n">lof_effects</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lof_mutation</span> <span class="o">=</span> <span class="n">anyof</span><span class="p">(</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">eff</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">eff</span> <span class="ow">in</span> <span class="n">lof_effects</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">lof_mutation</span><span class="o">.</span><span class="n">description</span>
 <span class="go">&#39;(TRANSCRIPT_ABLATION on NM_001042681.2 OR FRAMESHIFT_VARIANT on NM_001042681.2 OR START_LOST on NM_001042681.2 OR STOP_GAINED on NM_001042681.2)&#39;</span>
 </pre></div>
 </div>
-<p>The genotype predicate will bin the patient into two groups: a point mutation group or the loss of function group:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">monoallelic_predicate</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">monoallelic_predicate</span><span class="p">(</span>
+<p>The genotype predicate will bin the patient into two classes: a point mutation or the loss of function:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.clf</span> <span class="kn">import</span> <span class="n">monoallelic_classifier</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span> <span class="o">=</span> <span class="n">monoallelic_classifier</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">a_predicate</span><span class="o">=</span><span class="n">point_mutation</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">b_predicate</span><span class="o">=</span><span class="n">lof_mutation</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">a_label</span><span class="o">=</span><span class="s2">&quot;Point&quot;</span><span class="p">,</span> <span class="n">b_label</span><span class="o">=</span><span class="s2">&quot;LoF&quot;</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">group_labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span><span class="o">.</span><span class="n">class_labels</span>
 <span class="go">(&#39;Point&#39;, &#39;LoF&#39;)</span>
 </pre></div>
 </div>
@@ -290,7 +290,7 @@ for using with phenotype scores.</p>
 <p>We execute the analysis by running</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">score_analysis</span><span class="o">.</span><span class="n">compare_genotype_vs_phenotype_score</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">gt_predicate</span><span class="o">=</span><span class="n">gt_predicate</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">gt_clf</span><span class="o">=</span><span class="n">gt_clf</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">pheno_scorer</span><span class="o">=</span><span class="n">pheno_scorer</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 </pre></div>
@@ -316,7 +316,7 @@ with point vs. loss-of-function mutations.</p>
 </div>
 <p>The data frame provides a <cite>genotype</cite> category and a <cite>phenotype_score</cite> for each patient.
 The genotype category should be interpreted in the context of the genotype predicate:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gt_id_to_name</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">cat_id</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_categorizations</span><span class="p">()}</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gt_id_to_name</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">cat_id</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">gt_clf</span><span class="o">.</span><span class="n">get_categorizations</span><span class="p">()}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_id_to_name</span>
 <span class="go">{0: &#39;Point&#39;, 1: &#39;LoF&#39;}</span>
 </pre></div>
@@ -353,7 +353,7 @@ lying within 1.5x the inter-quartile range (IQR) from the box.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="mtc.html" class="btn btn-neutral float-left" title="Multiple-testing correction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="measurements.html" class="btn btn-neutral float-right" title="Compare measurement values" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="measurements.html" class="btn btn-neutral float-right" title="Compare measurements" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

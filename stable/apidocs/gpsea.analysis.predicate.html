@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.predicate package &mdash; GPSEA 0.8.0 documentation</title>
+  <title>gpsea.analysis.predicate package &mdash; GPSEA 0.9.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../_static/documentation_options.js?v=39bb1c6d"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -23,7 +23,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="gpsea.analysis.predicate.genotype package" href="gpsea.analysis.predicate.genotype.html" />
+    <link rel="next" title="gpsea.analysis.pscore package" href="gpsea.analysis.pscore.html" />
     <link rel="prev" title="gpsea.analysis.pcats.stats package" href="gpsea.analysis.pcats.stats.html" /> 
 </head>
 
@@ -97,161 +97,389 @@
   <section id="module-gpsea.analysis.predicate">
 <span id="gpsea-analysis-predicate-package"></span><h1>gpsea.analysis.predicate package<a class="headerlink" href="#module-gpsea.analysis.predicate" title="Link to this heading"></a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.PolyPredicate">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.</span></span><span class="sig-name descname"><span class="pre">PolyPredicate</span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_api.html#PolyPredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.PolyPredicate" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">C</span></code>], <a class="reference internal" href="gpsea.analysis.html#gpsea.analysis.Partitioning" title="gpsea.analysis._partition.Partitioning"><code class="xref py py-class docutils literal notranslate"><span class="pre">Partitioning</span></code></a></p>
-<p><cite>PolyPredicate</cite> partitions a <a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model.Patient"><code class="xref py py-class docutils literal notranslate"><span class="pre">Patient</span></code></a> into one of several discrete groups
-represented by a <a class="reference internal" href="#gpsea.analysis.predicate.Categorization" title="gpsea.analysis.predicate.Categorization"><code class="xref py py-class docutils literal notranslate"><span class="pre">Categorization</span></code></a>.</p>
-<p>The groups must be <em>exclusive</em> - the patient can be binned into one and only one group,
-and <em>exhaustive</em> - the groups must cover all possible scenarios.</p>
-<p>However, if the patient cannot be assigned into any meaningful category, <cite>None</cite> can be returned.
-As a rule of thumb, returning <cite>None</cite> will exclude the patient from the analysis.</p>
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.VariantPredicate">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.</span></span><span class="sig-name descname"><span class="pre">VariantPredicate</span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_api.html#VariantPredicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.VariantPredicate" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="gpsea.analysis.html#gpsea.analysis.Partitioning" title="gpsea.analysis._partition.Partitioning"><code class="xref py py-class docutils literal notranslate"><span class="pre">Partitioning</span></code></a></p>
+<p><cite>VariantPredicate</cite> tests if a variant meets a certain criterion.</p>
+<p>The subclasses <em>MUST</em> implement all abstract methods of this class
+<em>plus</em> <code class="docutils literal notranslate"><span class="pre">__eq__</span></code> and <code class="docutils literal notranslate"><span class="pre">__hash__</span></code>, to support building the compound predicates.</p>
+<p>We <em>strongly</em> recommend implementing <code class="docutils literal notranslate"><span class="pre">__str__</span></code> and <code class="docutils literal notranslate"><span class="pre">__repr__</span></code> as well.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.PolyPredicate.get_categorizations">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_categorizations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><span class="pre">C</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_api.html#PolyPredicate.get_categorizations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.PolyPredicate.get_categorizations" title="Link to this definition"></a></dt>
-<dd><p>Get a sequence of all categories which the predicate can produce.</p>
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.VariantPredicate.get_question">
+<span class="sig-name descname"><span class="pre">get_question</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_api.html#VariantPredicate.get_question"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.VariantPredicate.get_question" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <cite>str</cite> with the question the predicate can answer.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.PolyPredicate.get_categories">
-<span class="sig-name descname"><span class="pre">get_categories</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.13)"><span class="pre">Iterator</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.analysis.predicate.PatientCategory" title="gpsea.analysis.predicate._api.PatientCategory"><span class="pre">PatientCategory</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_api.html#PolyPredicate.get_categories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.PolyPredicate.get_categories" title="Link to this definition"></a></dt>
-<dd><p>Get an iterator with <a class="reference internal" href="#gpsea.analysis.predicate.PatientCategory" title="gpsea.analysis.predicate.PatientCategory"><code class="xref py py-class docutils literal notranslate"><span class="pre">PatientCategory</span></code></a> instances that the predicate can produce.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.PolyPredicate.group_labels">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">group_labels</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Collection" title="(in Python v3.13)"><span class="pre">Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gpsea.analysis.predicate.PolyPredicate.group_labels" title="Link to this definition"></a></dt>
-<dd><p>Get a collection with names of the <a class="reference internal" href="#gpsea.analysis.predicate.PatientCategory" title="gpsea.analysis.predicate.PatientCategory"><code class="xref py py-class docutils literal notranslate"><span class="pre">PatientCategory</span></code></a> items that the predicate can produce.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.PolyPredicate.summarize_groups">
-<span class="sig-name descname"><span class="pre">summarize_groups</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_api.html#PolyPredicate.summarize_groups"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.PolyPredicate.summarize_groups" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.PolyPredicate.summarize">
-<span class="sig-name descname"><span class="pre">summarize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TextIO" title="(in Python v3.13)"><span class="pre">TextIO</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_api.html#PolyPredicate.summarize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.PolyPredicate.summarize" title="Link to this definition"></a></dt>
-<dd><p>Summarize the predicate into the <cite>out</cite> handle.</p>
-<p>The summary includes the name, summary, and the groups the predicate can assign individuals into.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.PolyPredicate.n_categorizations">
-<span class="sig-name descname"><span class="pre">n_categorizations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_api.html#PolyPredicate.n_categorizations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.PolyPredicate.n_categorizations" title="Link to this definition"></a></dt>
-<dd><p>Get the number of categorizations the predicate can produce.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.PolyPredicate.get_category">
-<span class="sig-name descname"><span class="pre">get_category</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.PatientCategory" title="gpsea.analysis.predicate._api.PatientCategory"><span class="pre">PatientCategory</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_api.html#PolyPredicate.get_category"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.PolyPredicate.get_category" title="Link to this definition"></a></dt>
-<dd><p>Get the category name for a <a class="reference internal" href="#gpsea.analysis.predicate.PatientCategory.cat_id" title="gpsea.analysis.predicate.PatientCategory.cat_id"><code class="xref py py-class docutils literal notranslate"><span class="pre">PatientCategory.cat_id</span></code></a>.</p>
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.VariantPredicate.test">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variant</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.model.html#gpsea.model.Variant" title="gpsea.model._variant.Variant"><span class="pre">Variant</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_api.html#VariantPredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.VariantPredicate.test" title="Link to this definition"></a></dt>
+<dd><p>Test if the <cite>variant</cite> meets a criterion.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cat_id</strong> – an <cite>int</cite> with the id.</p>
+<dd class="field-odd"><p><strong>variant</strong> – an instance of <a class="reference internal" href="gpsea.model.html#gpsea.model.Variant" title="gpsea.model.Variant"><code class="xref py py-class docutils literal notranslate"><span class="pre">Variant</span></code></a> to test.</p>
 </dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p>ValueError if there is no such category was defined.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>True</cite> if the variant meets the criterion and <cite>False</cite> otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.PolyPredicate.get_category_name">
-<span class="sig-name descname"><span class="pre">get_category_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_api.html#PolyPredicate.get_category_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.PolyPredicate.get_category_name" title="Link to this definition"></a></dt>
-<dd><p>Get the category name for a <a class="reference internal" href="#gpsea.analysis.predicate.PatientCategory.cat_id" title="gpsea.analysis.predicate.PatientCategory.cat_id"><code class="xref py py-class docutils literal notranslate"><span class="pre">PatientCategory.cat_id</span></code></a>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cat_id</strong> – an <cite>int</cite> with the id.</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p>ValueError if there is no such category was defined.</p>
-</dd>
-</dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.PolyPredicate.test">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">C</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_api.html#PolyPredicate.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.PolyPredicate.test" title="Link to this definition"></a></dt>
-<dd><p>Assign a <cite>patient</cite> into a categorization.</p>
-<p>Return <cite>None</cite> if the patient cannot be assigned into any meaningful category.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.true">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.</span></span><span class="sig-name descname"><span class="pre">true</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_variant.html#true"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.true" title="Link to this definition"></a></dt>
+<dd><p>The most inclusive variant predicate - returns <cite>True</cite> for any variant whatsoever.</p>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.PatientCategory">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.</span></span><span class="sig-name descname"><span class="pre">PatientCategory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_api.html#PatientCategory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.PatientCategory" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p><cite>PatientCategory</cite> represents one of several exclusive discrete groups.</p>
-<p>Patient category has <a class="reference internal" href="#gpsea.analysis.predicate.PatientCategory.cat_id" title="gpsea.analysis.predicate.PatientCategory.cat_id"><code class="xref py py-attr docutils literal notranslate"><span class="pre">cat_id</span></code></a>, a unique numeric identifier of the group,
-<a class="reference internal" href="#gpsea.analysis.predicate.PatientCategory.name" title="gpsea.analysis.predicate.PatientCategory.name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">name</span></code></a> with human-readable group name, and <a class="reference internal" href="#gpsea.analysis.predicate.PatientCategory.description" title="gpsea.analysis.predicate.PatientCategory.description"><code class="xref py py-attr docutils literal notranslate"><span class="pre">description</span></code></a> with an optional verbose description.</p>
-<dl class="py property">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.PatientCategory.cat_id">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cat_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#gpsea.analysis.predicate.PatientCategory.cat_id" title="Link to this definition"></a></dt>
-<dd><p>Get an <cite>int</cite> with the unique numeric identifier of the group.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.PatientCategory.name">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.predicate.PatientCategory.name" title="Link to this definition"></a></dt>
-<dd><p>Get a <cite>str</cite> with a human-readable name of the group.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.PatientCategory.description">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="headerlink" href="#gpsea.analysis.predicate.PatientCategory.description" title="Link to this definition"></a></dt>
-<dd><p>Get a <cite>str</cite> with an optional detailed group description.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.Categorization">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.</span></span><span class="sig-name descname"><span class="pre">Categorization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.analysis.predicate.PatientCategory" title="gpsea.analysis.predicate._api.PatientCategory"><span class="pre">PatientCategory</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_api.html#Categorization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.Categorization" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p><cite>Categorization</cite> represents one of discrete group a <a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model.Patient"><code class="xref py py-class docutils literal notranslate"><span class="pre">Patient</span></code></a> can be assigned into.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.Categorization.from_raw_parts">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_raw_parts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_api.html#Categorization.from_raw_parts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.Categorization.from_raw_parts" title="Link to this definition"></a></dt>
-<dd><p>Create <cite>Categorization</cite> from the <cite>cat_id</cite> identifier, <cite>name</cite>, and an optional <cite>description</cite>.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="gpsea.analysis.predicate.Categorization.category">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">category</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#gpsea.analysis.predicate.PatientCategory" title="gpsea.analysis.predicate._api.PatientCategory"><span class="pre">PatientCategory</span></a></em><a class="headerlink" href="#gpsea.analysis.predicate.Categorization.category" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<section id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html">gpsea.analysis.predicate.genotype package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.GenotypePolyPredicate"><code class="docutils literal notranslate"><span class="pre">GenotypePolyPredicate</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.sex_predicate"><code class="docutils literal notranslate"><span class="pre">sex_predicate()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.diagnosis_predicate"><code class="docutils literal notranslate"><span class="pre">diagnosis_predicate()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.monoallelic_predicate"><code class="docutils literal notranslate"><span class="pre">monoallelic_predicate()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.biallelic_predicate"><code class="docutils literal notranslate"><span class="pre">biallelic_predicate()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.allele_count"><code class="docutils literal notranslate"><span class="pre">allele_count()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.AlleleCounter"><code class="docutils literal notranslate"><span class="pre">AlleleCounter</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicate"><code class="docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.genotype.html#gpsea.analysis.predicate.genotype.VariantPredicates"><code class="docutils literal notranslate"><span class="pre">VariantPredicates</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="gpsea.analysis.predicate.phenotype.html">gpsea.analysis.predicate.phenotype package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PhenotypePolyPredicate"><code class="docutils literal notranslate"><span class="pre">PhenotypePolyPredicate</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.HpoPredicate"><code class="docutils literal notranslate"><span class="pre">HpoPredicate</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.DiseasePresencePredicate"><code class="docutils literal notranslate"><span class="pre">DiseasePresencePredicate</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.PhenotypeCategorization"><code class="docutils literal notranslate"><span class="pre">PhenotypeCategorization</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.prepare_predicates_for_terms_of_interest"><code class="docutils literal notranslate"><span class="pre">prepare_predicates_for_terms_of_interest()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.predicate.phenotype.html#gpsea.analysis.predicate.phenotype.prepare_hpo_terms_of_interest"><code class="docutils literal notranslate"><span class="pre">prepare_hpo_terms_of_interest()</span></code></a></li>
-</ul>
-</li>
-</ul>
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.allof">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.</span></span><span class="sig-name descname"><span class="pre">allof</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_variant.html#allof"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.allof" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> that returns <cite>True</cite> if ALL <cite>predicates</cite> evaluate to <cite>True</cite>.</p>
+<p>This is useful for building compound predicates programmatically.</p>
+<p><strong>Example</strong></p>
+<p>Build a predicate to test if variant has a functional annotation to genes <em>SURF1</em> and <em>SURF2</em>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate</span> <span class="kn">import</span> <span class="n">allof</span><span class="p">,</span> <span class="n">gene</span>
+</pre></div>
 </div>
-</section>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">genes</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;SURF1&#39;</span><span class="p">,</span> <span class="s1">&#39;SURF2&#39;</span><span class="p">,)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span> <span class="o">=</span> <span class="n">allof</span><span class="p">(</span><span class="n">gene</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">genes</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span><span class="o">.</span><span class="n">description</span>
+<span class="go">&#39;(affects SURF1 AND affects SURF2)&#39;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>predicates</strong> – an iterable of predicates to test</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.anyof">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.</span></span><span class="sig-name descname"><span class="pre">anyof</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_variant.html#anyof"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.anyof" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> that returns <cite>True</cite> if ANY of the <cite>predicates</cite> evaluates to <cite>True</cite>.</p>
+<p>This can be useful for building compound predicates programmatically.</p>
+<p><strong>Example</strong></p>
+<p>Build a predicate to test if variant leads to a missense
+or nonsense change on a fictional transcript <cite>NM_123456.7</cite>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate</span> <span class="kn">import</span> <span class="n">anyof</span><span class="p">,</span> <span class="n">variant_effect</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tx_id</span> <span class="o">=</span> <span class="s1">&#39;NM_123456.7&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">effects</span> <span class="o">=</span> <span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="o">.</span><span class="n">STOP_GAINED</span><span class="p">,)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span> <span class="o">=</span> <span class="n">anyof</span><span class="p">(</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">effects</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span><span class="o">.</span><span class="n">description</span>
+<span class="go">&#39;(MISSENSE_VARIANT on NM_123456.7 OR STOP_GAINED on NM_123456.7)&#39;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>predicates</strong> – an iterable of predicates to test</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.variant_effect">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.</span></span><span class="sig-name descname"><span class="pre">variant_effect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">effect</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.model.html#gpsea.model.VariantEffect" title="gpsea.model._variant_effects.VariantEffect"><span class="pre">VariantEffect</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tx_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_variant.html#variant_effect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.variant_effect" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> to test if the functional annotation predicts the variant to lead to
+a certain variant effect.</p>
+<p><strong>Example</strong></p>
+<p>Make a predicate for testing if the variant leads to a missense change on transcript <cite>NM_123.4</cite>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate</span> <span class="kn">import</span> <span class="n">variant_effect</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span> <span class="o">=</span> <span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="s1">&#39;NM_123.4&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span><span class="o">.</span><span class="n">description</span>
+<span class="go">&#39;MISSENSE_VARIANT on NM_123.4&#39;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>effect</strong> – the target <a class="reference internal" href="gpsea.model.html#gpsea.model.VariantEffect" title="gpsea.model.VariantEffect"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantEffect</span></code></a></p></li>
+<li><p><strong>tx_id</strong> – a <cite>str</cite> with the accession ID of the target transcript (e.g. <cite>NM_123.4</cite>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.variant_key">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.</span></span><span class="sig-name descname"><span class="pre">variant_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_variant.html#variant_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.variant_key" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> that tests if the variant matches the provided <cite>key</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> – a <cite>str</cite> with the variant key (e.g. <cite>X_12345_12345_C_G</cite> or <cite>22_10001_20000_INV</cite>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.gene">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.</span></span><span class="sig-name descname"><span class="pre">gene</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symbol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_variant.html#gene"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.gene" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> that tests if the variant affects a given gene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>symbol</strong> – a <cite>str</cite> with the gene symbol (e.g. <code class="docutils literal notranslate"><span class="pre">'FBN1'</span></code>).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.transcript">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.</span></span><span class="sig-name descname"><span class="pre">transcript</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tx_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_variant.html#transcript"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.transcript" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> that tests if the variant affects a transcript.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tx_id</strong> – a <cite>str</cite> with the accession ID of the target transcript (e.g. <cite>NM_123.4</cite>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.exon">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.</span></span><span class="sig-name descname"><span class="pre">exon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tx_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_variant.html#exon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.exon" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> that tests if the variant overlaps with an exon of a specific transcript.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>We use 1-based numbering to number the exons,
+not the usual 0-based numbering of the computer science.
+Therefore, the first exon of the transcript
+has <code class="docutils literal notranslate"><span class="pre">exon_number==1</span></code>, the second exon is <code class="docutils literal notranslate"><span class="pre">2</span></code>, and so on …</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>We do not check if the <cite>exon_number</cite> spans
+beyond the number of exons of the given <cite>transcript_id</cite>!
+Therefore, <code class="docutils literal notranslate"><span class="pre">exon_number==10,000</span></code> will effectively return <cite>False</cite>
+for <em>all</em> variants!!! 😱
+Well, at least the genome variants of the <em>Homo sapiens sapiens</em> taxon…</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exon</strong> – a positive <cite>int</cite> with the index of the target exon
+(e.g. <cite>1</cite> for the 1st exon, <cite>2</cite> for the 2nd, …)</p></li>
+<li><p><strong>tx_id</strong> – a <cite>str</cite> with the accession ID of the target transcript (e.g. <cite>NM_123.4</cite>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.protein_region">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.</span></span><span class="sig-name descname"><span class="pre">protein_region</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="gpsea.model.genome.html#gpsea.model.genome.Region" title="gpsea.model.genome._genome.Region"><span class="pre">Region</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tx_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_variant.html#protein_region"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.protein_region" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> that tests if the variant
+overlaps with a region on a protein of a specific transcript.</p>
+<p class="rubric">Example</p>
+<p>Create a predicate to test if the variant overlaps with the 5th aminoacid
+of the protein encoded by a fictional transcript <cite>NM_1234.5</cite>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate</span> <span class="kn">import</span> <span class="n">protein_region</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">overlaps_with_fifth_aa</span> <span class="o">=</span> <span class="n">protein_region</span><span class="p">(</span><span class="n">region</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">tx_id</span><span class="o">=</span><span class="s2">&quot;NM_1234.5&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">overlaps_with_fifth_aa</span><span class="o">.</span><span class="n">description</span>
+<span class="go">&#39;overlaps with [5,5] region of the protein encoded by NM_1234.5&#39;</span>
+</pre></div>
+</div>
+<p>Create a predicate to test if the variant overlaps with the first 20 aminoacid residues of the same transcript:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">overlaps_with_first_20</span> <span class="o">=</span> <span class="n">protein_region</span><span class="p">(</span><span class="n">region</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="n">tx_id</span><span class="o">=</span><span class="s2">&quot;NM_1234.5&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">overlaps_with_first_20</span><span class="o">.</span><span class="n">description</span>
+<span class="go">&#39;overlaps with [1,20] region of the protein encoded by NM_1234.5&#39;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>region</strong> – a <a class="reference internal" href="gpsea.model.genome.html#gpsea.model.genome.Region" title="gpsea.model.genome.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a> that gives the start and end coordinate
+of the region of interest on a protein strand or a tuple with 1-based coordinates.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.is_large_imprecise_sv">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.</span></span><span class="sig-name descname"><span class="pre">is_large_imprecise_sv</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_variant.html#is_large_imprecise_sv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.is_large_imprecise_sv" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> for testing if the variant is a large structural variant (SV)
+without exact breakpoint coordinates.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.is_structural_variant">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.</span></span><span class="sig-name descname"><span class="pre">is_structural_variant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_variant.html#is_structural_variant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.is_structural_variant" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> for testing if the variant is a structural variant (SV).</p>
+<p>SVs are usually defined as variant affecting more than a certain number of base pairs.
+The thresholds vary in the literature, but here we use 50bp as a default.</p>
+<p>Any variant that affects at least <cite>threshold</cite> base pairs is considered an SV.
+Large SVs with unknown breakpoint coordinates or translocations
+(<a class="reference internal" href="gpsea.model.html#gpsea.model.VariantClass.TRANSLOCATION" title="gpsea.model.VariantClass.TRANSLOCATION"><code class="xref py py-class docutils literal notranslate"><span class="pre">TRANSLOCATION</span></code></a>) are always considered as an SV.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>threshold</strong> – a non-negative <cite>int</cite> with the number of base pairs that must be affected</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.structural_type">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.</span></span><span class="sig-name descname"><span class="pre">structural_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curie</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_variant.html#structural_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.structural_type" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> for testing if the variant has a certain structural type.</p>
+<p>We recommend using a descendant of <cite>structural_variant</cite>
+(<a class="reference external" href="https://purl.obolibrary.org/obo/SO_0001537">SO:0001537</a>)
+as the structural type.</p>
+<p><strong>Example</strong></p>
+<p>Make a predicate for testing if the variant is a chromosomal deletion (<cite>SO:1000029</cite>):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate</span> <span class="kn">import</span> <span class="n">structural_type</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span> <span class="o">=</span> <span class="n">structural_type</span><span class="p">(</span><span class="s1">&#39;SO:1000029&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span><span class="o">.</span><span class="n">description</span>
+<span class="go">&#39;structural type is SO:1000029&#39;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>curie</strong> – compact uniform resource identifier (CURIE) with the structural type to test.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.variant_class">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.</span></span><span class="sig-name descname"><span class="pre">variant_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variant_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.model.html#gpsea.model.VariantClass" title="gpsea.model._variant.VariantClass"><span class="pre">VariantClass</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_variant.html#variant_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.variant_class" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> for testing if the variant
+is of a certain <a class="reference internal" href="gpsea.model.html#gpsea.model.VariantClass" title="gpsea.model.VariantClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantClass</span></code></a>.</p>
+<p><strong>Example</strong></p>
+<p>Make a predicate to test if the variant is a deletion:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantClass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate</span> <span class="kn">import</span> <span class="n">variant_class</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span> <span class="o">=</span> <span class="n">variant_class</span><span class="p">(</span><span class="n">VariantClass</span><span class="o">.</span><span class="n">DEL</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span><span class="o">.</span><span class="n">description</span>
+<span class="go">&#39;variant class is DEL&#39;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>variant_class</strong> – the variant class to test.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.ref_length">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.</span></span><span class="sig-name descname"><span class="pre">ref_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.13)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'&lt;'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'&lt;='</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'=='</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'!='</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'&gt;='</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'&gt;'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_variant.html#ref_length"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.ref_length" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> for testing if the reference (REF) allele
+of variant is above, below, or (not) equal to certain <cite>length</cite>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>See <a class="reference internal" href="../user-guide/glossary.html#length-of-the-reference-allele"><span class="std std-ref">Length of the reference allele</span></a> for more info.</p>
+</div>
+<p><strong>Example</strong></p>
+<p>Prepare a predicate that tests that the REF allele includes more than 5 base pairs:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate</span> <span class="kn">import</span> <span class="n">ref_length</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span> <span class="o">=</span> <span class="n">ref_length</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span><span class="o">.</span><span class="n">description</span>
+<span class="go">&#39;reference allele length &gt; 5&#39;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>operator</strong> – a <cite>str</cite> with the desired test. Must be one of <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">'&lt;',</span> <span class="pre">'&lt;=',</span> <span class="pre">'==',</span> <span class="pre">'!=',</span> <span class="pre">'&gt;=',</span> <span class="pre">'&gt;'</span> <span class="pre">}</span></code>.</p></li>
+<li><p><strong>length</strong> – a non-negative <cite>int</cite> with the length threshold.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.change_length">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.</span></span><span class="sig-name descname"><span class="pre">change_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.13)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'&lt;'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'&lt;='</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'=='</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'!='</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'&gt;='</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'&gt;'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_variant.html#change_length"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.change_length" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> for testing if the variant’s change length
+is above, below, or (not) equal to certain <cite>threshold</cite>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>See <a class="reference internal" href="../user-guide/glossary.html#change-length-of-an-allele"><span class="std std-ref">Change length of an allele</span></a> for more info.</p>
+</div>
+<p><strong>Example</strong></p>
+<p>Make a predicate for testing if the change length is less than or equal to <cite>-10</cite>,
+e.g. to test if a variant is a <em>deletion</em> leading to removal of at least 10 base pairs:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate</span> <span class="kn">import</span> <span class="n">change_length</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span> <span class="o">=</span> <span class="n">change_length</span><span class="p">(</span><span class="s1">&#39;&lt;=&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span><span class="o">.</span><span class="n">description</span>
+<span class="go">&#39;change length &lt;= -10&#39;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>operator</strong> – a <cite>str</cite> with the desired test. Must be one of <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">'&lt;',</span> <span class="pre">'&lt;=',</span> <span class="pre">'==',</span> <span class="pre">'!=',</span> <span class="pre">'&gt;=',</span> <span class="pre">'&gt;'</span> <span class="pre">}</span></code>.</p></li>
+<li><p><strong>threshold</strong> – an <cite>int</cite> with the threshold. Can be negative, zero, or positive.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.is_structural_deletion">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.</span></span><span class="sig-name descname"><span class="pre">is_structural_deletion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-50</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_variant.html#is_structural_deletion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.is_structural_deletion" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> for testing if the variant
+is a <a class="reference external" href="https://purl.obolibrary.org/obo/SO_1000029">chromosomal deletion</a> or a structural variant deletion
+that leads to removal of at least <em>n</em> base pairs (50bp by default).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The predicate uses <a class="reference internal" href="gpsea.model.html#gpsea.model.VariantCoordinates.change_length" title="gpsea.model.VariantCoordinates.change_length"><code class="xref py py-meth docutils literal notranslate"><span class="pre">change_length()</span></code></a>
+to determine if the length of the variant is above or below <cite>threshold</cite>.</p>
+<p><strong>IMPORTANT</strong>: the change lengths of deletions are <em>negative</em>, since the alternate allele
+is shorter than the reference allele. See <a class="reference internal" href="../user-guide/glossary.html#change-length-of-an-allele"><span class="std std-ref">Change length of an allele</span></a> for more info.</p>
+</div>
+<p><strong>Example</strong></p>
+<p>Prepare a predicate for testing if the variant is a chromosomal deletion that removes at least 20 base pairs:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate</span> <span class="kn">import</span> <span class="n">is_structural_deletion</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span> <span class="o">=</span> <span class="n">is_structural_deletion</span><span class="p">(</span><span class="o">-</span><span class="mi">20</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicate</span><span class="o">.</span><span class="n">description</span>
+<span class="go">&#39;(structural type is SO:1000029 OR (variant class is DEL AND change length &lt;= -20))&#39;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>threshold</strong> – an <cite>int</cite> with the change length threshold to determine if a variant is “structural”
+(-50 bp by default).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.protein_feature_type">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.</span></span><span class="sig-name descname"><span class="pre">protein_feature_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.model.html#gpsea.model.FeatureType" title="gpsea.model._protein.FeatureType"><span class="pre">FeatureType</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">protein_metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.model.html#gpsea.model.ProteinMetadata" title="gpsea.model._protein.ProteinMetadata"><span class="pre">ProteinMetadata</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_variant.html#protein_feature_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.protein_feature_type" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a>
+to test if the variant affects a <cite>feature_type</cite> of a protein.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_type</strong> – the target protein <a class="reference internal" href="gpsea.model.html#gpsea.model.FeatureType" title="gpsea.model.FeatureType"><code class="xref py py-class docutils literal notranslate"><span class="pre">FeatureType</span></code></a>
+(e.g. <a class="reference internal" href="gpsea.model.html#gpsea.model.FeatureType.DOMAIN" title="gpsea.model.FeatureType.DOMAIN"><code class="xref py py-class docutils literal notranslate"><span class="pre">DOMAIN</span></code></a>).</p></li>
+<li><p><strong>protein_metadata</strong> – the information about the protein.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.predicate.protein_feature">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.predicate.</span></span><span class="sig-name descname"><span class="pre">protein_feature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">protein_metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.model.html#gpsea.model.ProteinMetadata" title="gpsea.model._protein.ProteinMetadata"><span class="pre">ProteinMetadata</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/predicate/_variant.html#protein_feature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.predicate.protein_feature" title="Link to this definition"></a></dt>
+<dd><p>Prepare a <a class="reference internal" href="#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> to test if the variant affects a protein feature
+labeled with the provided <cite>feature_id</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_id</strong> – the id of the target protein feature (e.g. <cite>ANK 1</cite>)</p></li>
+<li><p><strong>protein_metadata</strong> – the information about the protein.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
@@ -259,7 +487,7 @@ As a rule of thumb, returning <cite>None</cite> will exclude the patient from th
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="gpsea.analysis.pcats.stats.html" class="btn btn-neutral float-left" title="gpsea.analysis.pcats.stats package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="gpsea.analysis.predicate.genotype.html" class="btn btn-neutral float-right" title="gpsea.analysis.predicate.genotype package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="gpsea.analysis.pscore.html" class="btn btn-neutral float-right" title="gpsea.analysis.pscore package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

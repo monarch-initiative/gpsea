@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.temporal._api &mdash; GPSEA 0.8.0 documentation</title>
+  <title>gpsea.analysis.temporal._api &mdash; GPSEA 0.9.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../_static/documentation_options.js?v=39bb1c6d"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -86,12 +86,12 @@
 <span class="kn">import</span> <span class="nn">scipy.stats</span>
 
 <span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Patient</span>
-<span class="kn">from</span> <span class="nn">..predicate.genotype</span> <span class="kn">import</span> <span class="n">GenotypePolyPredicate</span>
 
 <span class="kn">from</span> <span class="nn">._base</span> <span class="kn">import</span> <span class="n">Survival</span>
 <span class="kn">from</span> <span class="nn">._util</span> <span class="kn">import</span> <span class="n">prepare_censored_data</span>
 <span class="kn">from</span> <span class="nn">.stats</span> <span class="kn">import</span> <span class="n">SurvivalStatistic</span>
 
+<span class="kn">from</span> <span class="nn">..clf</span> <span class="kn">import</span> <span class="n">GenotypeClassifier</span>
 <span class="kn">from</span> <span class="nn">.._base</span> <span class="kn">import</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="p">,</span> <span class="n">StatisticResult</span><span class="p">,</span> <span class="n">AnalysisException</span>
 <span class="kn">from</span> <span class="nn">.._partition</span> <span class="kn">import</span> <span class="n">ContinuousPartitioning</span>
 
@@ -142,7 +142,7 @@
 <span class="sd">    ============  ===========  ============================================</span>
 
 <span class="sd">    The index includes the individual IDs (`patient_id`), and then there are 2 columns</span>
-<span class="sd">    with the `genotype` group id (:attr:`~gpsea.analysis.predicate.PatientCategory.cat_id`)</span>
+<span class="sd">    with the `genotype` group id (:attr:`~gpsea.analysis.clf.PatientCategory.cat_id`)</span>
 <span class="sd">    and the `phenotype` with the survival represented as :class:`~gpsea.analysis.temporal.Survival` object.</span>
 
 <span class="sd">    A `genotype` value may be missing (`None`) if the individual cannot be assigned</span>
@@ -152,14 +152,14 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
+        <span class="n">gt_clf</span><span class="p">:</span> <span class="n">GenotypeClassifier</span><span class="p">,</span>
         <span class="n">endpoint</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">,</span>
         <span class="n">statistic</span><span class="p">:</span> <span class="n">SurvivalStatistic</span><span class="p">,</span>
         <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">statistic_result</span><span class="p">:</span> <span class="n">StatisticResult</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">gt_predicate</span><span class="o">=</span><span class="n">gt_predicate</span><span class="p">,</span>
+            <span class="n">gt_clf</span><span class="o">=</span><span class="n">gt_clf</span><span class="p">,</span>
             <span class="n">phenotype</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
             <span class="n">statistic</span><span class="o">=</span><span class="n">statistic</span><span class="p">,</span>
             <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
@@ -191,7 +191,7 @@
 
 <span class="sd">        :param ax: a Matplotlib `Axes` to draw on.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">pat_cat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gt_predicate</span><span class="o">.</span><span class="n">get_categories</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">pat_cat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gt_clf</span><span class="o">.</span><span class="n">get_categories</span><span class="p">():</span>
             <span class="n">survivals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span> <span class="o">==</span> <span class="n">pat_cat</span><span class="o">.</span><span class="n">cat_id</span><span class="p">,</span>
                 <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">PH_COL</span><span class="p">,</span>
@@ -201,15 +201,14 @@
                 <span class="n">censored_data</span> <span class="o">=</span> <span class="n">prepare_censored_data</span><span class="p">(</span><span class="n">survivals</span><span class="o">=</span><span class="n">non_na</span><span class="p">)</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">ecdf</span><span class="p">(</span><span class="n">censored_data</span><span class="p">)</span>
                 <span class="n">data</span><span class="o">.</span><span class="n">sf</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">pat_cat</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        
+
         <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span></div>
 
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">(</span>
-            <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">SurvivalAnalysisResult</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="nb">super</span><span class="p">(</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-        <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">SurvivalAnalysisResult</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">super</span><span class="p">(</span>
+            <span class="n">MonoPhenotypeAnalysisResult</span><span class="p">,</span> <span class="bp">self</span>
+        <span class="p">)</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span>
@@ -217,7 +216,7 @@
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="s2">&quot;SurvivalAnalysisResult(&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;gt_predicate=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_gt_predicate</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;gt_clf=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_gt_clf</span><span class="si">}</span><span class="s2">, &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;endpoint=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_phenotype</span><span class="si">}</span><span class="s2">, &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;statistic=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span><span class="si">}</span><span class="s2">, &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;data=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="si">}</span><span class="s2">, &quot;</span>
@@ -235,7 +234,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `SurvivalAnalysis` compares the survivals of genotype groups with respect</span>
 <span class="sd">    to an :class:`~gpsea.analysis.temporal.Endpoint`.</span>
-<span class="sd">    </span>
+
 <span class="sd">    The cohort is partitioned into groups using a genotype predicate</span>
 <span class="sd">    and survival is computed for each cohort member. The difference between</span>
 <span class="sd">    survivals is tested with selected :class:`~gpsea.analysis.temporal.stats.SurvivalStatistic`.</span>
@@ -256,13 +255,13 @@
     <span class="k">def</span> <span class="nf">compare_genotype_vs_survival</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cohort</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Patient</span><span class="p">],</span>
-        <span class="n">gt_predicate</span><span class="p">:</span> <span class="n">GenotypePolyPredicate</span><span class="p">,</span>
+        <span class="n">gt_clf</span><span class="p">:</span> <span class="n">GenotypeClassifier</span><span class="p">,</span>
         <span class="n">endpoint</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SurvivalAnalysisResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Execute the survival analysis on a given `cohort`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="n">idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">((</span><span class="n">patient</span><span class="o">.</span><span class="n">patient_id</span> <span class="k">for</span> <span class="n">patient</span> <span class="ow">in</span> <span class="n">cohort</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;patient_id&quot;</span><span class="p">)</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
             <span class="kc">None</span><span class="p">,</span>
@@ -272,11 +271,13 @@
         <span class="n">survivals</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
         <span class="c1"># Apply the predicate and the survival metric on the cohort</span>
         <span class="k">for</span> <span class="n">patient</span> <span class="ow">in</span> <span class="n">cohort</span><span class="p">:</span>
-            <span class="n">gt_cat</span> <span class="o">=</span> <span class="n">gt_predicate</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
+            <span class="n">gt_cat</span> <span class="o">=</span> <span class="n">gt_clf</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">gt_cat</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">patient</span><span class="o">.</span><span class="n">patient_id</span><span class="p">,</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">patient</span><span class="o">.</span><span class="n">patient_id</span><span class="p">,</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span> <span class="o">=</span> <span class="n">gt_cat</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">cat_id</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">patient</span><span class="o">.</span><span class="n">patient_id</span><span class="p">,</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">gt_cat</span><span class="o">.</span><span class="n">category</span><span class="o">.</span><span class="n">cat_id</span>
+                <span class="p">)</span>
 
             <span class="n">survival</span> <span class="o">=</span> <span class="n">endpoint</span><span class="o">.</span><span class="n">compute_survival</span><span class="p">(</span><span class="n">patient</span><span class="p">)</span>
             <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">patient</span><span class="o">.</span><span class="n">patient_id</span><span class="p">,</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">PH_COL</span><span class="p">]</span> <span class="o">=</span> <span class="n">survival</span>  <span class="c1"># type: ignore</span>
@@ -284,7 +285,7 @@
             <span class="k">if</span> <span class="n">gt_cat</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">survival</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">survivals</span><span class="p">[</span><span class="n">gt_cat</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">survival</span><span class="p">)</span>
 
-        <span class="n">vals</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">survivals</span><span class="p">[</span><span class="n">gt_cat</span><span class="p">]</span> <span class="k">for</span> <span class="n">gt_cat</span> <span class="ow">in</span> <span class="n">gt_predicate</span><span class="o">.</span><span class="n">get_categorizations</span><span class="p">())</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">survivals</span><span class="p">[</span><span class="n">gt_cat</span><span class="p">]</span> <span class="k">for</span> <span class="n">gt_cat</span> <span class="ow">in</span> <span class="n">gt_clf</span><span class="o">.</span><span class="n">get_categorizations</span><span class="p">())</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span><span class="o">.</span><span class="n">compute_pval</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">pval</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">AnalysisException</span><span class="p">(</span>
@@ -293,7 +294,7 @@
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">SurvivalAnalysisResult</span><span class="p">(</span>
-            <span class="n">gt_predicate</span><span class="o">=</span><span class="n">gt_predicate</span><span class="p">,</span>
+            <span class="n">gt_clf</span><span class="o">=</span><span class="n">gt_clf</span><span class="p">,</span>
             <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
             <span class="n">statistic</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span><span class="p">,</span>
             <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>

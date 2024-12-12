@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Survival analysis &mdash; GPSEA 0.8.0 documentation</title>
+  <title>Survival analysis &mdash; GPSEA 0.9.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../_static/documentation_options.js?v=39bb1c6d"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -24,7 +24,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Glossary" href="../glossary.html" />
-    <link rel="prev" title="Compare measurement values" href="measurements.html" /> 
+    <link rel="prev" title="Compare measurements" href="measurements.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -55,10 +55,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../exploratory.html">Cohort exploratory analysis</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">Statistical analyses</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="partitioning/index.html">Partitioning</a></li>
-<li class="toctree-l3"><a class="reference internal" href="phenotype-groups.html">Compare genotype and phenotype groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phenotype-classes.html">Compare genotype and phenotype classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mtc.html">Multiple-testing correction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="phenotype-scores.html">Compare phenotype scores in genotype groups</a></li>
-<li class="toctree-l3"><a class="reference internal" href="measurements.html">Compare measurement values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phenotype-scores.html">Compare phenotype scores</a></li>
+<li class="toctree-l3"><a class="reference internal" href="measurements.html">Compare measurements</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Survival analysis</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#example-analysis">Example analysis</a></li>
 </ul>
@@ -126,24 +126,24 @@ and then serialized as a JSON file following the instructions in <a class="refer
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tx_id</span> <span class="o">=</span> <span class="s1">&#39;NM_003361.4&#39;</span>
 </pre></div>
 </div>
-<section id="genotype-predicate">
-<h4>Genotype predicate<a class="headerlink" href="#genotype-predicate" title="Link to this heading"></a></h4>
+<section id="genotype-classifier">
+<h4>Genotype classifier<a class="headerlink" href="#genotype-classifier" title="Link to this heading"></a></h4>
 <p>One allele of exon 3 vs. one allele of elsewhere.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">VariantPredicates</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_in_exon3</span> <span class="o">=</span> <span class="n">VariantPredicates</span><span class="o">.</span><span class="n">exon</span><span class="p">(</span><span class="n">exon</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate</span> <span class="kn">import</span> <span class="n">exon</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_in_exon3</span> <span class="o">=</span> <span class="n">exon</span><span class="p">(</span><span class="n">exon</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">is_in_exon3</span><span class="o">.</span><span class="n">description</span>
 <span class="go">&#39;overlaps with exon 3 of NM_003361.4&#39;</span>
 </pre></div>
 </div>
-<p>Monoallelic predicate to compare one allele of <em>UMOD</em> exon 3 variant
+<p>Monoallelic classifier to compare one allele of <em>UMOD</em> exon 3 variant
 versus one allele of other <em>UMOD</em> variant:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate.genotype</span> <span class="kn">import</span> <span class="n">monoallelic_predicate</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span> <span class="o">=</span> <span class="n">monoallelic_predicate</span><span class="p">(</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.clf</span> <span class="kn">import</span> <span class="n">monoallelic_classifier</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span> <span class="o">=</span> <span class="n">monoallelic_classifier</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">a_predicate</span><span class="o">=</span><span class="n">is_in_exon3</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">b_predicate</span><span class="o">=~</span><span class="n">is_in_exon3</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">a_label</span><span class="o">=</span><span class="s2">&quot;Exon 3&quot;</span><span class="p">,</span> <span class="n">b_label</span><span class="o">=</span><span class="s2">&quot;Other&quot;</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_predicate</span><span class="o">.</span><span class="n">group_labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span><span class="o">.</span><span class="n">class_labels</span>
 <span class="go">(&#39;Exon 3&#39;, &#39;Other&#39;)</span>
 </pre></div>
 </div>
@@ -196,7 +196,7 @@ the genotype groups:</p>
 <p>We execute the analysis by running</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">survival_analysis</span><span class="o">.</span><span class="n">compare_genotype_vs_survival</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">gt_predicate</span><span class="o">=</span><span class="n">gt_predicate</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">gt_clf</span><span class="o">=</span><span class="n">gt_clf</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 </pre></div>
@@ -246,7 +246,7 @@ the genotype groups:</p>
 </pre></div>
 </div>
 <p>Each line corresponeds to an individual and the dataframe is indexed by the individual’s identifier/label.
-The <cite>genotype</cite> column contains the genotype group code,
+The <cite>genotype</cite> column contains the genotype class code,
 and <cite>phenotype</cite> column includes a <a class="reference internal" href="../../apidocs/gpsea.analysis.temporal.html#gpsea.analysis.temporal.Survival" title="gpsea.analysis.temporal.Survival"><code class="xref py py-class docutils literal notranslate"><span class="pre">Survival</span></code></a> value
 or <cite>None</cite> if computing the survival was impossible (see <a class="reference internal" href="../../apidocs/gpsea.analysis.temporal.endpoint.html#gpsea.analysis.temporal.endpoint.hpo_onset" title="gpsea.analysis.temporal.endpoint.hpo_onset"><code class="xref py py-func docutils literal notranslate"><span class="pre">hpo_onset()</span></code></a> for details).
 The <cite>Survival</cite> reports the number of days until attaining the endpoint,
@@ -261,7 +261,7 @@ or until the individual dropped out of the analysis (<cite>is_censored=True</cit
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="measurements.html" class="btn btn-neutral float-left" title="Compare measurement values" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="measurements.html" class="btn btn-neutral float-left" title="Compare measurements" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../glossary.html" class="btn btn-neutral float-right" title="Glossary" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

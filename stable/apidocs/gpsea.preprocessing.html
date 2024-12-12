@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.preprocessing package &mdash; GPSEA 0.8.0 documentation</title>
+  <title>gpsea.preprocessing package &mdash; GPSEA 0.9.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../_static/documentation_options.js?v=39bb1c6d"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -587,17 +587,8 @@ This class specifically only works with a RefSeq database ID (e.g. NP_037407.4).
 <dt class="sig sig-object py" id="gpsea.preprocessing.VepFunctionalAnnotator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.preprocessing.</span></span><span class="sig-name descname"><span class="pre">VepFunctionalAnnotator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_computational_txs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/preprocessing/_vep.html#VepFunctionalAnnotator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.VepFunctionalAnnotator" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gpsea.preprocessing.FunctionalAnnotator" title="gpsea.preprocessing._api.FunctionalAnnotator"><code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionalAnnotator</span></code></a></p>
-<p>A <cite>FunctionalAnnotator</cite> that uses Variant Effect Predictor (VEP) REST API to
-do functional variant annotation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>include_computational_txs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Include computational transcripts, such as</p></li>
-<li><p><strong>XM_.</strong> (<em>RefSeq</em>)</p></li>
-<li><p><strong>timeout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Timeout in seconds</p></li>
-</ul>
-</dd>
-</dl>
+<p><cite>VepFunctionalAnnotator</cite> uses the Variant Effect Predictor (VEP) REST API
+to perform functional variant annotation.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gpsea.preprocessing.VepFunctionalAnnotator.NONCODING_EFFECTS">
 <span class="sig-name descname"><span class="pre">NONCODING_EFFECTS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{VariantEffect.DOWNSTREAM_GENE_VARIANT,</span> <span class="pre">VariantEffect.FIVE_PRIME_UTR_VARIANT,</span> <span class="pre">VariantEffect.INTERGENIC_VARIANT,</span> <span class="pre">VariantEffect.INTRON_VARIANT,</span> <span class="pre">VariantEffect.NON_CODING_TRANSCRIPT_EXON_VARIANT,</span> <span class="pre">VariantEffect.NON_CODING_TRANSCRIPT_VARIANT,</span> <span class="pre">VariantEffect.SPLICE_ACCEPTOR_VARIANT,</span> <span class="pre">VariantEffect.SPLICE_DONOR_5TH_BASE_VARIANT,</span> <span class="pre">VariantEffect.SPLICE_DONOR_VARIANT,</span> <span class="pre">VariantEffect.SPLICE_POLYPYRIMIDINE_TRACT_VARIANT,</span> <span class="pre">VariantEffect.THREE_PRIME_UTR_VARIANT,</span> <span class="pre">VariantEffect.UPSTREAM_GENE_VARIANT}</span></em><a class="headerlink" href="#gpsea.preprocessing.VepFunctionalAnnotator.NONCODING_EFFECTS" title="Link to this definition"></a></dt>
@@ -607,22 +598,9 @@ do functional variant annotation.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.preprocessing.VepFunctionalAnnotator.annotate">
 <span class="sig-name descname"><span class="pre">annotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variant_coordinates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.model.html#gpsea.model.VariantCoordinates" title="gpsea.model._variant.VariantCoordinates"><span class="pre">VariantCoordinates</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="gpsea.model.html#gpsea.model.TranscriptAnnotation" title="gpsea.model._variant.TranscriptAnnotation"><span class="pre">TranscriptAnnotation</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/preprocessing/_vep.html#VepFunctionalAnnotator.annotate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.preprocessing.VepFunctionalAnnotator.annotate" title="Link to this definition"></a></dt>
-<dd><p>Perform functional annotation using Variant Effect Predictor (VEP) REST API.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>variant_coordinates</strong> (<a class="reference internal" href="gpsea.model.html#gpsea.model.VariantCoordinates" title="gpsea.model.VariantCoordinates"><em>VariantCoordinates</em></a>) – A VariantCoordinates object</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A sequence of transcript
-annotations for the variant coordinates</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><em>Sequence</em></a>[<a class="reference internal" href="gpsea.model.html#gpsea.model.TranscriptAnnotation" title="gpsea.model.TranscriptAnnotation">TranscriptAnnotation</a>]</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError if VEP times out</strong><strong> or </strong><strong>does not return a response</strong><strong> or </strong><strong>if the response is not formatted as we expect.</strong> – </p>
-</dd>
-</dl>
+<dd><p>Compute functional annotations for the variant coordinates. The annotations can be empty.</p>
+<p>Returns: a sequence of transcript annotations
+:raises ValueError if the annotation cannot proceed due to the remote resource being offline, etc.:</p>
 </dd></dl>
 
 <dl class="py method">

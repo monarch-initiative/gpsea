@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Phenotype predicates and scorers &mdash; GPSEA 0.8.0 documentation</title>
+  <title>Phenotype classifiers and scorers &mdash; GPSEA 0.9.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../_static/documentation_options.js?v=39bb1c6d"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -23,7 +23,7 @@
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
-    <link rel="next" title="HPO predicate" href="hpo_predicate.html" />
+    <link rel="next" title="HPO classifier" href="hpo_predicate.html" />
     <link rel="prev" title="Group by allele count" href="../genotype/allele_count.html" /> 
 </head>
 
@@ -55,15 +55,15 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../exploratory.html">Cohort exploratory analysis</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../../index.html">Statistical analyses</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../index.html">Partitioning</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../genotype/index.html">Genotype predicates</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Phenotype predicates and scorers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../genotype/index.html">Genotype classifiers</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Phenotype classifiers and scorers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../gallery.html">Gallery</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../phenotype-groups.html">Compare genotype and phenotype groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../phenotype-classes.html">Compare genotype and phenotype classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../mtc.html">Multiple-testing correction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../phenotype-scores.html">Compare phenotype scores in genotype groups</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../measurements.html">Compare measurement values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../phenotype-scores.html">Compare phenotype scores</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../measurements.html">Compare measurements</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../survival.html">Survival analysis</a></li>
 </ul>
 </li>
@@ -90,7 +90,7 @@
           <li class="breadcrumb-item"><a href="../../../index.html">User guide</a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Statistical analyses</a></li>
           <li class="breadcrumb-item"><a href="../index.html">Partitioning</a></li>
-      <li class="breadcrumb-item active">Phenotype predicates and scorers</li>
+      <li class="breadcrumb-item active">Phenotype classifiers and scorers</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../../_sources/user-guide/analyses/partitioning/phenotype/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -100,15 +100,15 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="phenotype-predicates-and-scorers">
-<span id="id1"></span><h1>Phenotype predicates and scorers<a class="headerlink" href="#phenotype-predicates-and-scorers" title="Link to this heading"></a></h1>
-<p>GPSEA offers several phenotype predicates.</p>
+  <section id="phenotype-classifiers-and-scorers">
+<span id="phenotype-predicates-and-scorers"></span><h1>Phenotype classifiers and scorers<a class="headerlink" href="#phenotype-classifiers-and-scorers" title="Link to this heading"></a></h1>
+<p>GPSEA offers several phenotype classifiers.</p>
 <p>TODO – separate explanations for HPO (Fisher), scores (Mann Whitney) and survival (log rank test).</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="hpo_predicate.html">HPO predicate</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hpo_predicate.html#predicates-for-all-cohort-phenotypes">Predicates for all cohort phenotypes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hpo_predicate.html">HPO classifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hpo_predicate.html#classifiers-for-all-cohort-phenotypes">Classifiers for all cohort phenotypes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="counting.html">Counting phenotype scorer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devries.html">De Vries Score</a></li>
 </ul>
@@ -120,7 +120,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../genotype/allele_count.html" class="btn btn-neutral float-left" title="Group by allele count" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="hpo_predicate.html" class="btn btn-neutral float-right" title="HPO predicate" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="hpo_predicate.html" class="btn btn-neutral float-right" title="HPO classifier" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -1,11 +1,11 @@
 
-.. _hpo-predicate:
+.. _hpo-classifier:
 
 
-HPO predicate
-=============
+HPO classifier
+==============
 
-When testing for presence or absence of an HPO term, the :class:`~gpsea.analysis.predicate.phenotype.HpoPredicate`
+When testing for presence or absence of an HPO term, the :class:`~gpsea.analysis.clf.HpoClassifier`
 leverages the :ref:`true-path-rule` to take advantage of the HPO hierarchy.
 In result, an individual annotated with a term is implicitly annotated with all its ancestors.
 For instance, an individual annotated with `Ectopia lentis <https://hpo.jax.org/browse/term/HP:0001083>`_
@@ -16,10 +16,11 @@ is also annotated with `Abnormal lens morphology <https://hpo.jax.org/browse/ter
 Similarly, all descendants of a term, whose presence was specifically excluded in an individual,
 are implicitly excluded.
 
+
 Example
 -------
 
-Here we show how to set up :class:`~gpsea.analysis.predicate.phenotype.HpoPredicate`
+Here we show how to set up :class:`~gpsea.analysis.clf.HpoClassifier`
 to test for a presence of `Abnormal lens morphology <https://hpo.jax.org/browse/term/HP:0000517>`_.
 
 We need to load :class:`~hpotk.ontology.MinimalOntology` with HPO data to access the HPO hierarchy:
@@ -28,19 +29,19 @@ We need to load :class:`~hpotk.ontology.MinimalOntology` with HPO data to access
 >>> store = hpotk.configure_ontology_store()
 >>> hpo = store.load_minimal_hpo(release='v2024-07-01')
 
-and now we can set up a predicate to test for presence of *Abnormal lens morphology*:
+and now we can set up the classifier to test for presence of *Abnormal lens morphology*:
 
->>> from gpsea.analysis.predicate.phenotype import HpoPredicate
+>>> from gpsea.analysis.clf import HpoClassifier
 >>> query = hpotk.TermId.from_curie('HP:0000517')
->>> pheno_predicate = HpoPredicate(
+>>> pheno_clf = HpoClassifier(
 ...     hpo=hpo,
 ...     query=query,
 ... )
->>> pheno_predicate.name
-'HPO Predicate'
->>> pheno_predicate.description
+>>> pheno_clf.name
+'HPO Classifier'
+>>> pheno_clf.description
 'Test for presence of Abnormal lens morphology [HP:0000517]'
->>> pheno_predicate.group_labels
+>>> pheno_clf.class_labels
 ('Yes', 'No')
 
 
@@ -48,21 +49,29 @@ and now we can set up a predicate to test for presence of *Abnormal lens morphol
 missing_implies_phenotype_excluded
 ----------------------------------
 
-In many cases, published reports of clinical data about individuals with rare diseases describes phenotypic features that were observed, but do not 
-provide a comprehensive list of features that were explicitly excluded. By default, GPSEA will only include features that are recorded as observed or excluded in a phenopacket.
-Setting this argument to True will cause "n/a" entries to be set to "excluded". We provide this option for exploration but do not recommend its use for the 
-final analysis unless the assumption behind it is known to be true.
+In many cases, published reports of clinical data about individuals with rare diseases
+describe phenotypic features that were observed, but do not provide
+a comprehensive list of features that were explicitly excluded.
+By default, GPSEA will only include features that are recorded as observed or excluded in a phenopacket.
+
+However, setting ``missing_implies_excluded=True`` will cause "n/a" entries to be set to "excluded".
+We provide this option for exploration but do not recommend its use
+for the final analysis unless the assumption behind it is known to be true.
 
 
 
-Predicates for all cohort phenotypes
-====================================
+Classifiers for all cohort phenotypes
+=====================================
 
-Constructing phenotype predicates for all HPO terms of a cohort sounds a bit tedious.
-The :func:`~gpsea.analysis.predicate.phenotype.prepare_predicates_for_terms_of_interest`
+Constructing phenotype classifiers for all HPO terms of a cohort sounds a bit tedious.
+The :func:`~gpsea.analysis.clf.prepare_classifiers_for_terms_of_interest`
 function cuts down the tedium.
 
-For a given phenopacket collection (e.g. 156 patients with mutations in *WWOX* gene included in Phenopacket Store version `0.1.18`)
+
+Example
+-------
+
+For a phenopacket collection (e.g. 156 patients with mutations in *WWOX* gene included in Phenopacket Store version `0.1.18`)
 
 >>> from ppktstore.registry import configure_phenopacket_registry
 >>> registry = configure_phenopacket_registry()
@@ -79,14 +88,14 @@ processed into a cohort
 Individuals Processed: ...
 
 
-we can create HPO predicates for testing all 369 HPO terms used in the cohort
+we can create HPO classifiers for testing all 369 HPO terms used in the cohort:
 
->>> from gpsea.analysis.predicate.phenotype import prepare_predicates_for_terms_of_interest
->>> pheno_predicates = prepare_predicates_for_terms_of_interest(
+>>> from gpsea.analysis.clf import prepare_classifiers_for_terms_of_interest
+>>> pheno_clfs = prepare_classifiers_for_terms_of_interest(
 ...     cohort=cohort,
 ...     hpo=hpo,
 ... )
->>> len(pheno_predicates)
+>>> len(pheno_clfs)
 369
 
 and subject the predicates into further analysis, such as :class:`~gpsea.analysis.pcats.HpoTermAnalysis`.

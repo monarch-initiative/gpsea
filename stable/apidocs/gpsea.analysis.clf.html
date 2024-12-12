@@ -1,0 +1,620 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gpsea.analysis.clf package &mdash; GPSEA 0.9.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/gpsea.css?v=547657ed" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=39bb1c6d"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=6dbb43f8"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gpsea.analysis.mtc_filter package" href="gpsea.analysis.mtc_filter.html" />
+    <link rel="prev" title="gpsea.analysis package" href="gpsea.analysis.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GPSEA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/index.html">User guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="gpsea.html">gpsea package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="gpsea.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="gpsea.analysis.html">gpsea.analysis package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gpsea.model.html">gpsea.model package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gpsea.preprocessing.html">gpsea.preprocessing package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gpsea.view.html">gpsea.view package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="gpsea.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GPSEA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="gpsea.html">gpsea package</a></li>
+          <li class="breadcrumb-item"><a href="gpsea.analysis.html">gpsea.analysis package</a></li>
+      <li class="breadcrumb-item active">gpsea.analysis.clf package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/apidocs/gpsea.analysis.clf.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-gpsea.analysis.clf">
+<span id="gpsea-analysis-clf-package"></span><h1>gpsea.analysis.clf package<a class="headerlink" href="#module-gpsea.analysis.clf" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.Classifier">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.clf.</span></span><span class="sig-name descname"><span class="pre">Classifier</span></span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_api.html#Classifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.Classifier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">C</span></code>], <a class="reference internal" href="gpsea.analysis.html#gpsea.analysis.Partitioning" title="gpsea.analysis._partition.Partitioning"><code class="xref py py-class docutils literal notranslate"><span class="pre">Partitioning</span></code></a></p>
+<p><cite>Classifier</cite> partitions a <a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model.Patient"><code class="xref py py-class docutils literal notranslate"><span class="pre">Patient</span></code></a> into one of several discrete classes
+represented by a <a class="reference internal" href="#gpsea.analysis.clf.Categorization" title="gpsea.analysis.clf.Categorization"><code class="xref py py-class docutils literal notranslate"><span class="pre">Categorization</span></code></a>.</p>
+<p>The classes must be <em>exclusive</em> - the individual can be binned into one and only one class,
+and <em>exhaustive</em> - the classes must cover all possible scenarios.</p>
+<p>However, if the individual cannot be assigned into any meaningful class, <cite>None</cite> can be returned.
+As a rule of thumb, returning <cite>None</cite> will exclude the individual from the analysis.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.Classifier.get_categorizations">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_categorizations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><span class="pre">C</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_api.html#Classifier.get_categorizations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.Classifier.get_categorizations" title="Link to this definition"></a></dt>
+<dd><p>Get a sequence of all categories which the classifier can produce.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.Classifier.get_categories">
+<span class="sig-name descname"><span class="pre">get_categories</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.13)"><span class="pre">Iterator</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.analysis.clf.PatientCategory" title="gpsea.analysis.clf._api.PatientCategory"><span class="pre">PatientCategory</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_api.html#Classifier.get_categories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.Classifier.get_categories" title="Link to this definition"></a></dt>
+<dd><p>Get an iterator with <a class="reference internal" href="#gpsea.analysis.clf.PatientCategory" title="gpsea.analysis.clf.PatientCategory"><code class="xref py py-class docutils literal notranslate"><span class="pre">PatientCategory</span></code></a> instances that the classifier can produce.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.Classifier.class_labels">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">class_labels</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Collection" title="(in Python v3.13)"><span class="pre">Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gpsea.analysis.clf.Classifier.class_labels" title="Link to this definition"></a></dt>
+<dd><p>Get a collection with names of the <a class="reference internal" href="#gpsea.analysis.clf.PatientCategory" title="gpsea.analysis.clf.PatientCategory"><code class="xref py py-class docutils literal notranslate"><span class="pre">PatientCategory</span></code></a> items that the classifier can produce.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.Classifier.summarize_classes">
+<span class="sig-name descname"><span class="pre">summarize_classes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_api.html#Classifier.summarize_classes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.Classifier.summarize_classes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.Classifier.summarize">
+<span class="sig-name descname"><span class="pre">summarize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TextIO" title="(in Python v3.13)"><span class="pre">TextIO</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_api.html#Classifier.summarize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.Classifier.summarize" title="Link to this definition"></a></dt>
+<dd><p>Summarize the predicate into the <cite>out</cite> handle.</p>
+<p>The summary includes the name, summary, and the groups the predicate can assign individuals into.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.Classifier.n_categorizations">
+<span class="sig-name descname"><span class="pre">n_categorizations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_api.html#Classifier.n_categorizations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.Classifier.n_categorizations" title="Link to this definition"></a></dt>
+<dd><p>Get the number of categorizations the classifier can produce.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.Classifier.get_category">
+<span class="sig-name descname"><span class="pre">get_category</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.clf.PatientCategory" title="gpsea.analysis.clf._api.PatientCategory"><span class="pre">PatientCategory</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_api.html#Classifier.get_category"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.Classifier.get_category" title="Link to this definition"></a></dt>
+<dd><p>Get the category name for a <a class="reference internal" href="#gpsea.analysis.clf.PatientCategory.cat_id" title="gpsea.analysis.clf.PatientCategory.cat_id"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PatientCategory.cat_id</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cat_id</strong> – an <cite>int</cite> with the id.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p>ValueError if there is no such category was defined.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.Classifier.get_category_name">
+<span class="sig-name descname"><span class="pre">get_category_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_api.html#Classifier.get_category_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.Classifier.get_category_name" title="Link to this definition"></a></dt>
+<dd><p>Get the category name for a <a class="reference internal" href="#gpsea.analysis.clf.PatientCategory.cat_id" title="gpsea.analysis.clf.PatientCategory.cat_id"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PatientCategory.cat_id</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cat_id</strong> – an <cite>int</cite> with the id.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p>ValueError if there is no such category was defined.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.Classifier.test">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">individual</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">C</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_api.html#Classifier.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.Classifier.test" title="Link to this definition"></a></dt>
+<dd><p>Assign an <cite>individual</cite> into a class.</p>
+<p>Return <cite>None</cite> if the individual cannot be assigned into any meaningful class.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.PatientCategory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.clf.</span></span><span class="sig-name descname"><span class="pre">PatientCategory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_api.html#PatientCategory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.PatientCategory" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p><cite>PatientCategory</cite> represents one of several exclusive discrete classes.</p>
+<p>Patient class has <a class="reference internal" href="#gpsea.analysis.clf.PatientCategory.cat_id" title="gpsea.analysis.clf.PatientCategory.cat_id"><code class="xref py py-attr docutils literal notranslate"><span class="pre">cat_id</span></code></a>, a unique numeric identifier of the class,
+<a class="reference internal" href="#gpsea.analysis.clf.PatientCategory.name" title="gpsea.analysis.clf.PatientCategory.name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">name</span></code></a> with human-readable class name, and <a class="reference internal" href="#gpsea.analysis.clf.PatientCategory.description" title="gpsea.analysis.clf.PatientCategory.description"><code class="xref py py-attr docutils literal notranslate"><span class="pre">description</span></code></a> with an optional verbose description.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.PatientCategory.cat_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cat_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#gpsea.analysis.clf.PatientCategory.cat_id" title="Link to this definition"></a></dt>
+<dd><p>Get an <cite>int</cite> with the unique numeric identifier of the class.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.PatientCategory.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.clf.PatientCategory.name" title="Link to this definition"></a></dt>
+<dd><p>Get a <cite>str</cite> with a human-readable name of the class.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.PatientCategory.description">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="headerlink" href="#gpsea.analysis.clf.PatientCategory.description" title="Link to this definition"></a></dt>
+<dd><p>Get a <cite>str</cite> with an optional detailed class description.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.Categorization">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.clf.</span></span><span class="sig-name descname"><span class="pre">Categorization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.analysis.clf.PatientCategory" title="gpsea.analysis.clf._api.PatientCategory"><span class="pre">PatientCategory</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_api.html#Categorization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.Categorization" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p><cite>Categorization</cite> represents one of discrete classes a <a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model.Patient"><code class="xref py py-class docutils literal notranslate"><span class="pre">Patient</span></code></a> can be assigned into.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.Categorization.from_raw_parts">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_raw_parts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_api.html#Categorization.from_raw_parts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.Categorization.from_raw_parts" title="Link to this definition"></a></dt>
+<dd><p>Create <cite>Categorization</cite> from the <cite>cat_id</cite> identifier, <cite>name</cite>, and an optional <cite>description</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.Categorization.category">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">category</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#gpsea.analysis.clf.PatientCategory" title="gpsea.analysis.clf._api.PatientCategory"><span class="pre">PatientCategory</span></a></em><a class="headerlink" href="#gpsea.analysis.clf.Categorization.category" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.GenotypeClassifier">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.clf.</span></span><span class="sig-name descname"><span class="pre">GenotypeClassifier</span></span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_api.html#GenotypeClassifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.GenotypeClassifier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpsea.analysis.clf.Classifier" title="gpsea.analysis.clf._api.Classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">Classifier</span></code></a>[<a class="reference internal" href="#gpsea.analysis.clf.Categorization" title="gpsea.analysis.clf._api.Categorization"><code class="xref py py-class docutils literal notranslate"><span class="pre">Categorization</span></code></a>]</p>
+<p><cite>GenotypeClassifier</cite> is a base class for all types
+that assign an individual into a group based on the genotype.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.AlleleCounter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.clf.</span></span><span class="sig-name descname"><span class="pre">AlleleCounter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_counter.html#AlleleCounter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.AlleleCounter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p><cite>AlleleCounter</cite> counts the number of alleles of all variants that pass the selection with a given <cite>predicate</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>predicate</strong> – a <code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code> for selecting the target variants.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.AlleleCounter.get_question">
+<span class="sig-name descname"><span class="pre">get_question</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_counter.html#AlleleCounter.get_question"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.AlleleCounter.get_question" title="Link to this definition"></a></dt>
+<dd><p>Get the question tested by the predicate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the question tested by the predicate</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.AlleleCounter.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_counter.html#AlleleCounter.count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.AlleleCounter.count" title="Link to this definition"></a></dt>
+<dd><p>Count the number of alleles of all variants that pass the predicate.
+:param patient: the patient to test</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the count of the passing alleles</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.sex_classifier">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.clf.</span></span><span class="sig-name descname"><span class="pre">sex_classifier</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.clf.GenotypeClassifier" title="gpsea.analysis.clf._api.GenotypeClassifier"><span class="pre">GenotypeClassifier</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_gt_classifiers.html#sex_classifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.sex_classifier" title="Link to this definition"></a></dt>
+<dd><p>Get a genotype predicate for categorizing patients by their <a class="reference internal" href="gpsea.model.html#gpsea.model.Sex" title="gpsea.model.Sex"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sex</span></code></a>.</p>
+<p>See the <a class="reference internal" href="../user-guide/analyses/partitioning/genotype/sex.html#group-by-sex"><span class="std std-ref">Group by sex</span></a> section for an example.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.diagnosis_classifier">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.clf.</span></span><span class="sig-name descname"><span class="pre">diagnosis_classifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">diagnoses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.clf.GenotypeClassifier" title="gpsea.analysis.clf._api.GenotypeClassifier"><span class="pre">GenotypeClassifier</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_gt_classifiers.html#diagnosis_classifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.diagnosis_classifier" title="Link to this definition"></a></dt>
+<dd><p>Genotype classifier bins an individual based on presence of a disease diagnosis,
+as listed in <a class="reference internal" href="gpsea.model.html#gpsea.model.Patient.diseases" title="gpsea.model.Patient.diseases"><code class="xref py py-attr docutils literal notranslate"><span class="pre">diseases</span></code></a> attribute.</p>
+<p>If the individual is diagnosed with more than one disease from the provided <cite>diagnoses</cite>,
+the individual is assigned into no group (<cite>None</cite>).</p>
+<p>See the <a class="reference internal" href="../user-guide/analyses/partitioning/genotype/diagnosis.html#group-by-diagnosis"><span class="std std-ref">Group by diagnosis</span></a> section for an example.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>diagnoses</strong> – an iterable with at least 2 disease IDs, either as a <cite>str</cite> or a <a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.html#hpotk.TermId" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TermId</span></code></a>
+to determine the genotype group.</p></li>
+<li><p><strong>labels</strong> – an iterable with diagnose names or <cite>None</cite> if disease IDs should be used instead.
+The number of labels must match the number of predicates.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.monoallelic_classifier">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.clf.</span></span><span class="sig-name descname"><span class="pre">monoallelic_classifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a_predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'A'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'B'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.clf.GenotypeClassifier" title="gpsea.analysis.clf._api.GenotypeClassifier"><span class="pre">GenotypeClassifier</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_gt_classifiers.html#monoallelic_classifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.monoallelic_classifier" title="Link to this definition"></a></dt>
+<dd><p>Monoallelic classifier bins patient into one of two groups, <cite>A</cite> and <cite>B</cite>,
+based on presence of <em>exactly one</em> allele of a variant
+that meets the predicate criteria.</p>
+<p>See <a class="reference internal" href="../user-guide/analyses/partitioning/genotype/variant_category.html#monoallelic-classifier"><span class="std std-ref">Monoallelic classifier</span></a> for more information and an example usage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a_predicate</strong> – predicate to test if the variants
+meet the criteria of the first group (named <cite>A</cite> by default).</p></li>
+<li><p><strong>b_predicate</strong> – predicate to test if the variants
+meet the criteria of the second group or <cite>None</cite>
+if the inverse of <cite>a_predicate</cite> should be used (named <cite>B</cite> by default).</p></li>
+<li><p><strong>a_label</strong> – display name of the <cite>a_predicate</cite> (default <code class="docutils literal notranslate"><span class="pre">&quot;A&quot;</span></code>).</p></li>
+<li><p><strong>b_label</strong> – display name of the <cite>b_predicate</cite> (default <code class="docutils literal notranslate"><span class="pre">&quot;B&quot;</span></code>).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.biallelic_classifier">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.clf.</span></span><span class="sig-name descname"><span class="pre">biallelic_classifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a_predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'A'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'B'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partitions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Collection" title="(in Python v3.13)"><span class="pre">Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Collection" title="(in Python v3.13)"><span class="pre">Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0,</span> <span class="pre">1,</span> <span class="pre">2)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.clf.GenotypeClassifier" title="gpsea.analysis.clf._api.GenotypeClassifier"><span class="pre">GenotypeClassifier</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_gt_classifiers.html#biallelic_classifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.biallelic_classifier" title="Link to this definition"></a></dt>
+<dd><p>Biallelic classifier assigns an individual into one of the three classes,
+<cite>AA</cite>, <cite>AB</cite>, and <cite>BB</cite>,
+based on presence of <em>two</em> variant alleles
+that meet the criteria.</p>
+<p>See <a class="reference internal" href="../user-guide/analyses/partitioning/genotype/variant_category.html#biallelic-classifier"><span class="std std-ref">Biallelic classifier</span></a> for more information and an example usage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a_predicate</strong> – predicate to test if the variants meet
+the criteria of the first group (named <cite>A</cite> by default).</p></li>
+<li><p><strong>b_predicate</strong> – predicate to test if the variants meet
+the criteria of the second group or <cite>None</cite> if an inverse
+of <cite>a_predicate</cite> should be used (named <cite>B</cite> by default).</p></li>
+<li><p><strong>a_label</strong> – display name of the <cite>a_predicate</cite> (default <code class="docutils literal notranslate"><span class="pre">&quot;A&quot;</span></code>).</p></li>
+<li><p><strong>b_label</strong> – display name of the <cite>b_predicate</cite> (default <code class="docutils literal notranslate"><span class="pre">&quot;B&quot;</span></code>).</p></li>
+<li><p><strong>partitions</strong> – a sequence with partition identifiers (default <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1,</span> <span class="pre">2)</span></code>).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.allele_count">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.clf.</span></span><span class="sig-name descname"><span class="pre">allele_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Collection" title="(in Python v3.13)"><span class="pre">Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Collection" title="(in Python v3.13)"><span class="pre">Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.analysis.predicate.html#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate._api.VariantPredicate"><span class="pre">VariantPredicate</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.clf.GenotypeClassifier" title="gpsea.analysis.clf._api.GenotypeClassifier"><span class="pre">GenotypeClassifier</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_gt_classifiers.html#allele_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.allele_count" title="Link to this definition"></a></dt>
+<dd><p>Allele count classifier assigns the individual into a group based on the allele count
+of the target variants.</p>
+<p>The <cite>counts</cite> option takes an <cite>int</cite> collection or a collection of <cite>int</cite> collections.
+An <cite>int</cite> value represents a target allele count and several counts can be grouped in a partition.
+A standalone <cite>int</cite> is assumed to represent a partition.
+The outer collection includes all partitions.
+An allele count can be included only in one partition.</p>
+<p class="rubric">Examples</p>
+<p>The following counts will partition the cohort into individuals
+with zero allele or one target allele:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.clf</span> <span class="kn">import</span> <span class="n">allele_count</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">zero_vs_one</span> <span class="o">=</span> <span class="n">allele_count</span><span class="p">(</span><span class="n">counts</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">zero_vs_one</span><span class="o">.</span><span class="n">summarize_classes</span><span class="p">()</span>
+<span class="go">&#39;Allele count: 0, 1&#39;</span>
+</pre></div>
+</div>
+<p>These counts will create three classes for individuals with zero, one or two alleles:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">zero_vs_one_vs_two</span> <span class="o">=</span> <span class="n">allele_count</span><span class="p">(</span><span class="n">counts</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">zero_vs_one_vs_two</span><span class="o">.</span><span class="n">summarize_classes</span><span class="p">()</span>
+<span class="go">&#39;Allele count: 0, 1, 2&#39;</span>
+</pre></div>
+</div>
+<p>Last, the counts below will create two groups, one for the individuals with zero target variant type alleles,
+and one for the individuals with one or two alleles:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">zero_vs_one_vs_two</span> <span class="o">=</span> <span class="n">allele_count</span><span class="p">(</span><span class="n">counts</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">}))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">zero_vs_one_vs_two</span><span class="o">.</span><span class="n">summarize_classes</span><span class="p">()</span>
+<span class="go">&#39;Allele count: 0, 1 OR 2&#39;</span>
+</pre></div>
+</div>
+<p>Note that we wrap the last two allele counts in a set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>counts</strong> – a sequence with allele count partitions.</p></li>
+<li><p><strong>target</strong> – a predicate for choosing the variants for testing
+or <cite>None</cite> if <em>all</em> variants in the individual should be used.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.PhenotypeClassifier">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.clf.</span></span><span class="sig-name descname"><span class="pre">PhenotypeClassifier</span></span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_api.html#PhenotypeClassifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.PhenotypeClassifier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">P</span></code>], <a class="reference internal" href="#gpsea.analysis.clf.Classifier" title="gpsea.analysis.clf._api.Classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">Classifier</span></code></a>[<a class="reference internal" href="#gpsea.analysis.clf.PhenotypeCategorization" title="gpsea.analysis.clf._api.PhenotypeCategorization"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeCategorization</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">P</span></code>]]</p>
+<p>Phenotype classifier assigns an individual into a class <cite>P</cite> based on the phenotype.</p>
+<p>The class <cite>P</cite> can be a <a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TermId</span></code></a> representing an HPO term or an OMIM/MONDO term.</p>
+<p>Only one class can be investigated, and <a class="reference internal" href="#gpsea.analysis.clf.PhenotypeClassifier.phenotype" title="gpsea.analysis.clf.PhenotypeClassifier.phenotype"><code class="xref py py-attr docutils literal notranslate"><span class="pre">phenotype</span></code></a> returns the investigated phenotype
+(e.g. <em>Arachnodactyly</em> <cite>HP:0001166</cite>).</p>
+<p>As another hallmark of this predicate, one of the categorizations must correspond to the group of patients
+who exibit the investigated phenotype. The categorization is provided
+via <a class="reference internal" href="#gpsea.analysis.clf.PhenotypeClassifier.present_phenotype_categorization" title="gpsea.analysis.clf.PhenotypeClassifier.present_phenotype_categorization"><code class="xref py py-attr docutils literal notranslate"><span class="pre">present_phenotype_categorization</span></code></a> property.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.PhenotypeClassifier.phenotype">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phenotype</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">P</span></em><a class="headerlink" href="#gpsea.analysis.clf.PhenotypeClassifier.phenotype" title="Link to this definition"></a></dt>
+<dd><p>Get the phenotype entity of interest.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.PhenotypeClassifier.present_phenotype_categorization">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">present_phenotype_categorization</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#gpsea.analysis.clf.PhenotypeCategorization" title="gpsea.analysis.clf._api.PhenotypeCategorization"><span class="pre">PhenotypeCategorization</span></a><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gpsea.analysis.clf.PhenotypeClassifier.present_phenotype_categorization" title="Link to this definition"></a></dt>
+<dd><p>Get the categorization which represents the group of the patients who exibit the investigated phenotype.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.PhenotypeClassifier.present_phenotype_category">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">present_phenotype_category</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#gpsea.analysis.clf.PatientCategory" title="gpsea.analysis.clf._api.PatientCategory"><span class="pre">PatientCategory</span></a></em><a class="headerlink" href="#gpsea.analysis.clf.PhenotypeClassifier.present_phenotype_category" title="Link to this definition"></a></dt>
+<dd><p>Get the patient category that correspond to the group of the patients who exibit the investigated phenotype.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.PhenotypeCategorization">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.clf.</span></span><span class="sig-name descname"><span class="pre">PhenotypeCategorization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.analysis.clf.PatientCategory" title="gpsea.analysis.clf._api.PatientCategory"><span class="pre">PatientCategory</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">P</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_api.html#PhenotypeCategorization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.PhenotypeCategorization" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">P</span></code>], <a class="reference internal" href="#gpsea.analysis.clf.Categorization" title="gpsea.analysis.clf._api.Categorization"><code class="xref py py-class docutils literal notranslate"><span class="pre">Categorization</span></code></a></p>
+<p>On top of the attributes of the <cite>Categorization</cite>, <cite>PhenotypeCategorization</cite> keeps track of the target phenotype <cite>P</cite>.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.PhenotypeCategorization.phenotype">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phenotype</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">P</span></em><a class="headerlink" href="#gpsea.analysis.clf.PhenotypeCategorization.phenotype" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.HpoClassifier">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.clf.</span></span><span class="sig-name descname"><span class="pre">HpoClassifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hpo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.ontology.html#hpotk.ontology.MinimalOntology" title="(in hpo-toolkit)"><span class="pre">MinimalOntology</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">missing_implies_phenotype_excluded</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_pheno.html#HpoClassifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.HpoClassifier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpsea.analysis.clf.PhenotypeClassifier" title="gpsea.analysis.clf._api.PhenotypeClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeClassifier</span></code></a>[<a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TermId</span></code></a>]</p>
+<p><cite>HpoClassifier</cite> tests if a patient is annotated with an HPO term.</p>
+<p>Note, <cite>query</cite> must be a term of the provided <cite>hpo</cite>!</p>
+<p>See <a class="reference internal" href="../user-guide/analyses/partitioning/phenotype/hpo_predicate.html#hpo-classifier"><span class="std std-ref">HPO classifier</span></a> section for an example usage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hpo</strong> – HPO ontology</p></li>
+<li><p><strong>query</strong> – the HPO term to test</p></li>
+<li><p><strong>missing_implies_phenotype_excluded</strong> – <cite>True</cite> if lack of an explicit annotation implies term’s absence`.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.HpoClassifier.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.clf.HpoClassifier.name" title="Link to this definition"></a></dt>
+<dd><p>Get the name of the partitioning.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.HpoClassifier.description">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.clf.HpoClassifier.description" title="Link to this definition"></a></dt>
+<dd><p>Get a description of the partitioning.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.HpoClassifier.variable_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variable_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.clf.HpoClassifier.variable_name" title="Link to this definition"></a></dt>
+<dd><p>Get a <cite>str</cite> with the name of the variable investigated by the partitioning.</p>
+<p>For instance <cite>Sex</cite>, <cite>Allele groups</cite>, <cite>HP:0001250</cite>, <cite>OMIM:256000</cite></p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.HpoClassifier.phenotype">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phenotype</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></em><a class="headerlink" href="#gpsea.analysis.clf.HpoClassifier.phenotype" title="Link to this definition"></a></dt>
+<dd><p>Get the phenotype entity of interest.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.HpoClassifier.present_phenotype_categorization">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">present_phenotype_categorization</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#gpsea.analysis.clf.PhenotypeCategorization" title="gpsea.analysis.clf._api.PhenotypeCategorization"><span class="pre">PhenotypeCategorization</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gpsea.analysis.clf.HpoClassifier.present_phenotype_categorization" title="Link to this definition"></a></dt>
+<dd><p>Get the categorization which represents the group of the patients who exibit the investigated phenotype.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.HpoClassifier.get_categorizations">
+<span class="sig-name descname"><span class="pre">get_categorizations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.analysis.clf.PhenotypeCategorization" title="gpsea.analysis.clf._api.PhenotypeCategorization"><span class="pre">PhenotypeCategorization</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_pheno.html#HpoClassifier.get_categorizations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.HpoClassifier.get_categorizations" title="Link to this definition"></a></dt>
+<dd><p>Get a sequence of all categories which the classifier can produce.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.HpoClassifier.test">
+<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.clf.PhenotypeCategorization" title="gpsea.analysis.clf._api.PhenotypeCategorization"><span class="pre">PhenotypeCategorization</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_pheno.html#HpoClassifier.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.HpoClassifier.test" title="Link to this definition"></a></dt>
+<dd><p>Assign an <cite>individual</cite> into a class.</p>
+<p>Return <cite>None</cite> if the individual cannot be assigned into any meaningful class.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.DiseasePresenceClassifier">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.analysis.clf.</span></span><span class="sig-name descname"><span class="pre">DiseasePresenceClassifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">disease_id_query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_pheno.html#DiseasePresenceClassifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.DiseasePresenceClassifier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpsea.analysis.clf.PhenotypeClassifier" title="gpsea.analysis.clf._api.PhenotypeClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeClassifier</span></code></a>[<a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TermId</span></code></a>]</p>
+<p><cite>DiseasePresenceClassifier</cite> tests if an individual was diagnosed with a disease.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>disease_id_query</strong> – a disease identifier formatted either as a CURIE <cite>str</cite> (e.g. <code class="docutils literal notranslate"><span class="pre">OMIM:256000</span></code>)
+or as a <a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.html#hpotk.TermId" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TermId</span></code></a>.</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.DiseasePresenceClassifier.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.clf.DiseasePresenceClassifier.name" title="Link to this definition"></a></dt>
+<dd><p>Get the name of the partitioning.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.DiseasePresenceClassifier.description">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.clf.DiseasePresenceClassifier.description" title="Link to this definition"></a></dt>
+<dd><p>Get a description of the partitioning.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.DiseasePresenceClassifier.variable_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variable_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.analysis.clf.DiseasePresenceClassifier.variable_name" title="Link to this definition"></a></dt>
+<dd><p>Get a <cite>str</cite> with the name of the variable investigated by the partitioning.</p>
+<p>For instance <cite>Sex</cite>, <cite>Allele groups</cite>, <cite>HP:0001250</cite>, <cite>OMIM:256000</cite></p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.DiseasePresenceClassifier.phenotype">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phenotype</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a></em><a class="headerlink" href="#gpsea.analysis.clf.DiseasePresenceClassifier.phenotype" title="Link to this definition"></a></dt>
+<dd><p>Get the phenotype entity of interest.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.DiseasePresenceClassifier.present_phenotype_categorization">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">present_phenotype_categorization</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#gpsea.analysis.clf.PhenotypeCategorization" title="gpsea.analysis.clf._api.PhenotypeCategorization"><span class="pre">PhenotypeCategorization</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gpsea.analysis.clf.DiseasePresenceClassifier.present_phenotype_categorization" title="Link to this definition"></a></dt>
+<dd><p>Get the categorization which represents the group of the patients who exibit the investigated phenotype.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.DiseasePresenceClassifier.get_categorizations">
+<span class="sig-name descname"><span class="pre">get_categorizations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.analysis.clf.PhenotypeCategorization" title="gpsea.analysis.clf._api.PhenotypeCategorization"><span class="pre">PhenotypeCategorization</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_pheno.html#DiseasePresenceClassifier.get_categorizations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.DiseasePresenceClassifier.get_categorizations" title="Link to this definition"></a></dt>
+<dd><p>Get a sequence of all categories which the classifier can produce.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.DiseasePresenceClassifier.test">
+<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model._cohort.Patient"><span class="pre">Patient</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.analysis.clf.PhenotypeCategorization" title="gpsea.analysis.clf._api.PhenotypeCategorization"><span class="pre">PhenotypeCategorization</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_pheno.html#DiseasePresenceClassifier.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.DiseasePresenceClassifier.test" title="Link to this definition"></a></dt>
+<dd><p>Assign an <cite>individual</cite> into a class.</p>
+<p>Return <cite>None</cite> if the individual cannot be assigned into any meaningful class.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.prepare_classifiers_for_terms_of_interest">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.clf.</span></span><span class="sig-name descname"><span class="pre">prepare_classifiers_for_terms_of_interest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cohort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model._cohort.Patient"><span class="pre">Patient</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hpo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.ontology.html#hpotk.ontology.MinimalOntology" title="(in hpo-toolkit)"><span class="pre">MinimalOntology</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">missing_implies_excluded</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.analysis.clf.PhenotypeClassifier" title="gpsea.analysis.clf._api.PhenotypeClassifier"><span class="pre">PhenotypeClassifier</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_util.html#prepare_classifiers_for_terms_of_interest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.prepare_classifiers_for_terms_of_interest" title="Link to this definition"></a></dt>
+<dd><p>A convenience method for creating a suite of phenotype classifiers
+for testing all phenotypes of interest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cohort</strong> – a cohort of individuals to investigate.</p></li>
+<li><p><strong>hpo</strong> – an entity with an HPO graph (e.g. <a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.html#hpotk.MinimalOntology" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">MinimalOntology</span></code></a>).</p></li>
+<li><p><strong>missing_implies_excluded</strong> – <cite>True</cite> if absence of an annotation should be counted as its explicit exclusion.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpsea.analysis.clf.prepare_hpo_terms_of_interest">
+<span class="sig-prename descclassname"><span class="pre">gpsea.analysis.clf.</span></span><span class="sig-name descname"><span class="pre">prepare_hpo_terms_of_interest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cohort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model._cohort.Patient"><span class="pre">Patient</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hpo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.ontology.html#hpotk.ontology.MinimalOntology" title="(in hpo-toolkit)"><span class="pre">MinimalOntology</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/gpsea/analysis/clf/_util.html#prepare_hpo_terms_of_interest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.clf.prepare_hpo_terms_of_interest" title="Link to this definition"></a></dt>
+<dd><p>Prepare a collection of HPO terms to test.</p>
+<p>This includes the direct HPO patient annotations
+as well as the ancestors of the present terms and the descendants of the excluded terms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cohort</strong> – a cohort of individuals to investigate.</p></li>
+<li><p><strong>hpo</strong> – HPO as <a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.html#hpotk.MinimalOntology" title="(in hpo-toolkit)"><code class="xref py py-class docutils literal notranslate"><span class="pre">MinimalOntology</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gpsea.analysis.html" class="btn btn-neutral float-left" title="gpsea.analysis package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gpsea.analysis.mtc_filter.html" class="btn btn-neutral float-right" title="gpsea.analysis.mtc_filter package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
