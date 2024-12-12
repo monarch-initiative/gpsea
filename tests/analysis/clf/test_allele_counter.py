@@ -12,7 +12,9 @@ from gpsea.model import (
     VariantInfo,
 )
 from gpsea.model.genome import Contig, GenomeBuild, GenomicRegion, Region, Strand
-from gpsea.analysis.predicate.genotype import AlleleCounter, VariantPredicates
+from gpsea.analysis.clf import AlleleCounter
+import gpsea.analysis.predicate as vp
+
 
 
 @pytest.fixture(scope="module")
@@ -209,7 +211,7 @@ class TestAlleleCounter:
         variant_key: str,
         expected: int,
     ):
-        predicate = VariantPredicates.variant_key(key=variant_key)
+        predicate = vp.variant_key(key=variant_key)
         counter = AlleleCounter(predicate)
 
         assert counter.count(patient) == expected
@@ -226,7 +228,7 @@ class TestAlleleCounter:
     def test_count_effects(
         self, patient: Patient, variant_effect: VariantEffect, tx_id: str, expected: int
     ):
-        predicate = VariantPredicates.variant_effect(effect=variant_effect, tx_id=tx_id)
+        predicate = vp.variant_effect(effect=variant_effect, tx_id=tx_id)
         counter = AlleleCounter(predicate)
 
         assert counter.count(patient) == expected

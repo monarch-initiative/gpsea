@@ -1,7 +1,7 @@
 import typing
 import pytest
 
-from ._gt_predicates import _build_count_to_cat, _build_ac_to_cat, _qc_partitions
+from ._gt_classifiers import _build_count_to_cat, _build_ac_to_cat, _qc_partitions
 
 
 @pytest.mark.parametrize(

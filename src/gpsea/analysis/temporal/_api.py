@@ -8,12 +8,12 @@ import pandas as pd
 import scipy.stats
 
 from gpsea.model import Patient
-from ..predicate.genotype import GenotypePolyPredicate
 
 from ._base import Survival
 from ._util import prepare_censored_data
 from .stats import SurvivalStatistic
 
+from ..clf import GenotypeClassifier
 from .._base import MonoPhenotypeAnalysisResult, StatisticResult, AnalysisException
 from .._partition import ContinuousPartitioning
 
@@ -56,7 +56,7 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
     ============  ===========  ============================================
 
     The index includes the individual IDs (`patient_id`), and then there are 2 columns
-    with the `genotype` group id (:attr:`~gpsea.analysis.predicate.PatientCategory.cat_id`)
+    with the `genotype` group id (:attr:`~gpsea.analysis.clf.PatientCategory.cat_id`)
     and the `phenotype` with the survival represented as :class:`~gpsea.analysis.temporal.Survival` object.
 
     A `genotype` value may be missing (`None`) if the individual cannot be assigned
@@ -66,14 +66,14 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
 
     def __init__(
         self,
-        gt_predicate: GenotypePolyPredicate,
+        gt_clf: GenotypeClassifier,
         endpoint: Endpoint,
         statistic: SurvivalStatistic,
         data: pd.DataFrame,
         statistic_result: StatisticResult,
     ):
         super().__init__(
-            gt_predicate=gt_predicate,
+            gt_clf=gt_clf,
             phenotype=endpoint,
             statistic=statistic,
             data=data,
@@ -103,7 +103,7 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
 
         :param ax: a Matplotlib `Axes` to draw on.
         """
-        for pat_cat in self._gt_predicate.get_categories():
+        for pat_cat in self._gt_clf.get_categories():
             survivals = self._data.loc[
                 self._data[MonoPhenotypeAnalysisResult.GT_COL] == pat_cat.cat_id,
                 MonoPhenotypeAnalysisResult.PH_COL,
@@ -113,14 +113,13 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
                 censored_data = prepare_censored_data(survivals=non_na)
                 data = scipy.stats.ecdf(censored_data)
                 data.sf.plot(ax, label=pat_cat.name)
-        
+
         ax.legend()
 
     def __eq__(self, value: object) -> bool:
-        return (
-            isinstance(value, SurvivalAnalysisResult)
-            and super(MonoPhenotypeAnalysisResult, self).__eq__(value)
-        )
+        return isinstance(value, SurvivalAnalysisResult) and super(
+            MonoPhenotypeAnalysisResult, self
+        ).__eq__(value)
 
     def __hash__(self) -> int:
         return super(MonoPhenotypeAnalysisResult, self).__hash__()
@@ -128,7 +127,7 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
     def __str__(self) -> str:
         return (
             "SurvivalAnalysisResult("
-            f"gt_predicate={self._gt_predicate}, "
+            f"gt_clf={self._gt_clf}, "
             f"endpoint={self._phenotype}, "
             f"statistic={self._statistic}, "
             f"data={self._data}, "
@@ -143,7 +142,7 @@ class SurvivalAnalysis:
     """
     `SurvivalAnalysis` compares the survivals of genotype groups with respect
     to an :class:`~gpsea.analysis.temporal.Endpoint`.
-    
+
     The cohort is partitioned into groups using a genotype predicate
     and survival is computed for each cohort member. The difference between
     survivals is tested with selected :class:`~gpsea.analysis.temporal.stats.SurvivalStatistic`.
@@ -162,13 +161,13 @@ class SurvivalAnalysis:
     def compare_genotype_vs_survival(
         self,
         cohort: typing.Iterable[Patient],
-        gt_predicate: GenotypePolyPredicate,
+        gt_clf: GenotypeClassifier,
         endpoint: Endpoint,
     ) -> SurvivalAnalysisResult:
         """
         Execute the survival analysis on a given `cohort`.
         """
-        
+
         idx = pd.Index((patient.patient_id for patient in cohort), name="patient_id")
         data = pd.DataFrame(
             None,
@@ -178,11 +177,13 @@ class SurvivalAnalysis:
         survivals = defaultdict(list)
         # Apply the predicate and the survival metric on the cohort
         for patient in cohort:
-            gt_cat = gt_predicate.test(patient)
+            gt_cat = gt_clf.test(patient)
             if gt_cat is None:
                 data.loc[patient.patient_id, MonoPhenotypeAnalysisResult.GT_COL] = None
             else:
-                data.loc[patient.patient_id, MonoPhenotypeAnalysisResult.GT_COL] = gt_cat.category.cat_id
+                data.loc[patient.patient_id, MonoPhenotypeAnalysisResult.GT_COL] = (
+                    gt_cat.category.cat_id
+                )
 
             survival = endpoint.compute_survival(patient)
             data.loc[patient.patient_id, MonoPhenotypeAnalysisResult.PH_COL] = survival  # type: ignore
@@ -190,7 +191,7 @@ class SurvivalAnalysis:
             if gt_cat is not None and survival is not None:
                 survivals[gt_cat].append(survival)
 
-        vals = tuple(survivals[gt_cat] for gt_cat in gt_predicate.get_categorizations())
+        vals = tuple(survivals[gt_cat] for gt_cat in gt_clf.get_categorizations())
         result = self._statistic.compute_pval(vals)
         if math.isnan(result.pval):
             raise AnalysisException(
@@ -199,7 +200,7 @@ class SurvivalAnalysis:
             )
 
         return SurvivalAnalysisResult(
-            gt_predicate=gt_predicate,
+            gt_clf=gt_clf,
             endpoint=endpoint,
             statistic=self._statistic,
             data=data,

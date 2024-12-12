@@ -2,22 +2,25 @@ import pytest
 
 import hpotk
 
-from gpsea.model import *
-from gpsea.model.genome import *
-from gpsea.analysis.predicate.genotype import VariantPredicate
-
-
-class AlwaysFalseVariantPredicate(VariantPredicate):
-    def get_question(self) -> str:
-        return "No question asked, just always returns False"
-
-    def test(self, variant: Variant) -> bool:
-        return False
+from gpsea.model import (
+    Cohort,
+    SampleLabels,
+    Patient,
+    Sex,
+    Phenotype,
+    Variant,
+    Genotype,
+    Genotypes,
+    VariantCoordinates,
+    VariantEffect,
+)
+from gpsea.model.genome import GenomeBuild
+from gpsea.analysis.predicate import VariantPredicate, true
 
 
 @pytest.fixture(scope="package")
 def always_false_variant_predicate() -> VariantPredicate:
-    return AlwaysFalseVariantPredicate()
+    return ~true()
 
 
 @pytest.fixture(scope="package")

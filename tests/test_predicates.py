@@ -1,7 +1,7 @@
 import hpotk
 import pytest
 
-from gpsea.analysis.predicate.phenotype import HpoPredicate, DiseasePresencePredicate
+from gpsea.analysis.clf import HpoClassifier, DiseasePresenceClassifier
 from gpsea.model import Cohort, Patient
 
 
@@ -42,7 +42,7 @@ class TestHpoPredicate:
     ):
         patient = find_patient(patient_id, toy_cohort)
         term_id = hpotk.TermId.from_curie(curie)
-        predicate = HpoPredicate(hpo=hpo, query=term_id)
+        predicate = HpoClassifier(hpo=hpo, query=term_id)
         actual = predicate.test(patient)
 
         assert actual is not None
@@ -57,7 +57,7 @@ class TestHpoPredicate:
         # Not Measured and not Observed - 'HP:0006280',  # Chronic pancreatitis
         patient = find_patient('HetSingleVar', toy_cohort)
         term_id = hpotk.TermId.from_curie('HP:0006280')
-        predicate = HpoPredicate(hpo=hpo, query=term_id)
+        predicate = HpoClassifier(hpo=hpo, query=term_id)
         actual = predicate.test(patient)
 
         assert actual is None
@@ -80,7 +80,7 @@ class TestDiseasePresencePredicate:
     ):
         patient = find_patient(patient_id, toy_cohort)
         disease_id = hpotk.TermId.from_curie("OMIM:148050")
-        predicate = DiseasePresencePredicate(disease_id)
+        predicate = DiseasePresenceClassifier(disease_id)
         actual = predicate.test(patient)
 
         assert actual is not None

@@ -1,9 +1,9 @@
 .. _measurement-stat:
 
 
-==========================
-Compare measurement values
-==========================
+====================
+Compare measurements
+====================
 
 
 ****************
@@ -55,21 +55,21 @@ Missense should *NOT* be severe.
 TODO - create real predicate.
 
 >>> from gpsea.model import VariantEffect
->>> from gpsea.analysis.predicate.genotype import VariantPredicates
->>> is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id=tx_id)
+>>> from gpsea.analysis.predicate import variant_effect
+>>> is_missense = variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id=tx_id)
 >>> is_missense.description
 'MISSENSE_VARIANT on NM_000500.9'
 
 Assuming AR inheritance, we compare missense vs. rest:
 
->>> from gpsea.analysis.predicate.genotype import biallelic_predicate
->>> gt_predicate = biallelic_predicate(
+>>> from gpsea.analysis.clf import biallelic_classifier
+>>> gt_clf = biallelic_classifier(
 ...     a_predicate=is_missense,
 ...     b_predicate=~is_missense,
 ...     a_label="Missense", b_label="Other",
 ...     partitions=({0,}, {1, 2}),
 ... )
->>> gt_predicate.group_labels
+>>> gt_clf.class_labels
 ('Missense/Missense', 'Missense/Other OR Other/Other')
 
 Phenotype score
@@ -118,7 +118,7 @@ We execute the analysis by running
 
 >>> result = score_analysis.compare_genotype_vs_phenotype_score(
 ...     cohort=cohort,
-...     gt_predicate=gt_predicate,
+...     gt_clf=gt_clf,
 ...     pheno_scorer=pheno_scorer,
 ... )
 
@@ -140,7 +140,7 @@ individual 14[PMID_30968594_individual_14]         1      664.0
 
 Prepare genotype category legend:
 
->>> gt_id_to_name = {c.category.cat_id: c.category.name for c in gt_predicate.get_categorizations()}
+>>> gt_id_to_name = {c.category.cat_id: c.category.name for c in gt_clf.get_categorizations()}
 >>> gt_id_to_name
 {0: 'Missense/Missense', 1: 'Missense/Other OR Other/Other'}
 

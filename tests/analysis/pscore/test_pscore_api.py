@@ -4,13 +4,12 @@ import pytest
 import pandas as pd
 
 from gpsea.analysis import StatisticResult
-from gpsea.analysis.predicate.genotype import GenotypePolyPredicate
+from gpsea.analysis.clf import GenotypeClassifier
 from gpsea.analysis.pscore import PhenotypeScoreAnalysisResult, PhenotypeScorer
 from gpsea.analysis.pscore.stats import MannWhitneyStatistic
 
 
 class TestPhenotypeScoreAnalysisResult:
-
     @pytest.fixture(scope="class")
     def phenotype_scorer(self) -> PhenotypeScorer:
         return PhenotypeScorer.wrap_scoring_function(
@@ -21,7 +20,7 @@ class TestPhenotypeScoreAnalysisResult:
     @pytest.fixture(scope="class")
     def result(
         self,
-        suox_gt_predicate: GenotypePolyPredicate,
+        suox_gt_clf: GenotypeClassifier,
         phenotype_scorer: PhenotypeScorer,
     ) -> PhenotypeScoreAnalysisResult:
         data = pd.DataFrame(
@@ -29,25 +28,25 @@ class TestPhenotypeScoreAnalysisResult:
                 "patient_id": ["A", "B", "C"],
                 "genotype": [0, 1, None],
                 "phenotype": [
-                    10.,
-                    float('nan'),
-                    -4.,
+                    10.0,
+                    float("nan"),
+                    -4.0,
                 ],
             }
         ).set_index("patient_id")
         return PhenotypeScoreAnalysisResult(
-            gt_predicate=suox_gt_predicate,
+            gt_clf=suox_gt_clf,
             phenotype=phenotype_scorer,
             statistic=MannWhitneyStatistic(),
             data=data,
-            statistic_result=StatisticResult(statistic=.2, pval=0.1234),
+            statistic_result=StatisticResult(statistic=0.2, pval=0.1234),
         )
 
     def test_properties(
         self,
         result: PhenotypeScoreAnalysisResult,
     ):
-        assert tuple(result.gt_predicate.group_labels) == (
+        assert tuple(result.gt_clf.class_labels) == (
             "0",
             "1",
         )
@@ -62,4 +61,4 @@ class TestPhenotypeScoreAnalysisResult:
 
         assert records.shape == (1, 2)
         assert records.loc["A", "genotype"] == 0
-        assert records.loc["A", "phenotype"] == pytest.approx(10.)
+        assert records.loc["A", "phenotype"] == pytest.approx(10.0)

@@ -1,20 +1,20 @@
-.. _genotype-phenotype-groups:
+.. _genotype-phenotype-classes:
 
 
-=====================================
-Compare genotype and phenotype groups
-=====================================
+======================================
+Compare genotype and phenotype classes
+======================================
 
 .. doctest::
   :hide:
 
   >>> from gpsea import _overwrite
 
-In this section, we show how to test the association between genotype and phenotype categories.
+In this section, we show how to test the association between genotype and phenotype classes.
 We assume a cohort was preprocessed following the :ref:`input-data` section,
-and we use predicates described in the :ref:`partitioning` to assign each cohort member
-into a group along the genotype and phenotype axes.
-We use Fisher exact test (FET) to test for differences between the groups
+and we use classifiers described in the :ref:`partitioning` to assign each cohort member
+into a class along the genotype and phenotype axes.
+We use Fisher exact test (FET) to test for differences between the classes
 and we apply multiple testing correction to mitigate finding significant associations by chance. 
 
 
@@ -63,9 +63,9 @@ The ``p_value`` evaluates to `5.432292015291845e-06`, meaning there is a signifi
 The Fisher exact test evaluates whether the observed frequencies in a contingency table significantly
 deviate from the frequencies we would expect if there were no association between the variables.
 We want to test whether the frequency of `HP:0000486`` is significantly higher or lower in
-one genotype group compared to what would be expected if there were no association.
+one genotype class compared to what would be expected if there were no association.
 Note that by default, the *two-tailed* Fisher exact test is performed, meaning we have no
-hypothesis as to whether there is a higher or lower frequency in one of the genotype groups.
+hypothesis as to whether there is a higher or lower frequency in one of the genotype classes.
 
 However, we are typically interested in testing the associations between the genotype and multiple phenotypic features at once.
 GPSEA takes advantage of the HPO structure and simplifies the testing for all HPO terms encoded in the cohort.
@@ -109,84 +109,95 @@ Configure analysis
 ==================
 
 We want to test the association between frameshift *TBX5* variants and phenotypic abnormalities.
-GPSEA exposes a flexible predicate API that lets us create genotype and phenotype predicates
+GPSEA exposes a flexible classifier API that lets us create genotype and phenotype classifiers
 to assign the cohort members into genotype and phenotype categories based on the variants
-and the HPO terms. We need to create one genotype predicate and one or more phenotype predicates.
+and the HPO terms.
+We need to create one genotype classifier and one or more phenotype classifiers.
 
 
-Genotype predicate
-------------------
+Genotype classifier
+-------------------
 
-We want to separate the patients into two groups: a group *with* a frameshift variant
-and a group *without* a frameshift variant (i.e. any other heterozygous variant).
+We want to separate the patients into two classes: a class *with* a frameshift variant
+and a class *without* a frameshift variant (i.e. any other heterozygous variant).
 We will use the *MANE* transcript for the analysis:
 
 >>> tx_id = 'NM_181486.4'
 
-Building a genotype predicate is a two step process. 
-First, we create a :class:`~gpsea.analysis.predicate.genotype.VariantPredicate`
+Building a genotype classifier is a two step process. 
+First, we create a :class:`~gpsea.analysis.predicate.VariantPredicate`
 to test if the variant is predicted to lead to a frameshift in `NM_181486.4`:
 
 >>> from gpsea.model import VariantEffect
->>> from gpsea.analysis.predicate.genotype import VariantPredicates
->>> is_frameshift = VariantPredicates.variant_effect(VariantEffect.FRAMESHIFT_VARIANT, tx_id)
+>>> from gpsea.analysis.predicate import variant_effect
+>>> is_frameshift = variant_effect(VariantEffect.FRAMESHIFT_VARIANT, tx_id)
 >>> is_frameshift.description
 'FRAMESHIFT_VARIANT on NM_181486.4'
 
-and then we wrap `is_frameshift` in a :class:`~gpsea.analysis.predicate.genotype.monoallelic_predicate` 
-to classify each *TBX5* cohort member either as an individual with one frameshift allele (`Frameshift`)
-or as an idividual with one non-frameshift allele (`Other`):
+.. note::
 
->>> from gpsea.analysis.predicate.genotype import monoallelic_predicate
->>> gt_predicate = monoallelic_predicate(
+   The :mod:`gpsea.analysis.predicate` documentation lists all available variant predicates
+   and :ref:`variant-predicates` exemplifies their usage.
+
+To build a genotype classifier, we wrap `is_frameshift`
+in a Monoallelic classifier (:class:`~gpsea.analysis.clf.monoallelic_classifier`),
+to classify each *TBX5* cohort member either as an individual with one *frameshift* allele (`Frameshift`)
+or as an individual with one *non-frameshift* allele (`Other`):
+
+>>> from gpsea.analysis.clf import monoallelic_classifier
+>>> gt_clf = monoallelic_classifier(
 ...     a_predicate=is_frameshift,
 ...     a_label="Frameshift",
 ...     b_label="Other",
 ... )
->>> gt_predicate.group_labels
+>>> gt_clf.class_labels
 ('Frameshift', 'Other')
 
-In the subsequent analysis, `gt_predicate` will assign a cohort member into the respective group.
-Note, any patient with :math:`0` or :math:`\ge 2` alleles will be *omitted* from the analysis.
+.. note::
+
+   See the :ref:`genotype-classifiers` for other genotype classifier examples.
+
+In the subsequent analysis, `gt_clf` assigns an individual into a genotype class.
+Note, any individual with :math:`0` or :math:`\ge 2` alleles will be *omitted* from the analysis.
 
 
-Phenotype predicates
---------------------
+Phenotype classifiers
+---------------------
 
 We recommend testing the genotype phenotype association for all HPO terms that annotate the cohort members,
 while taking advantage of the HPO graph structure and of the :ref:`true-path-rule`.
-We will use the :func:`~gpsea.analysis.predicate.phenotype.prepare_predicates_for_terms_of_interest`
-utility function to generate phenotype predicates for all HPO terms.
+We will use the :func:`~gpsea.analysis.clf.prepare_classifiers_for_terms_of_interest`
+utility function to generate phenotype classifiers for all HPO terms.
 
-The function needs HPO to prepare predicates, hence we need to load HPO:
+The function needs HPO to prepare classifiers, hence we need to load HPO:
 
 >>> import hpotk
 >>> store = hpotk.configure_ontology_store()
 >>> hpo = store.load_minimal_hpo(release='v2024-07-01')
 
 
-and then we can create the predicates
+and then we can create the classifiers
 
->>> from gpsea.analysis.predicate.phenotype import prepare_predicates_for_terms_of_interest
->>> pheno_predicates = prepare_predicates_for_terms_of_interest(
+>>> from gpsea.analysis.clf import prepare_classifiers_for_terms_of_interest
+>>> pheno_clfs = prepare_classifiers_for_terms_of_interest(
 ...     cohort=cohort,
 ...     hpo=hpo,
 ... )
->>> len(pheno_predicates)
+>>> len(pheno_clfs)
 369
 
 The function finds 369 HPO terms that annotate at least one individual,
 including the *indirect* annotations whose presence is implied by the :ref:`true-path-rule`.
 
 
-.. _phenotype-groups-statistical-analysis:
+.. _phenotype-classes-statistical-analysis:
 
 
 Statistical analysis
 --------------------
 
 We will use :ref:`fisher-exact-test` to test the association
-between genotype and phenotype groups, as described previously.
+between genotype and phenotype classes, as described previously.
 
 In the case of this cohort, we can test association between having a frameshift variant and one of 369 HPO terms.
 However, testing multiple hypotheses on the same dataset increases the risk of finding
@@ -198,11 +209,12 @@ Phenotype MT filter selects a (sub)set of HPO terms for testing,
 for instance only the user-selected terms (see :class:`~gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter`)
 or the terms selected by :class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`.
 
-Multiple testing correction then adjusts the nominal p values for the increased risk
+MTC then adjusts the nominal p values for the increased risk
 of false positive G/P associations.
 The available MTC procedures are listed in the :ref:`mtc-correction-procedures` section.
 
-We must pick one of these to perform genotype-phenotype analysis.
+We must choose a phenotype MT filter as well as a MTC procedure to perform genotype-phenotype analysis.
+
 
 .. _default-hpo-analysis:
 
@@ -210,7 +222,7 @@ Default analysis
 ^^^^^^^^^^^^^^^^
 
 We recommend using HPO MT filter (:class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`) as a phenotype MT filter
-and Benjamini-Hochberg for multiple testing correction.
+and Benjamini-Hochberg for MTC.
 The default analysis can be configured with :func:`~gpsea.analysis.pcats.configure_hpo_term_analysis` convenience method.
 
 >>> from gpsea.analysis.pcats import configure_hpo_term_analysis
@@ -273,12 +285,12 @@ The ``analysis`` is identical to the one configured in the :ref:`default-hpo-ana
 Analysis
 ========
 
-We can now test associations between the genotype groups and the HPO terms:
+We can now test associations between the genotype classes and the HPO terms:
 
 >>> result = analysis.compare_genotype_vs_phenotypes(
 ...     cohort=cohort,
-...     gt_predicate=gt_predicate,
-...     pheno_predicates=pheno_predicates,
+...     gt_clf=gt_clf,
+...     pheno_clfs=pheno_clfs,
 ... )
 >>> len(result.phenotypes)
 369
@@ -286,8 +298,8 @@ We can now test associations between the genotype groups and the HPO terms:
 24
 
 
-We tested the ``cohort`` for association between the genotype groups (``gt_predicate``)
-and HPO terms (``pheno_predicates``).
+We tested the ``cohort`` for association between the genotype classes (``gt_clf``)
+and HPO terms (``pheno_clfs``).
 Thanks to phenotype MT filter, we only tested 24 out of 369 terms.
 The MT filter report shows the filtering details:
 
@@ -299,7 +311,7 @@ The MT filter report shows the filtering details:
 .. raw:: html
   :file: report/tbx5_frameshift.mtc_report.html
 
-.. doctest:: phenotype-groups
+.. doctest:: phenotype-classes
    :hide:
 
    >>> if _overwrite: mtc_report.write('docs/user-guide/analyses/report/tbx5_frameshift.mtc_report.html')
@@ -321,7 +333,7 @@ one HPO term per row. The rows are ordered by the corrected p value and nominal 
    :file: report/tbx5_frameshift.csv
    :header-rows: 2
 
-.. doctest:: phenotype-groups
+.. doctest:: phenotype-classes
    :hide:
 
    >>> if _overwrite: summary_df.to_csv('docs/user-guide/analyses/report/tbx5_frameshift.csv')

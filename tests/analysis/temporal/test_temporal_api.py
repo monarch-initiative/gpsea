@@ -11,12 +11,8 @@ from gpsea.analysis._base import AnalysisException
 from gpsea.model import Cohort, Patient, Status, VitalStatus, Disease, Age
 from gpsea.io import GpseaJSONDecoder
 from gpsea.analysis import StatisticResult
-from gpsea.analysis.predicate.genotype import (
-    GenotypePolyPredicate,
-    VariantPredicates,
-    diagnosis_predicate,
-    monoallelic_predicate,
-)
+from gpsea.analysis.clf import GenotypeClassifier, diagnosis_classifier, monoallelic_classifier
+from gpsea.analysis.predicate import exon
 from gpsea.analysis.temporal import SurvivalAnalysis, SurvivalAnalysisResult, Survival
 from gpsea.analysis.temporal.endpoint import hpo_onset, death
 from gpsea.analysis.temporal.stats import LogRankTest
@@ -32,9 +28,9 @@ def umod_cohort(
 
 
 @pytest.fixture(scope="module")
-def umod_gt_predicate() -> GenotypePolyPredicate:
-    in_exon_3 = VariantPredicates.exon(3, tx_id="NM_003361.4")
-    return monoallelic_predicate(
+def umod_gt_clf() -> GenotypeClassifier:
+    in_exon_3 = exon(3, tx_id="NM_003361.4")
+    return monoallelic_classifier(
         a_predicate=in_exon_3,
         b_predicate=~in_exon_3,
         a_label="Exon 3",
@@ -43,7 +39,6 @@ def umod_gt_predicate() -> GenotypePolyPredicate:
 
 
 class TestSurvivalAnalysis:
-
     @pytest.fixture(scope="class")
     def survival_analysis(self) -> SurvivalAnalysis:
         return SurvivalAnalysis(statistic=LogRankTest())
@@ -53,9 +48,8 @@ class TestSurvivalAnalysis:
         survival_analysis: SurvivalAnalysis,
         hpo: hpotk.MinimalOntology,
         umod_cohort: Cohort,
-        umod_gt_predicate: GenotypePolyPredicate,
+        umod_gt_clf: GenotypeClassifier,
     ):
-
         endpoint = hpo_onset(
             hpo=hpo,
             term_id="HP:0003774",  # Stage 5 chronic kidney disease
@@ -63,7 +57,7 @@ class TestSurvivalAnalysis:
 
         result = survival_analysis.compare_genotype_vs_survival(
             cohort=umod_cohort,
-            gt_predicate=umod_gt_predicate,
+            gt_clf=umod_gt_clf,
             endpoint=endpoint,
         )
 
@@ -75,7 +69,7 @@ class TestSurvivalAnalysis:
     ):
         d_one = Disease.from_raw_parts("OMIM:100000", name="One", is_observed=True)
         d_two = Disease.from_raw_parts("OMIM:200000", name="Two", is_observed=True)
-        gt_predicate = diagnosis_predicate(
+        gt_predicate = diagnosis_classifier(
             diagnoses=(d.identifier for d in (d_one, d_two)),
             labels=(d.name for d in (d_one, d_two)),
         )
@@ -96,7 +90,7 @@ class TestSurvivalAnalysis:
         with pytest.raises(AnalysisException) as e:
             survival_analysis.compare_genotype_vs_survival(
                 cohort=cohort,
-                gt_predicate=gt_predicate,
+                gt_clf=gt_predicate,
                 endpoint=endpoint,
             )
 
@@ -106,11 +100,10 @@ class TestSurvivalAnalysis:
 
 
 class TestSurvivalAnalysisResult:
-
     @pytest.fixture(scope="class")
     def result(
         self,
-        umod_gt_predicate: GenotypePolyPredicate,
+        umod_gt_clf: GenotypeClassifier,
     ) -> SurvivalAnalysisResult:
         data = pd.DataFrame(
             data={
@@ -129,7 +122,7 @@ class TestSurvivalAnalysisResult:
             }
         ).set_index("patient_id")
         return SurvivalAnalysisResult(
-            gt_predicate=umod_gt_predicate,
+            gt_clf=umod_gt_clf,
             endpoint=death(),
             statistic=LogRankTest(),
             data=data,
@@ -140,7 +133,7 @@ class TestSurvivalAnalysisResult:
         self,
         result: SurvivalAnalysisResult,
     ):
-        assert tuple(result.gt_predicate.group_labels) == (
+        assert tuple(result.gt_clf.class_labels) == (
             "Exon 3",
             "Other exon",
         )

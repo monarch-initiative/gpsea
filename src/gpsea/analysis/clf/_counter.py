@@ -1,5 +1,6 @@
 from gpsea.model import Patient, Genotype
-from ._api import VariantPredicate
+
+from ..predicate import VariantPredicate
 
 
 class AlleleCounter:

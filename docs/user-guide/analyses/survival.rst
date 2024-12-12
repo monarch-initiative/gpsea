@@ -46,26 +46,27 @@ Configure analysis
 
 >>> tx_id = 'NM_003361.4'
 
-Genotype predicate
-------------------
+
+Genotype classifier
+-------------------
 
 One allele of exon 3 vs. one allele of elsewhere.
 
->>> from gpsea.analysis.predicate.genotype import VariantPredicates
->>> is_in_exon3 = VariantPredicates.exon(exon=3, tx_id=tx_id)
+>>> from gpsea.analysis.predicate import exon
+>>> is_in_exon3 = exon(exon=3, tx_id=tx_id)
 >>> is_in_exon3.description
 'overlaps with exon 3 of NM_003361.4'
 
-Monoallelic predicate to compare one allele of *UMOD* exon 3 variant
+Monoallelic classifier to compare one allele of *UMOD* exon 3 variant
 versus one allele of other *UMOD* variant:
 
->>> from gpsea.analysis.predicate.genotype import monoallelic_predicate
->>> gt_predicate = monoallelic_predicate(
+>>> from gpsea.analysis.clf import monoallelic_classifier
+>>> gt_clf = monoallelic_classifier(
 ...     a_predicate=is_in_exon3,
 ...     b_predicate=~is_in_exon3,
 ...     a_label="Exon 3", b_label="Other",
 ... )
->>> gt_predicate.group_labels
+>>> gt_clf.class_labels
 ('Exon 3', 'Other')
 
 
@@ -102,6 +103,7 @@ the genotype groups:
 >>> from gpsea.analysis.temporal.stats import LogRankTest
 >>> survival_statistic = LogRankTest()
 
+
 Final analysis
 --------------
 
@@ -112,6 +114,7 @@ We will put the final analysis together into a :class:`~gpsea.analysis.temporal.
 ...     statistic=survival_statistic,
 ... )
 
+
 Analysis
 ========
 
@@ -119,7 +122,7 @@ We execute the analysis by running
 
 >>> result = survival_analysis.compare_genotype_vs_survival(
 ...     cohort=cohort,
-...     gt_predicate=gt_predicate,
+...     gt_clf=gt_clf,
 ...     endpoint=endpoint,
 ... )
 
@@ -152,7 +155,7 @@ We can plot Kaplan-Meier curves:
 ... )
 >>> _ = ax.grid(axis="y")
 
-.. image:: /img/umod_km_curves.png
+.. image:: report/umod_km_curves.png
    :alt: UMOD Kaplan-Meier curves
    :align: center
    :width: 600px
@@ -160,7 +163,7 @@ We can plot Kaplan-Meier curves:
 .. doctest:: survival
    :hide:
 
-   >>> if _overwrite: fig.savefig('docs/img/umod_km_curves.png')
+   >>> if _overwrite: fig.savefig('docs/user-guide/analyses/report/umod_km_curves.png')
    
 
 Raw data
@@ -179,7 +182,7 @@ AII.5[PMID_22034507_AII_5]       0    Survival(value=22280.25, is_censored=False
 AIII.4[PMID_22034507_AIII_4]     0    Survival(value=19723.5, is_censored=False)
 
 Each line corresponeds to an individual and the dataframe is indexed by the individual's identifier/label.
-The `genotype` column contains the genotype group code,
+The `genotype` column contains the genotype class code,
 and `phenotype` column includes a :class:`~gpsea.analysis.temporal.Survival` value
 or `None` if computing the survival was impossible (see :func:`~gpsea.analysis.temporal.endpoint.hpo_onset` for details).
 The `Survival` reports the number of days until attaining the endpoint,
