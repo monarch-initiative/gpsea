@@ -22,23 +22,23 @@ def summarize_hpo_analysis(
     pheno_idx = pd.Index(result.phenotypes)
     # Column index: multiindex of counts and percentages for all genotype predicate groups
     gt_idx = pd.MultiIndex.from_product(
-        iterables=(result.gt_predicate.get_categories(), ("Count", "Percent")),
-        names=(result.gt_predicate.variable_name, None),
+        iterables=(result.gt_clf.get_categories(), ("Count", "Percent")),
+        names=(result.gt_clf.variable_name, None),
     )
 
     # We'll fill this frame with data
     df = pd.DataFrame(index=pheno_idx, columns=gt_idx)
 
-    for ph_predicate, count in zip(result.pheno_predicates, result.all_counts):
+    for ph_clf, count in zip(result.pheno_clfs, result.all_counts):
         # Sum across the phenotype categories (collapse the rows).
         gt_totals = count.sum()
 
         for gt_cat in count.columns:
-            cnt = count.loc[ph_predicate.present_phenotype_category, gt_cat]
+            cnt = count.loc[ph_clf.present_phenotype_category, gt_cat]
             total = gt_totals[gt_cat]
-            df.loc[ph_predicate.phenotype, (gt_cat, "Count")] = f"{cnt}/{total}"
+            df.loc[ph_clf.phenotype, (gt_cat, "Count")] = f"{cnt}/{total}"
             pct = 0 if total == 0 else round(cnt * 100 / total)
-            df.loc[ph_predicate.phenotype, (gt_cat, "Percent")] = f"{pct}%"
+            df.loc[ph_clf.phenotype, (gt_cat, "Percent")] = f"{pct}%"
 
     # Add columns with p values and corrected p values (if present)
     p_val_col_name = "p values"
@@ -56,7 +56,9 @@ def summarize_hpo_analysis(
     # and only report the tested HPO terms
     with_p_value = df[("", p_val_col_name)].notna()
     if result.corrected_pvals is not None:
-        return df.sort_values(by=[("", corrected_p_val_col_name), ("", p_val_col_name)]).loc[with_p_value]
+        return df.sort_values(
+            by=[("", corrected_p_val_col_name), ("", p_val_col_name)]
+        ).loc[with_p_value]
     else:
         return df.sort_values(by=("", p_val_col_name)).loc[with_p_value]
 

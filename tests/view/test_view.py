@@ -8,16 +8,19 @@ import pytest
 from gpsea.analysis import StatisticResult
 from gpsea.analysis.pcats import HpoTermAnalysisResult
 from gpsea.analysis.pcats.stats import FisherExactTest
-from gpsea.analysis.predicate.genotype import GenotypePolyPredicate
-from gpsea.analysis.predicate.phenotype import HpoPredicate
+from gpsea.analysis.clf import GenotypeClassifier, HpoClassifier
 from gpsea.analysis.mtc_filter import PhenotypeMtcResult
 from gpsea.model import Cohort
-from gpsea.view import CohortViewer, CohortVariantViewer, MtcStatsViewer, summarize_hpo_analysis
+from gpsea.view import (
+    CohortViewer,
+    CohortVariantViewer,
+    MtcStatsViewer,
+    summarize_hpo_analysis,
+)
 
 
 @pytest.mark.skip("Just for manual testing and debugging")
 class TestCohortViewer:
-
     @pytest.fixture
     def cohort_viewer(
         self,
@@ -69,26 +72,25 @@ def test_viewer(
 
 
 class TestMtcStatsViewer:
-
     @pytest.fixture(scope="class")
     def hpo_term_analysis_result(
         self,
         hpo: hpotk.MinimalOntology,
-        suox_gt_predicate: GenotypePolyPredicate,
+        suox_gt_clf: GenotypeClassifier,
     ) -> HpoTermAnalysisResult:
-        is_arachnodactyly = HpoPredicate(
+        is_arachnodactyly = HpoClassifier(
             hpo=hpo,
             query=hpotk.TermId.from_curie("HP:0001166"),  # Arachnodactyly
         )
-        is_seizure = HpoPredicate(
+        is_seizure = HpoClassifier(
             hpo=hpo,
             query=hpotk.TermId.from_curie("HP:0001250"),  # Seizure
         )
         return HpoTermAnalysisResult(
-            gt_predicate=suox_gt_predicate,
+            gt_clf=suox_gt_clf,
             statistic=FisherExactTest(),
             mtc_correction="fdr_bh",
-            pheno_predicates=(
+            pheno_clfs=(
                 is_arachnodactyly,
                 is_seizure,
             ),
@@ -97,17 +99,17 @@ class TestMtcStatsViewer:
                 pd.DataFrame(
                     data=[[10, 5], [10, 15]],
                     index=pd.Index(is_arachnodactyly.get_categories()),
-                    columns=pd.Index(suox_gt_predicate.get_categories()),
+                    columns=pd.Index(suox_gt_clf.get_categories()),
                 ),
                 pd.DataFrame(
                     data=[[5, 0], [5, 10]],
                     index=pd.Index(is_seizure.get_categories()),
-                    columns=pd.Index(suox_gt_predicate.get_categories()),
+                    columns=pd.Index(suox_gt_clf.get_categories()),
                 ),
             ),
             statistic_results=(
-                StatisticResult(statistic=None, pval=math.nan), 
-                StatisticResult(statistic=1.23, pval=0.01), 
+                StatisticResult(statistic=None, pval=math.nan),
+                StatisticResult(statistic=1.23, pval=0.01),
             ),
             corrected_pvals=(math.nan, 0.01),
             mtc_filter_name="Random MTC filter",

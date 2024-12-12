@@ -4,18 +4,18 @@ from collections import Counter
 
 import hpotk
 
-from ._pheno import PhenotypePolyPredicate, HpoPredicate
+from ._pheno import PhenotypeClassifier, HpoClassifier
 
 from gpsea.model import Patient
 
 
-def prepare_predicates_for_terms_of_interest(
+def prepare_classifiers_for_terms_of_interest(
     cohort: typing.Iterable[Patient],
     hpo: hpotk.MinimalOntology,
     missing_implies_excluded: bool = False,
-) -> typing.Sequence[PhenotypePolyPredicate[hpotk.TermId]]:
+) -> typing.Sequence[PhenotypeClassifier[hpotk.TermId]]:
     """
-    A convenience method for creating a battery of :class:`PhenotypePolyPredicate` predicates
+    A convenience method for creating a suite of phenotype classifiers
     for testing all phenotypes of interest.
 
     :param cohort: a cohort of individuals to investigate.
@@ -23,12 +23,14 @@ def prepare_predicates_for_terms_of_interest(
     :param missing_implies_excluded: `True` if absence of an annotation should be counted as its explicit exclusion.
     """
     return tuple(
-        HpoPredicate(
+        HpoClassifier(
             hpo=hpo,
             query=term,
             missing_implies_phenotype_excluded=missing_implies_excluded,
-        ) for term in prepare_hpo_terms_of_interest(
-            cohort, hpo,
+        )
+        for term in prepare_hpo_terms_of_interest(
+            cohort,
+            hpo,
         )
     )
 

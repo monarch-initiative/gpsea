@@ -5,12 +5,11 @@ from collections import Counter
 import hpotk
 
 from gpsea.model import Patient
+from ..predicate import VariantPredicate, true
 
-from .._api import Categorization, PatientCategory
-from ._api import GenotypePolyPredicate
-from ._api import VariantPredicate
+from ._api import Categorization, PatientCategory
+from ._api import GenotypeClassifier
 from ._counter import AlleleCounter
-from ._variant import VariantPredicates
 
 
 def _fixate_partitions(
@@ -22,10 +21,14 @@ def _fixate_partitions(
             fixed.append((partition,))
         elif isinstance(partition, typing.Iterable):
             vals = tuple(partition)
-            assert all(isinstance(val, int) for val in vals), 'All indices must be `int`s!'
+            assert all(
+                isinstance(val, int) for val in vals
+            ), "All indices must be `int`s!"
             fixed.append(vals)
         else:
-            raise ValueError(f'Partition {i} is neither an `int` nor an iterable of `int`s: {partition}')
+            raise ValueError(
+                f"Partition {i} is neither an `int` nor an iterable of `int`s: {partition}"
+            )
     return fixed
 
 
@@ -125,7 +128,7 @@ def _compute_hash(
     return hash_value
 
 
-class PolyCountingGenotypePredicate(GenotypePolyPredicate):
+class PolyCountingGenotypeClassifier(GenotypeClassifier):
     # NOT PART OF THE PUBLIC API
 
     @staticmethod
@@ -134,7 +137,7 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
         b_predicate: VariantPredicate,
         a_label: str,
         b_label: str,
-    ) -> "PolyCountingGenotypePredicate":
+    ) -> "PolyCountingGenotypeClassifier":
         count2cat = {
             (1, 0): Categorization(
                 PatientCategory(
@@ -148,7 +151,7 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
             ),
         }
 
-        return PolyCountingGenotypePredicate.for_predicates_and_categories(
+        return PolyCountingGenotypeClassifier.for_predicates_and_categories(
             total_count=1,
             count2cat=count2cat,
             a_predicate=a_predicate,
@@ -162,14 +165,14 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
         a_label: str,
         b_label: str,
         partitions: typing.Iterable[typing.Iterable[int]],
-    ) -> "PolyCountingGenotypePredicate":
+    ) -> "PolyCountingGenotypeClassifier":
         count2cat = _build_count_to_cat(
             a_label=a_label,
             b_label=b_label,
             partitions=partitions,
         )
 
-        return PolyCountingGenotypePredicate.for_predicates_and_categories(
+        return PolyCountingGenotypeClassifier.for_predicates_and_categories(
             total_count=2,
             count2cat=count2cat,
             a_predicate=a_predicate,
@@ -182,8 +185,8 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
         count2cat: typing.Mapping[typing.Tuple[int, int], Categorization],
         a_predicate: VariantPredicate,
         b_predicate: VariantPredicate,
-    ) -> "PolyCountingGenotypePredicate":
-        return PolyCountingGenotypePredicate(
+    ) -> "PolyCountingGenotypeClassifier":
+        return PolyCountingGenotypeClassifier(
             total_count=total_count,
             a_counter=AlleleCounter(a_predicate),
             b_counter=AlleleCounter(b_predicate),
@@ -209,12 +212,12 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
 
     @property
     def name(self) -> str:
-        return "Allele Group Predicate"
+        return "Allele Group Classifier"
 
     @property
     def description(self) -> str:
         allele = "allele" if self._total_count == 1 else "alleles"
-        return f"Partition by allele group ({self._total_count} {allele} per group)"
+        return f"Classify by allele group ({self._total_count} {allele} per group)"
 
     @property
     def variable_name(self) -> str:
@@ -231,7 +234,7 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
 
     def __eq__(self, value: object) -> bool:
         return (
-            isinstance(value, PolyCountingGenotypePredicate)
+            isinstance(value, PolyCountingGenotypeClassifier)
             and self._count2cat == value._count2cat
             and self._a_counter == value._a_counter
             and self._b_counter == value._b_counter
@@ -241,18 +244,18 @@ class PolyCountingGenotypePredicate(GenotypePolyPredicate):
         return self._hash
 
 
-def monoallelic_predicate(
+def monoallelic_classifier(
     a_predicate: VariantPredicate,
     b_predicate: typing.Optional[VariantPredicate] = None,
     a_label: str = "A",
     b_label: str = "B",
-) -> GenotypePolyPredicate:
+) -> GenotypeClassifier:
     """
-    The predicate bins patient into one of two groups, `A` and `B`,
+    Monoallelic classifier bins patient into one of two groups, `A` and `B`,
     based on presence of *exactly one* allele of a variant
     that meets the predicate criteria.
 
-    See :ref:`monoallelic-predicate` for more information and an example usage.
+    See :ref:`monoallelic-classifier` for more information and an example usage.
 
     :param a_predicate: predicate to test if the variants
         meet the criteria of the first group (named `A` by default).
@@ -268,7 +271,7 @@ def monoallelic_predicate(
     if b_predicate is None:
         b_predicate = ~a_predicate
 
-    return PolyCountingGenotypePredicate.monoallelic(
+    return PolyCountingGenotypeClassifier.monoallelic(
         a_predicate=a_predicate,
         b_predicate=b_predicate,
         a_label=a_label,
@@ -276,20 +279,24 @@ def monoallelic_predicate(
     )
 
 
-def biallelic_predicate(
+def biallelic_classifier(
     a_predicate: VariantPredicate,
     b_predicate: typing.Optional[VariantPredicate] = None,
     a_label: str = "A",
     b_label: str = "B",
-    partitions: typing.Collection[typing.Union[int, typing.Collection[int]]] = (0, 1, 2),
-) -> GenotypePolyPredicate:
+    partitions: typing.Collection[typing.Union[int, typing.Collection[int]]] = (
+        0,
+        1,
+        2,
+    ),
+) -> GenotypeClassifier:
     """
-    The predicate bins patient into one of the three groups,
+    Biallelic classifier assigns an individual into one of the three classes,
     `AA`, `AB`, and `BB`,
     based on presence of *two* variant alleles
-    that meet the predicate criteria.
+    that meet the criteria.
 
-    See :ref:`biallelic-predicate` for more information and an example usage.
+    See :ref:`biallelic-classifier` for more information and an example usage.
 
     :param a_predicate: predicate to test if the variants meet
         the criteria of the first group (named `A` by default).
@@ -310,7 +317,7 @@ def biallelic_predicate(
     if b_predicate is None:
         b_predicate = ~a_predicate
 
-    return PolyCountingGenotypePredicate.biallelic(
+    return PolyCountingGenotypeClassifier.biallelic(
         a_predicate=a_predicate,
         b_predicate=b_predicate,
         a_label=a_label,
@@ -344,9 +351,9 @@ def _build_ac_to_cat(
 def allele_count(
     counts: typing.Collection[typing.Union[int, typing.Collection[int]]],
     target: typing.Optional[VariantPredicate] = None,
-) -> GenotypePolyPredicate:
+) -> GenotypeClassifier:
     """
-    Create a predicate to assign the patient into a group based on the allele count
+    Allele count classifier assigns the individual into a group based on the allele count
     of the target variants.
 
     The `counts` option takes an `int` collection or a collection of `int` collections.
@@ -361,22 +368,22 @@ def allele_count(
     The following counts will partition the cohort into individuals
     with zero allele or one target allele:
 
-    >>> from gpsea.analysis.predicate.genotype import allele_count
+    >>> from gpsea.analysis.clf import allele_count
     >>> zero_vs_one = allele_count(counts=(0, 1))
-    >>> zero_vs_one.summarize_groups()
+    >>> zero_vs_one.summarize_classes()
     'Allele count: 0, 1'
 
-    These counts will create three groups for individuals with zero, one or two alleles:
+    These counts will create three classes for individuals with zero, one or two alleles:
 
     >>> zero_vs_one_vs_two = allele_count(counts=(0, 1, 2))
-    >>> zero_vs_one_vs_two.summarize_groups()
+    >>> zero_vs_one_vs_two.summarize_classes()
     'Allele count: 0, 1, 2'
 
     Last, the counts below will create two groups, one for the individuals with zero target variant type alleles,
     and one for the individuals with one or two alleles:
 
     >>> zero_vs_one_vs_two = allele_count(counts=(0, {1, 2}))
-    >>> zero_vs_one_vs_two.summarize_groups()
+    >>> zero_vs_one_vs_two.summarize_classes()
     'Allele count: 0, 1 OR 2'
 
     Note that we wrap the last two allele counts in a set.
@@ -386,7 +393,7 @@ def allele_count(
         or `None` if *all* variants in the individual should be used.
     """
     if target is None:
-        target = VariantPredicates.true()
+        target = true()
     else:
         assert isinstance(target, VariantPredicate)
 
@@ -396,15 +403,14 @@ def allele_count(
     count2cat = _build_ac_to_cat(counts)
 
     counter = AlleleCounter(predicate=target)
-    
-    return AlleleCountPredicate(
+
+    return AlleleCountClassifier(
         count2cat=count2cat,
         counter=counter,
     )
 
 
-class AlleleCountPredicate(GenotypePolyPredicate):
-
+class AlleleCountClassifier(GenotypeClassifier):
     def __init__(
         self,
         count2cat: typing.Mapping[int, Categorization],
@@ -415,7 +421,9 @@ class AlleleCountPredicate(GenotypePolyPredicate):
         assert isinstance(counter, AlleleCounter)
         self._counter = counter
 
-        self._categorizations = tuple(_deduplicate_categorizations(self._count2cat.values()))
+        self._categorizations = tuple(
+            _deduplicate_categorizations(self._count2cat.values())
+        )
         self._hash = _compute_hash(self._count2cat, (self._counter,))
 
     def get_categorizations(self) -> typing.Sequence[Categorization]:
@@ -423,11 +431,11 @@ class AlleleCountPredicate(GenotypePolyPredicate):
 
     @property
     def name(self) -> str:
-        return "Allele Count Predicate"
+        return "Allele Count Classifier"
 
     @property
     def description(self) -> str:
-        return "Partition by the allele count"
+        return "Classify by the allele count"
 
     @property
     def variable_name(self) -> str:
@@ -440,15 +448,17 @@ class AlleleCountPredicate(GenotypePolyPredicate):
         return self._count2cat.get(count, None)
 
     def __eq__(self, value: object) -> bool:
-        return isinstance(value, AlleleCountPredicate) \
-            and self._count2cat == value._count2cat \
+        return (
+            isinstance(value, AlleleCountClassifier)
+            and self._count2cat == value._count2cat
             and self._counter == value._counter
+        )
 
     def __hash__(self) -> int:
         return self._hash
 
 
-class SexGenotypePredicate(GenotypePolyPredicate):
+class SexGenotypeClassifier(GenotypeClassifier):
     # NOT PART OF THE PUBLIC API
 
     def __init__(self):
@@ -474,11 +484,11 @@ class SexGenotypePredicate(GenotypePolyPredicate):
 
     @property
     def name(self) -> str:
-        return "Sex Predicate"
+        return "Sex Classifier"
 
     @property
     def description(self) -> str:
-        return "Partition by sex"
+        return "Classify by sex"
 
     @property
     def variable_name(self) -> str:
@@ -496,16 +506,16 @@ class SexGenotypePredicate(GenotypePolyPredicate):
             return None
 
     def __eq__(self, value: object) -> bool:
-        return isinstance(value, SexGenotypePredicate)
+        return isinstance(value, SexGenotypeClassifier)
 
     def __hash__(self) -> int:
         return 31
 
 
-INSTANCE = SexGenotypePredicate()
+INSTANCE = SexGenotypeClassifier()
 
 
-def sex_predicate() -> GenotypePolyPredicate:
+def sex_classifier() -> GenotypeClassifier:
     """
     Get a genotype predicate for categorizing patients by their :class:`~gpsea.model.Sex`.
 
@@ -514,13 +524,12 @@ def sex_predicate() -> GenotypePolyPredicate:
     return INSTANCE
 
 
-class DiagnosisPredicate(GenotypePolyPredicate):
-
+class DiagnosisClassifier(GenotypeClassifier):
     @staticmethod
     def create(
         diagnoses: typing.Iterable[typing.Union[str, hpotk.TermId]],
         labels: typing.Optional[typing.Iterable[str]] = None,
-    ) -> "DiagnosisPredicate":
+    ) -> "DiagnosisClassifier":
         # First, collect the iterables and check sanity.
         diagnosis_ids = []
         for d in diagnoses:
@@ -538,10 +547,12 @@ class DiagnosisPredicate(GenotypePolyPredicate):
         else:
             labels = tuple(labels)
 
-        assert (len(diagnosis_ids) >= 2), \
-            f"We need at least 2 diagnoses: {len(diagnosis_ids)}"
-        assert len(diagnosis_ids) == len(labels), \
-            f"The number of labels must match the number of diagnose IDs: {len(diagnosis_ids)}!={len(labels)}"
+        assert (
+            len(diagnosis_ids) >= 2
+        ), f"We need at least 2 diagnoses: {len(diagnosis_ids)}"
+        assert (
+            len(diagnosis_ids) == len(labels)
+        ), f"The number of labels must match the number of diagnose IDs: {len(diagnosis_ids)}!={len(labels)}"
 
         # Then, prepare the categorizations.
         categorizations = {
@@ -554,7 +565,7 @@ class DiagnosisPredicate(GenotypePolyPredicate):
         }
 
         # Last, put the predicate together.
-        return DiagnosisPredicate(categorizations)
+        return DiagnosisClassifier(categorizations)
 
     def __init__(
         self,
@@ -568,12 +579,12 @@ class DiagnosisPredicate(GenotypePolyPredicate):
 
     @property
     def name(self) -> str:
-        return "Diagnosis Predicate"
+        return "Diagnosis Classifier"
 
     @property
     def description(self) -> str:
         diagnoses = ", ".join(cat.category.name for cat in self._categorizations)
-        return f"Partition the individual by presence of {diagnoses}"
+        return f"Classify the individual by presence of {diagnoses}"
 
     @property
     def variable_name(self) -> str:
@@ -599,25 +610,24 @@ class DiagnosisPredicate(GenotypePolyPredicate):
                 return None
 
         return categorization
-    
+
     def __eq__(self, value: object) -> bool:
-        return isinstance(value, DiagnosisPredicate) \
-            and self._id2cat == value._id2cat
-    
+        return isinstance(value, DiagnosisClassifier) and self._id2cat == value._id2cat
+
     def __hash__(self) -> int:
         return self._hash
 
 
-def diagnosis_predicate(
+def diagnosis_classifier(
     diagnoses: typing.Iterable[typing.Union[str, hpotk.TermId]],
     labels: typing.Optional[typing.Iterable[str]] = None,
-) -> GenotypePolyPredicate:
+) -> GenotypeClassifier:
     """
-    Create a genotype predicate that bins the patient based on presence of a disease diagnosis,
+    Genotype classifier bins an individual based on presence of a disease diagnosis,
     as listed in :attr:`~gpsea.model.Patient.diseases` attribute.
 
-    If an individual is diagnosed with more than one disease from the provided `diagnoses`,
-    the individual will be assigned into no group (`None`).
+    If the individual is diagnosed with more than one disease from the provided `diagnoses`,
+    the individual is assigned into no group (`None`).
 
     See the :ref:`group-by-diagnosis` section for an example.
 
@@ -626,7 +636,7 @@ def diagnosis_predicate(
     :param labels: an iterable with diagnose names or `None` if disease IDs should be used instead.
       The number of labels must match the number of predicates.
     """
-    return DiagnosisPredicate.create(
+    return DiagnosisClassifier.create(
         diagnoses=diagnoses,
         labels=labels,
     )
