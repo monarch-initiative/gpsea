@@ -1,6 +1,6 @@
 import pytest
 
-from gpsea.analysis.predicate.genotype import VariantPredicates
+import gpsea.analysis.predicate as vp
 from gpsea.model import (
     Cohort,
     FeatureInfo,
@@ -19,7 +19,7 @@ class TestVariantPredicates:
         self,
         suox_cohort: Cohort,
     ):
-        predicate = VariantPredicates.true()
+        predicate = vp.true()
         assert all(predicate.test(v) for v in suox_cohort.all_variants())
 
     @pytest.mark.parametrize(
@@ -37,7 +37,7 @@ class TestVariantPredicates:
             effect: VariantEffect,
             expected: bool,
     ):
-        predicate = VariantPredicates.variant_effect(effect, tx_id='tx:xyz')
+        predicate = vp.variant_effect(effect, tx_id='tx:xyz')
 
         assert predicate.test(missense_variant) == expected
 
@@ -54,7 +54,7 @@ class TestVariantPredicates:
             variant_key: str,
             expected: bool,
     ):
-        predicate = VariantPredicates.variant_key(variant_key)
+        predicate = vp.variant_key(variant_key)
 
         assert predicate.test(missense_variant) == expected
 
@@ -72,13 +72,13 @@ class TestVariantPredicates:
             exon: int,
             expected: bool,
     ):
-        predicate = VariantPredicates.exon(exon, tx_id='tx:xyz')
+        predicate = vp.exon(exon, tx_id='tx:xyz')
 
         assert predicate.test(missense_variant) == expected
 
     def test_exon_predicate_fails_on_invalid_exon(self):
         with pytest.raises(AssertionError) as e:
-            VariantPredicates.exon(0, tx_id='tx:xyz')
+            vp.exon(0, tx_id='tx:xyz')
         assert e.value.args[0] == '`exon` must be a positive `int`'
 
     @pytest.mark.parametrize(
@@ -94,7 +94,7 @@ class TestVariantPredicates:
             tx_id: str,
             expected: bool,
     ):
-        predicate = VariantPredicates.transcript(tx_id)
+        predicate = vp.transcript(tx_id)
 
         assert predicate.test(missense_variant) == expected
 
@@ -111,7 +111,7 @@ class TestVariantPredicates:
             symbol: str,
             expected: bool,
     ):
-        predicate = VariantPredicates.gene(symbol)
+        predicate = vp.gene(symbol)
 
         assert predicate.test(missense_variant) == expected
 
@@ -120,7 +120,7 @@ class TestVariantPredicates:
         missense_variant: Variant,
         structural_variant: Variant,
     ):
-        predicate = VariantPredicates.is_large_imprecise_sv()
+        predicate = vp.is_large_imprecise_sv()
 
         assert predicate.test(missense_variant) is False
         assert predicate.test(structural_variant) is True
@@ -130,7 +130,7 @@ class TestVariantPredicates:
         missense_variant: Variant,
         structural_variant: Variant,
     ):
-        predicate = VariantPredicates.is_structural_variant()
+        predicate = vp.is_structural_variant()
 
         assert predicate.test(missense_variant) is False
         assert predicate.test(structural_variant) is True
@@ -140,7 +140,7 @@ class TestVariantPredicates:
         missense_variant: Variant,
         structural_variant: Variant,
     ):
-        predicate = VariantPredicates.structural_type('SO:1000029')
+        predicate = vp.structural_type('SO:1000029')
 
         assert predicate.test(missense_variant) is False
         assert predicate.test(structural_variant) is True
@@ -149,7 +149,7 @@ class TestVariantPredicates:
         self,
         missense_variant: Variant,
     ):
-        predicate = VariantPredicates.variant_class(VariantClass.SNV)
+        predicate = vp.variant_class(VariantClass.SNV)
 
         assert predicate.test(missense_variant) is True
 
@@ -158,7 +158,7 @@ class TestVariantPredicates:
         missense_variant: Variant,
         structural_variant: Variant,
     ):
-        predicate = VariantPredicates.change_length('==', 0)
+        predicate = vp.change_length('==', 0)
         
         # variant is an SNP
         assert predicate.test(missense_variant) is True
@@ -171,14 +171,14 @@ class TestVariantPredicates:
         structural_variant: Variant,
     ):
         for op in ("<", "<=", "==", "!=", ">=", ">"):
-            predicate = VariantPredicates.change_length(op, 0)
+            predicate = vp.change_length(op, 0)
             assert predicate.test(structural_variant) is False
 
     def test_structural_deletion(
         self,
         structural_variant: Variant,
     ):
-        predicate = VariantPredicates.is_structural_deletion()
+        predicate = vp.is_structural_deletion()
 
         assert predicate.test(structural_variant) is True
 
@@ -217,7 +217,7 @@ class TestProteinPredicates:
             protein_metadata: ProteinMetadata,
             expected: bool,
     ):
-        predicate = VariantPredicates.protein_feature_type(
+        predicate = vp.protein_feature_type(
             feature_type=feature_type,
             protein_metadata=protein_metadata,
         )
@@ -239,7 +239,7 @@ class TestProteinPredicates:
             protein_metadata: ProteinMetadata,
             expected: bool,
     ):
-        predicate = VariantPredicates.protein_feature(
+        predicate = vp.protein_feature(
             feature_id=feature_id,
             protein_metadata=protein_metadata,
         )
@@ -253,8 +253,8 @@ class TestLogicalVariantPredicate:
     """
 
     def test_equivalent_predicates_are_not_chained(self):
-        a1 = VariantPredicates.gene(symbol='A')
-        a2 = VariantPredicates.gene(symbol='A')
+        a1 = vp.gene(symbol='A')
+        a2 = vp.gene(symbol='A')
 
         assert a1 & a2 is a1
         assert a1 | a2 is a1
@@ -278,7 +278,7 @@ class TestLogicalVariantPredicate:
         right: str,
         expected: bool,
     ):
-        predicate = VariantPredicates.transcript(tx_id=left) & VariantPredicates.transcript(tx_id=right)
+        predicate = vp.transcript(tx_id=left) & vp.transcript(tx_id=right)
 
         assert predicate.test(missense_variant) == expected
 
@@ -298,7 +298,7 @@ class TestLogicalVariantPredicate:
         right: str,
         expected: bool,
     ):
-        predicate = VariantPredicates.transcript(tx_id=left) | VariantPredicates.transcript(tx_id=right)
+        predicate = vp.transcript(tx_id=left) | vp.transcript(tx_id=right)
         
         assert predicate.test(missense_variant) == expected
 
@@ -315,14 +315,14 @@ class TestLogicalVariantPredicate:
         tx_id: str,
         expected: bool,
     ):
-        predicate = ~VariantPredicates.transcript(tx_id)
+        predicate = ~vp.transcript(tx_id)
 
         assert predicate.test(missense_variant) == expected
     
     def test_no_double_inv_happens(
         self,
     ):
-        predicate = VariantPredicates.gene('FBN1')
+        predicate = vp.gene('FBN1')
         
         # Inverting a predicate must produce a new predicate.
         inv_predicate = ~predicate
@@ -337,7 +337,7 @@ class TestLogicalVariantPredicate:
     ):
         with pytest.raises(ValueError) as e:
             empty = ()
-            VariantPredicates.all(empty)
+            vp.allof(empty)
         assert e.value.args[0] == 'Predicates must not be empty!'
     
     def test_empty_any_predicate_raises_error(
@@ -345,12 +345,12 @@ class TestLogicalVariantPredicate:
     ):
         with pytest.raises(ValueError) as e:
             empty = ()
-            VariantPredicates.any(empty)
+            vp.anyof(empty)
         assert e.value.args[0] == 'Predicates must not be empty!'
 
     def test_logical_predicates_are_hashable(self):
-        a = VariantPredicates.gene(symbol='A')
-        b = VariantPredicates.gene(symbol='B')
+        a = vp.gene(symbol='A')
+        b = vp.gene(symbol='B')
 
         a_and_b = a & b
         assert isinstance(hash(a_and_b), int)

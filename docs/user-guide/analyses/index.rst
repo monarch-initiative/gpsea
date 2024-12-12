@@ -17,7 +17,7 @@ and explanations of how they are implemented by our software.
   :caption: Contents:
 
   partitioning/index
-  phenotype-groups
+  phenotype-classes
   mtc
   phenotype-scores
   measurements

@@ -9,8 +9,7 @@ import pandas as pd
 
 from hpotk.constants.hpo.base import PHENOTYPIC_ABNORMALITY
 
-from ..predicate.genotype import GenotypePolyPredicate
-from ..predicate.phenotype import PhenotypePolyPredicate, P
+from ..clf import GenotypeClassifier, PhenotypeClassifier, P
 
 
 @dataclasses.dataclass(eq=True, frozen=True)
@@ -38,6 +37,7 @@ class PhenotypeMtcResult:
     of be filtered out (:meth:`is_filtered_out`) in which case :attr:`mtc_issue` with more context
     regarding the culprit must be available.
     """
+
     # The following is used as a singleton for the "OK" result
     __ok_instance = None
 
@@ -45,7 +45,9 @@ class PhenotypeMtcResult:
     def ok() -> "PhenotypeMtcResult":
         # singleton
         if PhenotypeMtcResult.__ok_instance is None:
-            PhenotypeMtcResult.__ok_instance = PhenotypeMtcResult(status=True, issue=None)
+            PhenotypeMtcResult.__ok_instance = PhenotypeMtcResult(
+                status=True, issue=None
+            )
         return PhenotypeMtcResult.__ok_instance
 
     @staticmethod
@@ -60,9 +62,13 @@ class PhenotypeMtcResult:
     ):
         assert isinstance(status, bool)
         if status:
-            assert issue is None, '`issue` must NOT be provided if the HPO term passed the MTC filter'
+            assert (
+                issue is None
+            ), "`issue` must NOT be provided if the HPO term passed the MTC filter"
         else:
-            assert issue is not None, '`issue` must be provided if the HPO term failed the MTC filter'
+            assert (
+                issue is not None
+            ), "`issue` must be provided if the HPO term failed the MTC filter"
 
         self._status = status
         self._issue = issue
@@ -85,15 +91,17 @@ class PhenotypeMtcResult:
             return self.mtc_issue.reason
 
     def __eq__(self, value: object) -> bool:
-        return isinstance(value, PhenotypeMtcResult) \
-            and self._status == value._status \
+        return (
+            isinstance(value, PhenotypeMtcResult)
+            and self._status == value._status
             and self._issue == value._issue
+        )
 
     def __hash__(self) -> int:
         return hash((self._status, self._issue))
 
     def __str__(self) -> str:
-        return f'PhenotypeMtcResult(status={self._status}, issue={self._issue})'
+        return f"PhenotypeMtcResult(status={self._status}, issue={self._issue})"
 
     def __repr__(self) -> str:
         return str(self)
@@ -121,16 +129,16 @@ class PhenotypeMtcFilter(typing.Generic[P], metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def filter(
         self,
-        gt_predicate: GenotypePolyPredicate,
-        ph_predicates: typing.Sequence[PhenotypePolyPredicate[P]],
+        gt_clf: GenotypeClassifier,
+        pheno_clfs: typing.Sequence[PhenotypeClassifier[P]],
         counts: typing.Sequence[pd.DataFrame],
         cohort_size: int,
     ) -> typing.Sequence[PhenotypeMtcResult]:
         """
         Test if the phenotype with given counts should be included in the downstream analysis.
 
-        :param gt_predicate: the predicate that produced the columns of the `count` data frame.
-        :param ph_predicates: the phenotype predicates that produced the rows of the `counts` data frames.
+        :param gt_clf: the clsasifier that produced the columns of the `count` data frame.
+        :param pheno_clfs: the phenotype classifiers that produced the rows of the `counts` data frames.
         :param counts: a sequence of 2D data frames for the tested phenotypes.
             Each data frame corresponds to a genotype/phenotype contingency matrix.
         :param cohort_size: the size of the cohort.
@@ -162,13 +170,13 @@ class UseAllTermsMtcFilter(PhenotypeMtcFilter[typing.Any]):
 
     def filter(
         self,
-        gt_predicate: GenotypePolyPredicate,
-        ph_predicates: typing.Sequence[PhenotypePolyPredicate[P]],
+        gt_clf: GenotypeClassifier,
+        pheno_clfs: typing.Sequence[PhenotypeClassifier[P]],
         counts: typing.Sequence[pd.DataFrame],
         cohort_size: int,
     ) -> typing.Sequence[PhenotypeMtcResult]:
         # Always OK! 😏
-        return tuple(PhenotypeMtcFilter.OK for _ in ph_predicates)
+        return tuple(PhenotypeMtcFilter.OK for _ in pheno_clfs)
 
     def possible_results(self) -> typing.Collection[PhenotypeMtcResult]:
         return (PhenotypeMtcFilter.OK,)
@@ -189,7 +197,9 @@ class SpecifiedTermsMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
     See :ref:`specified-terms-mt-filter` section for more info.
     """
 
-    NON_SPECIFIED_TERM = PhenotypeMtcResult.fail(code="ST1", reason="Non-specified term")
+    NON_SPECIFIED_TERM = PhenotypeMtcResult.fail(
+        code="ST1", reason="Non-specified term"
+    )
     """
     The MTC filtering result returned when an HPO term does not belong among the selection of terms to be tested.
 
@@ -210,14 +220,14 @@ class SpecifiedTermsMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
 
     def filter(
         self,
-        gt_predicate: GenotypePolyPredicate,
-        ph_predicates: typing.Sequence[PhenotypePolyPredicate[P]],
+        gt_clf: GenotypeClassifier,
+        pheno_clfs: typing.Sequence[PhenotypeClassifier[P]],
         counts: typing.Sequence[pd.DataFrame],
         cohort_size: int,
     ) -> typing.Sequence[PhenotypeMtcResult]:
         results = []
-        for predicate in ph_predicates:
-            if predicate.phenotype in self._terms_to_test:
+        for pclf in pheno_clfs:
+            if pclf.phenotype in self._terms_to_test:
                 results.append(SpecifiedTermsMtcFilter.OK)
             else:
                 results.append(SpecifiedTermsMtcFilter.NON_SPECIFIED_TERM)
@@ -231,7 +241,7 @@ class SpecifiedTermsMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
 
     def filter_method_name(self) -> str:
         return "Specified terms MTC filter"
-    
+
     @staticmethod
     def verify_term_id(val: typing.Union[str, hpotk.TermId]) -> hpotk.TermId:
         if isinstance(val, str):
@@ -253,15 +263,19 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
     """
 
     NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO = PhenotypeMtcResult.fail(
-        "HMF02", "Skipping term because no genotype has more than one observed HPO count",
+        "HMF02",
+        "Skipping term because no genotype has more than one observed HPO count",
     )
     SAME_COUNT_AS_THE_ONLY_CHILD = PhenotypeMtcResult.fail(
-        "HMF03", "Skipping term because of a child term with the same individual counts",
+        "HMF03",
+        "Skipping term because of a child term with the same individual counts",
     )
     SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS = PhenotypeMtcResult.fail(
         "HMF05", "Skipping term because one genotype had zero observations"
     )
-    SKIPPING_NON_PHENOTYPE_TERM = PhenotypeMtcResult.fail("HMF07", "Skipping non phenotype term")
+    SKIPPING_NON_PHENOTYPE_TERM = PhenotypeMtcResult.fail(
+        "HMF07", "Skipping non phenotype term"
+    )
     SKIPPING_GENERAL_TERM = PhenotypeMtcResult.fail("HMF08", "Skipping general term")
 
     @staticmethod
@@ -289,14 +303,14 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
         """
         # The very top of the ontology is completely uninteresting.
         # Knowing about association between `All`, or `Phenotypic abnormality` tells us very little
-        top_level_terms = {phenotypic_abnormality, }
+        top_level_terms = {
+            phenotypic_abnormality,
+        }
         top_level_terms.update(hpo.graph.get_ancestors(phenotypic_abnormality))
 
         # Collect sets of the 1st level terms
         # e.g., Abnormality of the cardiovascular system (HP:0001626)
-        first_level_terms = set(
-            hpo.graph.get_children(phenotypic_abnormality)
-        )
+        first_level_terms = set(hpo.graph.get_children(phenotypic_abnormality))
 
         # the second level (children of the top level), contains terms we want to keep,
         # such as HP:0001611 Hypernasal speech, but it also contains "general" terms that
@@ -349,13 +363,13 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
         self._below_frequency_threshold = PhenotypeMtcResult.fail(
             code="HMF01",
             reason="Skipping term with maximum frequency that was"
-                   f" less than threshold {self._hpo_term_frequency_filter}",
+            f" less than threshold {self._hpo_term_frequency_filter}",
         )
 
         self._below_annotation_frequency_threshold = PhenotypeMtcResult.fail(
             code="HMF09",
             reason="Skipping term with maximum annotation frequency that was"
-                   f" less than threshold {self._hpo_annotation_frequency_threshold}",
+            f" less than threshold {self._hpo_annotation_frequency_threshold}",
         )
 
         # Do not perform a test if the counts in the genotype categories do not even have nominal statistical power
@@ -375,28 +389,30 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
         self._not_powered_for_2_by_2 = PhenotypeMtcResult.fail(
             code="HMF06",
             reason=f"Skipping term with less than {self._min_observations_for_2_by_2} observations"
-                   " (not powered for 2x2)",
+            " (not powered for 2x2)",
         )
         self._min_observations_for_2_by_3 = 6
         self._not_powered_for_2_by_3 = PhenotypeMtcResult.fail(
             code="HMF06",
             reason=f"Skipping term with less than {self._min_observations_for_2_by_3} observations"
-                   " (not powered for 2x3)",
+            " (not powered for 2x3)",
         )
 
     def filter(
         self,
-        gt_predicate: GenotypePolyPredicate,
-        ph_predicates: typing.Sequence[PhenotypePolyPredicate[P]],
+        gt_clf: GenotypeClassifier,
+        pheno_clfs: typing.Sequence[PhenotypeClassifier[hpotk.TermId]],
         counts: typing.Sequence[pd.DataFrame],
         cohort_size: int,
     ) -> typing.Sequence[PhenotypeMtcResult]:
-        phenotypes = [p.phenotype for p in ph_predicates]
+        phenotypes = [p.phenotype for p in pheno_clfs]
         p_to_idx = {p: i for i, p in enumerate(phenotypes)}
 
         annotation_count_thr = self._hpo_annotation_frequency_threshold * cohort_size
 
-        results: typing.MutableSequence[typing.Optional[PhenotypeMtcResult]] = [None for _ in range(len(phenotypes))]
+        results: typing.MutableSequence[typing.Optional[PhenotypeMtcResult]] = [
+            None for _ in range(len(phenotypes))
+        ]
         for term_id in self._get_ordered_terms(phenotypes):
             try:
                 idx = p_to_idx[term_id]
@@ -410,18 +426,16 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
                 results[idx] = HpoMtcFilter.SKIPPING_GENERAL_TERM
                 continue
 
-            if not self._hpo.graph.is_ancestor_of(
-                    PHENOTYPIC_ABNORMALITY, term_id
-            ):
+            if not self._hpo.graph.is_ancestor_of(PHENOTYPIC_ABNORMALITY, term_id):
                 results[idx] = HpoMtcFilter.SKIPPING_NON_PHENOTYPE_TERM
                 continue
 
-            ph_predicate = ph_predicates[idx]
+            ph_clf = pheno_clfs[idx]
             contingency_matrix = counts[idx]
 
             max_freq = HpoMtcFilter.get_maximum_group_observed_HPO_frequency(
                 contingency_matrix,
-                ph_predicate=ph_predicate,
+                ph_clf=ph_clf,
             )
             if max_freq < self._hpo_term_frequency_filter:
                 results[idx] = self._below_frequency_threshold
@@ -432,25 +446,33 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
                 results[idx] = self._below_annotation_frequency_threshold
                 continue
 
-            if contingency_matrix.shape == (2, 2) and total_count < self._min_observations_for_2_by_2:
+            if (
+                contingency_matrix.shape == (2, 2)
+                and total_count < self._min_observations_for_2_by_2
+            ):
                 results[idx] = self._not_powered_for_2_by_2
                 continue
-            elif contingency_matrix.shape == (2, 3) and total_count < self._min_observations_for_2_by_3:
+            elif (
+                contingency_matrix.shape == (2, 3)
+                and total_count < self._min_observations_for_2_by_3
+            ):
                 results[idx] = self._not_powered_for_2_by_3
                 continue
 
             if not HpoMtcFilter.some_cell_has_greater_than_one_count(
                 counts=contingency_matrix,
-                ph_predicate=ph_predicate,
+                ph_clf=ph_clf,
             ):
                 results[idx] = HpoMtcFilter.NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO
                 continue
 
             elif HpoMtcFilter.one_genotype_has_zero_hpo_observations(
                 counts=contingency_matrix,
-                gt_predicate=gt_predicate,
+                gt_clf=gt_clf,
             ):
-                results[idx] = HpoMtcFilter.SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS
+                results[idx] = (
+                    HpoMtcFilter.SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS
+                )
                 continue
 
             # Check if the term has exactly one child with a very similar number of individuals
@@ -469,7 +491,9 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
                         break
 
             if child_contingency_matrix is not None:
-                if (contingency_matrix - child_contingency_matrix).abs().max(axis=None) < 1:
+                if (contingency_matrix - child_contingency_matrix).abs().max(
+                    axis=None
+                ) < 1:
                     # Do not test if the count is exactly the same to the counts in the only child term.
                     results[idx] = HpoMtcFilter.SAME_COUNT_AS_THE_ONLY_CHILD
                     continue
@@ -486,7 +510,7 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
                     term_name = self._hpo.get_term_name(phenotypes[i])
                     missing.append(term_name)
 
-            msg = 'Missing results for {}'.format(', '.join(missing))
+            msg = "Missing results for {}".format(", ".join(missing))
             raise ValueError(msg)
 
         # Ignoring the type hint, because we checked the type match above.
@@ -512,14 +536,14 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
     @staticmethod
     def get_number_of_observed_hpo_observations(
         counts_frame: pd.DataFrame,
-        ph_predicate: PhenotypePolyPredicate[hpotk.TermId],
+        ph_clf: PhenotypeClassifier[hpotk.TermId],
     ) -> int:
-        return counts_frame.loc[ph_predicate.present_phenotype_category].sum()
+        return counts_frame.loc[ph_clf.present_phenotype_category].sum()
 
     @staticmethod
     def get_maximum_group_observed_HPO_frequency(
         counts_frame: pd.DataFrame,
-        ph_predicate: PhenotypePolyPredicate[hpotk.TermId],
+        ph_clf: PhenotypeClassifier[hpotk.TermId],
     ) -> float:
         """
         Returns:
@@ -528,22 +552,22 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
         all_hpo_count_per_gt = counts_frame.sum()
         if (all_hpo_count_per_gt == 0).all():
             # Prevent division by zeros
-            return 0.
+            return 0.0
 
-        present_hpo_count_per_gt = counts_frame.loc[ph_predicate.present_phenotype_category]
+        present_hpo_count_per_gt = counts_frame.loc[ph_clf.present_phenotype_category]
         return (present_hpo_count_per_gt / all_hpo_count_per_gt).max()
 
     @staticmethod
     def one_genotype_has_zero_hpo_observations(
         counts: pd.DataFrame,
-        gt_predicate: GenotypePolyPredicate,
+        gt_clf: GenotypeClassifier,
     ):
-        return any(counts.loc[:, c].sum() == 0 for c in gt_predicate.get_categories())
+        return any(counts.loc[:, c].sum() == 0 for c in gt_clf.get_categories())
 
     @staticmethod
     def some_cell_has_greater_than_one_count(
         counts: pd.DataFrame,
-        ph_predicate: PhenotypePolyPredicate[hpotk.TermId],
+        ph_clf: PhenotypeClassifier[hpotk.TermId],
     ) -> bool:
         """
         If no genotype has more than one HPO count, we do not want to do a test. For instance, if MISSENSE has one
@@ -551,12 +575,12 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
 
         Args:
             counts: pandas DataFrame with counts
-            ph_predicate: the phenotype predicate that produced the counts
+            ph_clf: the phenotype classifier that produced the counts
 
         Returns: true if at least one of the genotypes has more than one observed HPO count
 
         """
-        return (counts.loc[ph_predicate.present_phenotype_category] > 1).any()
+        return (counts.loc[ph_clf.present_phenotype_category] > 1).any()
 
     def _get_ordered_terms(
         self,

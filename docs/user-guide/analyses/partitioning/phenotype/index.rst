@@ -1,10 +1,10 @@
 .. _phenotype-predicates-and-scorers:
 
-################################
-Phenotype predicates and scorers
-################################
+#################################
+Phenotype classifiers and scorers
+#################################
 
-GPSEA offers several phenotype predicates.
+GPSEA offers several phenotype classifiers.
 
 TODO -- separate explanations for HPO (Fisher), scores (Mann Whitney) and survival (log rank test).
 

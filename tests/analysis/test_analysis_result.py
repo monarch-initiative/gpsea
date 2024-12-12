@@ -5,37 +5,36 @@ import pandas as pd
 import pytest
 
 from gpsea.analysis import MultiPhenotypeAnalysisResult, StatisticResult
-from gpsea.analysis.predicate.genotype import GenotypePolyPredicate
-from gpsea.analysis.predicate.phenotype import HpoPredicate
+from gpsea.analysis.clf import GenotypeClassifier, HpoClassifier
 from gpsea.analysis.pcats.stats import FisherExactTest
 
 
 @pytest.fixture(scope="class")
 def multi_phenotype_analysis_result(
     hpo: hpotk.MinimalOntology,
-    suox_gt_predicate: GenotypePolyPredicate,
+    suox_gt_clf: GenotypeClassifier,
 ) -> MultiPhenotypeAnalysisResult:
-    is_arachnodactyly = HpoPredicate(
+    is_arachnodactyly = HpoClassifier(
         hpo=hpo,
         query=hpotk.TermId.from_curie("HP:0001166"),  # Arachnodactyly
     )
-    is_seizure = HpoPredicate(
+    is_seizure = HpoClassifier(
         hpo=hpo,
         query=hpotk.TermId.from_curie("HP:0001250"),  # Seizure
     )
-    is_polydactyly = HpoPredicate(
+    is_polydactyly = HpoClassifier(
         hpo=hpo,
         query=hpotk.TermId.from_curie("HP:0100259"),  # Postaxial polydactyly
     )
-    is_clinodactyly = HpoPredicate(
+    is_clinodactyly = HpoClassifier(
         hpo=hpo,
         query=hpotk.TermId.from_curie("HP:0030084"),  # Clinodactyly
     )
     return MultiPhenotypeAnalysisResult(
-        gt_predicate=suox_gt_predicate,
+        gt_clf=suox_gt_clf,
         statistic=FisherExactTest(),
         mtc_correction="fdr_bh",
-        pheno_predicates=(
+        pheno_clfs=(
             is_arachnodactyly,
             is_seizure,
             is_polydactyly,
@@ -46,27 +45,27 @@ def multi_phenotype_analysis_result(
             pd.DataFrame(
                 data=[[10, 5], [10, 15]],
                 index=pd.Index(is_arachnodactyly.get_categories()),
-                columns=pd.Index(suox_gt_predicate.get_categories()),
+                columns=pd.Index(suox_gt_clf.get_categories()),
             ),
             pd.DataFrame(
                 data=[[5, 0], [5, 10]],
                 index=pd.Index(is_seizure.get_categories()),
-                columns=pd.Index(suox_gt_predicate.get_categories()),
+                columns=pd.Index(suox_gt_clf.get_categories()),
             ),
             pd.DataFrame(
                 data=[[50, 0], [5, 60]],
                 index=pd.Index(is_polydactyly.get_categories()),
-                columns=pd.Index(suox_gt_predicate.get_categories()),
+                columns=pd.Index(suox_gt_clf.get_categories()),
             ),
             pd.DataFrame(
                 data=[[0, 0], [10, 0]],
                 index=pd.Index(is_clinodactyly.get_categories()),
-                columns=pd.Index(suox_gt_predicate.get_categories()),
+                columns=pd.Index(suox_gt_clf.get_categories()),
             ),
         ),
         statistic_results=(
             None,
-            StatisticResult(statistic=1., pval=0.005),
+            StatisticResult(statistic=1.0, pval=0.005),
             StatisticResult(statistic=10.0, pval=0.0005),
             StatisticResult(statistic=0.1, pval=0.05),
         ),
@@ -75,7 +74,6 @@ def multi_phenotype_analysis_result(
 
 
 class TestMultiPhenotypeAnalysisResult:
-
     def test_significant_phenotype_indices(
         self,
         multi_phenotype_analysis_result: MultiPhenotypeAnalysisResult,

@@ -9,12 +9,10 @@ from gpsea.model import Cohort
 from gpsea.analysis.mtc_filter import PhenotypeMtcFilter, HpoMtcFilter
 from gpsea.analysis.pcats import HpoTermAnalysis
 from gpsea.analysis.pcats.stats import CountStatistic, FisherExactTest
-from gpsea.analysis.predicate.genotype import GenotypePolyPredicate
-from gpsea.analysis.predicate.phenotype import PhenotypePolyPredicate
+from gpsea.analysis.clf import GenotypeClassifier, PhenotypeClassifier
 
 
 class TestHpoTermAnalysis:
-
     @pytest.fixture(scope="class")
     def count_statistic(self) -> CountStatistic:
         return FisherExactTest()
@@ -47,13 +45,13 @@ class TestHpoTermAnalysis:
         self,
         analysis: HpoTermAnalysis,
         suox_cohort: Cohort,
-        suox_gt_predicate: GenotypePolyPredicate,
-        suox_pheno_predicates: typing.Sequence[PhenotypePolyPredicate[hpotk.TermId]],
+        suox_gt_clf: GenotypeClassifier,
+        suox_pheno_clfs: typing.Sequence[PhenotypeClassifier[hpotk.TermId]],
     ):
         results = analysis.compare_genotype_vs_phenotypes(
             cohort=suox_cohort.all_patients,
-            gt_predicate=suox_gt_predicate,
-            pheno_predicates=suox_pheno_predicates,
+            gt_clf=suox_gt_clf,
+            pheno_clfs=suox_pheno_clfs,
         )
 
         assert results is not None
@@ -86,13 +84,13 @@ class TestHpoTermAnalysis:
         self,
         analysis: HpoTermAnalysis,
         degenerated_cohort: Cohort,
-        suox_gt_predicate: GenotypePolyPredicate,
-        suox_pheno_predicates: typing.Sequence[PhenotypePolyPredicate[hpotk.TermId]],
+        suox_gt_clf: GenotypeClassifier,
+        suox_pheno_clfs: typing.Sequence[PhenotypeClassifier[hpotk.TermId]],
     ):
         result = analysis.compare_genotype_vs_phenotypes(
             cohort=degenerated_cohort,
-            gt_predicate=suox_gt_predicate,
-            pheno_predicates=suox_pheno_predicates,
+            gt_clf=suox_gt_clf,
+            pheno_clfs=suox_pheno_clfs,
         )
 
         assert (

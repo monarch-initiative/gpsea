@@ -1,13 +1,13 @@
 import pytest
 
 from gpsea.model import Patient, Sex, SampleLabels, VariantEffect
-from gpsea.analysis.predicate.genotype import (
-    sex_predicate,
-    monoallelic_predicate,
-    biallelic_predicate,
+from gpsea.analysis.clf import (
+    sex_classifier,
+    monoallelic_classifier,
+    biallelic_classifier,
     allele_count,
-    VariantPredicates,
 )
+from gpsea.analysis.predicate import variant_effect
 
 
 TX_ID = "tx:xyz"
@@ -52,7 +52,7 @@ class TestAlleleCount:
         name: str,
         request: pytest.FixtureRequest,
     ):
-        is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id=TX_ID)
+        is_missense = variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id=TX_ID)
         patient = request.getfixturevalue(patient_name)
         predicate = allele_count(
             counts=((0,), (1,)),
@@ -105,7 +105,7 @@ class TestAlleleCount:
         request: pytest.FixtureRequest,
     ):
         patient = request.getfixturevalue(patient_name)
-        is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id=TX_ID)
+        is_missense = variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id=TX_ID)
         predicate = allele_count(
             counts=((0,), (1,), (2,)),
             target=is_missense,
@@ -127,7 +127,7 @@ class TestAlleleCount:
     def test_summarize_groups(self):
         a = allele_count(counts=((0, 1), (2,)))
 
-        assert a.summarize_groups() == "Allele count: 0 OR 1, 2"
+        assert a.summarize_classes() == "Allele count: 0 OR 1, 2"
 
 
 class TestAllelePredicates:
@@ -146,12 +146,12 @@ class TestAllelePredicates:
         expected_name: str,
         request: pytest.FixtureRequest,
     ):
-        is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID)
-        is_synonymous = VariantPredicates.variant_effect(VariantEffect.SYNONYMOUS_VARIANT, TX_ID)
-        gt_predicate = monoallelic_predicate(is_missense, is_synonymous)
+        is_missense = variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID)
+        is_synonymous = variant_effect(VariantEffect.SYNONYMOUS_VARIANT, TX_ID)
+        gt_clf = monoallelic_classifier(is_missense, is_synonymous)
         individual = request.getfixturevalue(individual_name)
 
-        actual_cat = gt_predicate.test(individual)
+        actual_cat = gt_clf.test(individual)
 
         assert actual_cat is not None
         assert actual_cat.category.name == expected_name
@@ -159,12 +159,12 @@ class TestAllelePredicates:
     def test_monoallelic_predicate__general_stuff(
         self,
     ):
-        is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID)
-        is_synonymous = VariantPredicates.variant_effect(VariantEffect.SYNONYMOUS_VARIANT, TX_ID)
+        is_missense = variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID)
+        is_synonymous = variant_effect(VariantEffect.SYNONYMOUS_VARIANT, TX_ID)
         
-        gt_predicate = monoallelic_predicate(is_missense, is_synonymous)
+        gt_predicate = monoallelic_classifier(is_missense, is_synonymous)
         
-        assert gt_predicate.summarize_groups() == 'Allele group: A, B'
+        assert gt_predicate.summarize_classes() == 'Allele group: A, B'
 
     @pytest.mark.parametrize(
         "individual_name,expected_name",
@@ -181,9 +181,9 @@ class TestAllelePredicates:
         expected_name: str,
         request: pytest.FixtureRequest,
     ):
-        is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID)
-        is_synonymous = VariantPredicates.variant_effect(VariantEffect.SYNONYMOUS_VARIANT, TX_ID)
-        gt_predicate = biallelic_predicate(is_missense, is_synonymous)
+        is_missense = variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID)
+        is_synonymous = variant_effect(VariantEffect.SYNONYMOUS_VARIANT, TX_ID)
+        gt_predicate = biallelic_classifier(is_missense, is_synonymous)
         individual = request.getfixturevalue(individual_name)
 
         actual_cat = gt_predicate.test(individual)
@@ -194,12 +194,12 @@ class TestAllelePredicates:
     def test_biallelic_predicate__general_stuff(
         self,
     ):
-        is_missense = VariantPredicates.variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID)
-        is_synonymous = VariantPredicates.variant_effect(VariantEffect.SYNONYMOUS_VARIANT, TX_ID)
+        is_missense = variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID)
+        is_synonymous = variant_effect(VariantEffect.SYNONYMOUS_VARIANT, TX_ID)
         
-        gt_predicate = biallelic_predicate(is_missense, is_synonymous)
+        gt_predicate = biallelic_classifier(is_missense, is_synonymous)
         
-        assert gt_predicate.summarize_groups() == 'Allele group: A/A, A/B, B/B'
+        assert gt_predicate.summarize_classes() == 'Allele group: A/A, A/B, B/B'
 
 
 class TestSexPredicate:
@@ -211,7 +211,7 @@ class TestSexPredicate:
         jane = TestSexPredicate.make_patient('Jane', Sex.FEMALE)
         miffy = TestSexPredicate.make_patient('Miffy', Sex.UNKNOWN_SEX)
         
-        gt_predicate = sex_predicate()
+        gt_predicate = sex_classifier()
         female, male = gt_predicate.get_categorizations()
 
         assert gt_predicate.test(joe) == male
@@ -219,9 +219,9 @@ class TestSexPredicate:
         assert gt_predicate.test(miffy) is None
 
     def test_summarize_groups(self):
-        gt_predicate = sex_predicate()
+        gt_predicate = sex_classifier()
 
-        assert gt_predicate.summarize_groups() == "Sex: FEMALE, MALE"
+        assert gt_predicate.summarize_classes() == "Sex: FEMALE, MALE"
 
     @staticmethod
     def make_patient(label: str, sex: Sex) -> Patient:

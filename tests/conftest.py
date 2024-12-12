@@ -12,13 +12,9 @@ from hpotk.validate import (
     ValidationRunner,
 )
 
-from gpsea.analysis.predicate.genotype import (
-    GenotypePolyPredicate,
-    VariantPredicates,
-    biallelic_predicate,
-    allele_count,
-)
-from gpsea.analysis.predicate.phenotype import PhenotypePolyPredicate, HpoPredicate
+from gpsea.analysis.clf import GenotypeClassifier, biallelic_classifier, allele_count
+from gpsea.analysis.clf import PhenotypeClassifier, HpoClassifier
+from gpsea.analysis.predicate import variant_effect
 from gpsea.io import GpseaJSONDecoder
 from gpsea.model import (
     Cohort,
@@ -155,45 +151,45 @@ def suox_mane_tx_id() -> str:
 
 
 @pytest.fixture(scope="session")
-def suox_gt_predicate(
+def suox_gt_clf(
     suox_mane_tx_id: str,
-) -> GenotypePolyPredicate:
+) -> GenotypeClassifier:
     return allele_count(
         counts=((0,), (1,)),
-        target=VariantPredicates.variant_effect(
+        target=variant_effect(
             effect=VariantEffect.MISSENSE_VARIANT, tx_id=suox_mane_tx_id
         ),
     )
 
 
 @pytest.fixture(scope="session")
-def suox_pheno_predicates(
+def suox_pheno_clfs(
     hpo: hpotk.MinimalOntology,
-) -> typing.Sequence[PhenotypePolyPredicate[hpotk.TermId]]:
+) -> typing.Sequence[PhenotypeClassifier[hpotk.TermId]]:
     """
-    Get predicates for test for presence of 5 HPO terms:
+    Get classifiers to test for presence of 5 HPO terms:
     Seizure, Ectopia lentis, Sulfocysteinuria, Neurodevelopmental delay, and Hypertonia.
 
     Note, these are just a *SUBSET* of all phenotypes that can be tested for in the *SUOX* cohort.
     """
     return (
-        HpoPredicate(
+        HpoClassifier(
             hpo=hpo,
             query=hpotk.TermId.from_curie("HP:0001250"),  # Seizure
         ),
-        HpoPredicate(
+        HpoClassifier(
             hpo=hpo,
             query=hpotk.TermId.from_curie("HP:0001083"),  # Ectopia lentis
         ),
-        HpoPredicate(
+        HpoClassifier(
             hpo=hpo,
             query=hpotk.TermId.from_curie("HP:0032350"),  # Sulfocysteinuria
         ),
-        HpoPredicate(
+        HpoClassifier(
             hpo=hpo,
             query=hpotk.TermId.from_curie("HP:0012758"),  # Neurodevelopmental delay
         ),
-        HpoPredicate(
+        HpoClassifier(
             hpo=hpo,
             query=hpotk.TermId.from_curie("HP:0001276"),  # Hypertonia
         ),
@@ -250,11 +246,11 @@ def cyp21a2_mane_tx_id() -> str:
 
 
 @pytest.fixture(scope="session")
-def cyp21a2_gt_predicate(
+def cyp21a2_gt_clf(
     cyp21a2_mane_tx_id: str,
-) -> GenotypePolyPredicate:
-    return biallelic_predicate(
-        a_predicate=VariantPredicates.variant_effect(
+) -> GenotypeClassifier:
+    return biallelic_classifier(
+        a_predicate=variant_effect(
             effect=VariantEffect.MISSENSE_VARIANT,
             tx_id=cyp21a2_mane_tx_id,
         ),

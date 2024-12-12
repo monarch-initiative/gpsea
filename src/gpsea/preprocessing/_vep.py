@@ -10,13 +10,9 @@ from ._api import FunctionalAnnotator
 
 
 class VepFunctionalAnnotator(FunctionalAnnotator):
-    """A `FunctionalAnnotator` that uses Variant Effect Predictor (VEP) REST API to
-    do functional variant annotation.
-
-    Args:
-        include_computational_txs (bool): Include computational transcripts, such as
-        RefSeq `XM_`.
-        timeout (int): Timeout in seconds
+    """
+    `VepFunctionalAnnotator` uses the Variant Effect Predictor (VEP) REST API 
+    to perform functional variant annotation.
     """
 
     NONCODING_EFFECTS = {
@@ -51,16 +47,6 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
         self._timeout = timeout
 
     def annotate(self, variant_coordinates: VariantCoordinates) -> typing.Sequence[TranscriptAnnotation]:
-        """Perform functional annotation using Variant Effect Predictor (VEP) REST API.
-
-        Args:
-            variant_coordinates (VariantCoordinates): A VariantCoordinates object
-        Returns:
-            typing.Sequence[TranscriptAnnotation]: A sequence of transcript
-            annotations for the variant coordinates
-        Raises:
-            ValueError if VEP times out or does not return a response or if the response is not formatted as we expect.
-        """
         response = self.fetch_response(variant_coordinates)
         return self.process_response(variant_coordinates.variant_key, response)
 

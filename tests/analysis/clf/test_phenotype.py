@@ -2,8 +2,8 @@ import hpotk
 
 from gpsea.model import Cohort
 
-from gpsea.analysis.predicate.phenotype import PhenotypePolyPredicate
-from gpsea.analysis.predicate.phenotype import prepare_hpo_terms_of_interest, prepare_predicates_for_terms_of_interest
+from gpsea.analysis.clf import PhenotypeClassifier
+from gpsea.analysis.clf import prepare_hpo_terms_of_interest, prepare_classifiers_for_terms_of_interest
 
 
 def test_prepare_hpo_terms_of_interest(
@@ -22,10 +22,10 @@ def test_prepare_predicates_for_terms_of_interest(
     suox_cohort: Cohort,
     hpo: hpotk.MinimalOntology,
 ):
-    predicates = prepare_predicates_for_terms_of_interest(
+    predicates = prepare_classifiers_for_terms_of_interest(
         cohort=suox_cohort,
         hpo=hpo,
     )
 
     assert len(predicates) == 71
-    assert all(isinstance(p, PhenotypePolyPredicate) for p in predicates)
+    assert all(isinstance(p, PhenotypeClassifier) for p in predicates)
