@@ -10,7 +10,7 @@
     <tbody>
       <tr>
         <th>Count</th>
-        <th class="lft">Variant key</th>
+        <th>Variant key</th>
         <th>HGVS</th>
         <th>Overlapping Exons</th>
         <th>Effects</th>
@@ -18,7 +18,7 @@
       {% for vdata in variant_counts %}
       <tr>
         <td>{{ vdata['count'] }}</td>
-        <td class="lft">{{ vdata['variant_key'] }}</td>
+        <td>{{ vdata['variant_key'] }}</td>
         <td>{{ vdata['hgvs'] }}</td>
         <td>{{ vdata['exons'] }}</td>
         <td>{{ vdata['variant_effects'] }}</td>

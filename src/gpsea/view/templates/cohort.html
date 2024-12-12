@@ -52,13 +52,13 @@
       <tbody>
         <tr class="strng">
           <th><em>n</em></th>
-          <th class="lft">HPO Term</th>
+          <th>HPO Term</th>
         </tr>
 
         {% for count in hpo_counts %}
         <tr>
           <td>{{ count['count'] }}</td>
-          <td class="lft"><a href="https://hpo.jax.org/browse/term/{{ count['term_id'] }}">{{ count['label'] }}</a>
+          <td><a href="https://hpo.jax.org/browse/term/{{ count['term_id'] }}">{{ count['label'] }}</a>
           </td>
         </tr>
         {% endfor %}
@@ -106,14 +106,14 @@
       <tbody>
         <tr class="strng">
           <th><em>n</em></th>
-          <th class="lft">Measurement</th>
+          <th>Measurement</th>
           <th>ID</th>
         </tr>
 
         {% for count in measurement_counts %}
         <tr>
           <td>{{ count['count'] }}</td>
-          <td class="lft">{{ count['label'] }}</td>
+          <td>{{ count['label'] }}</td>
           <td>{{ count['term_id'] }}</td>
         </tr>
         {% endfor %}
@@ -140,12 +140,12 @@
       <tbody>
         <tr class="strng">
           <th><em>n</em></th>
-          <th class="lft">Disease</th>
+          <th>Disease</th>
         </tr>
         {% for count in disease_counts %}
         <tr>
           <td>{{ count['count'] }}</td>
-          <td class="lft"><a href="https://hpo.jax.org/browse/disease/{{ count['term_id'] }}">{{ count['label'] }}</a>
+          <td><a href="https://hpo.jax.org/browse/disease/{{ count['term_id'] }}">{{ count['label'] }}</a>
           </td>
         </tr>
         {% endfor %}
@@ -171,14 +171,14 @@
       <tbody>
         <tr class="strng">
           <th><em>n</em></th>
-          <th class="lft">Variant key</th>
+          <th>Variant key</th>
           <th>HGVS</th>
           <th>Variant Class</th>
         </tr>
         {% for count in var_counts %}
         <tr>
           <td>{{ count['count'] }}</td>
-          <td class="lft">{{ count['key'] }}</td>
+          <td>{{ count['key'] }}</td>
           <td>{{ count['hgvsc'] }} ({{ count['hgvsp'] }})</td>
           <td>{{ count['effects'] }}</td>
         </tr>
@@ -197,12 +197,12 @@
     <table>
       <tbody>
         <tr class="strng">
-          <th class="lft">Variant effect</th>
+          <th>Variant effect</th>
           <th>Count</th>
         </tr>
         {% for effect in variant_effects %}
         <tr>
-          <td class="lft">{{ effect['effect'] }}</td>
+          <td>{{ effect['effect'] }}</td>
           <td>{{ effect['count'] }} ({{ effect['percent'] }}%)</td>
         </tr>
         {% endfor %}
