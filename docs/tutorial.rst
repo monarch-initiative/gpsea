@@ -245,20 +245,19 @@ In GPSEA, the variable value for an individual is computed
 either by a :class:`~gpsea.analysis.clf.Classifier`
 or by a :class:`~gpsea.analysis.pscore.PhenotypeScorer`.
 A `Classifier` assigns the individual into a class,
-whereas a `PhenotypeScorer`` computes a continuous score.
+whereas a `PhenotypeScorer` computes a continuous score.
 The classifiers and scorers are applied on all individuals of the cohort
 and the resulting variable distributions are then assessed by a statistical test.
 
-(e.g. has a missense variant vs. has a truncating variant in a gene of interest)
-
-In GPSEA, genotype is always treated as a class.
-Therefore, a genotype `Classifier` is a prerequisite for each analysis.
+In GPSEA, genotype is always treated as a class
+and a genotype `Classifier` is a prerequisite for each analysis.
 However, there is much more flexibility on the phenotype part,
-where either a `Classifier` or a `PhenotypeScorer` can be used to compute the values.
+where either a `Classifier` or a `PhenotypeScorer` can be used to compute the values,
+depending on the analysis goals.
 
 In this tutorial section, we first configure a `Classifier` for assigning
 the individuals into a genotype class,
-and we follow with generating classifiers for testing for presence/absence
+and we follow with generating classifiers for testing the presence or exclusion
 of HPO terms in the individuals.
 
 
