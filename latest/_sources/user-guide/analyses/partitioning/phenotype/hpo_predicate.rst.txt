@@ -71,7 +71,7 @@ function cuts down the tedium.
 Example
 -------
 
-For a phenopacket collection (e.g. 156 patients with mutations in *WWOX* gene included in Phenopacket Store version `0.1.18`)
+For a phenopacket collection (e.g. 156 patients with mutations in *TBX5* gene included in Phenopacket Store version `0.1.18`)
 
 >>> from ppktstore.registry import configure_phenopacket_registry
 >>> registry = configure_phenopacket_registry()

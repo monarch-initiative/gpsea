@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>gpsea.analysis.mtc_filter._impl &mdash; GPSEA 0.9.1.dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/gpsea.css?v=547657ed" />
@@ -76,24 +76,24 @@
            <div itemprop="articleBody">
              
   <h1>Source code for gpsea.analysis.mtc_filter._impl</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">abc</span>
-<span class="kn">import</span> <span class="nn">dataclasses</span>
-<span class="kn">import</span> <span class="nn">typing</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
 
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">deque</span>
 
-<span class="kn">import</span> <span class="nn">hpotk</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hpotk</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="kn">from</span> <span class="nn">hpotk.constants.hpo.base</span> <span class="kn">import</span> <span class="n">PHENOTYPIC_ABNORMALITY</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hpotk.constants.hpo.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">PHENOTYPIC_ABNORMALITY</span>
 
-<span class="kn">from</span> <span class="nn">..clf</span> <span class="kn">import</span> <span class="n">GenotypeClassifier</span><span class="p">,</span> <span class="n">PhenotypeClassifier</span><span class="p">,</span> <span class="n">P</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..clf</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenotypeClassifier</span><span class="p">,</span> <span class="n">PhenotypeClassifier</span><span class="p">,</span> <span class="n">P</span>
 
 
 <div class="viewcode-block" id="PhenotypeMtcIssue">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcIssue">[docs]</a>
 <span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">eq</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">PhenotypeMtcIssue</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PhenotypeMtcIssue</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The container for data available regarding the reason why a phenotype was filtered out.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -112,7 +112,7 @@
 
 <div class="viewcode-block" id="PhenotypeMtcResult">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcResult">[docs]</a>
-<span class="k">class</span> <span class="nc">PhenotypeMtcResult</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PhenotypeMtcResult</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `PhenotypeMtcResult` represents a result of :class:`PhenotypeMtcFilter` for a single phenotype.</span>
 
@@ -127,7 +127,7 @@
 <div class="viewcode-block" id="PhenotypeMtcResult.ok">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcResult.ok">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">ok</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="s2">&quot;PhenotypeMtcResult&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ok</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="s2">&quot;PhenotypeMtcResult&quot;</span><span class="p">:</span>
         <span class="c1"># singleton</span>
         <span class="k">if</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">__ok_instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">__ok_instance</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="p">(</span>
@@ -139,12 +139,12 @@
 <div class="viewcode-block" id="PhenotypeMtcResult.fail">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcResult.fail">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">fail</span><span class="p">(</span><span class="n">code</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;PhenotypeMtcResult&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fail</span><span class="p">(</span><span class="n">code</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;PhenotypeMtcResult&quot;</span><span class="p">:</span>
         <span class="n">issue</span> <span class="o">=</span> <span class="n">PhenotypeMtcIssue</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">code</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">reason</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">PhenotypeMtcResult</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">issue</span><span class="o">=</span><span class="n">issue</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">status</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
         <span class="n">issue</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">PhenotypeMtcIssue</span><span class="p">],</span>
@@ -164,48 +164,48 @@
 
 <div class="viewcode-block" id="PhenotypeMtcResult.is_passed">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcResult.is_passed">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_passed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_passed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span></div>
 
 
 <div class="viewcode-block" id="PhenotypeMtcResult.is_filtered_out">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcResult.is_filtered_out">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_filtered_out</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_filtered_out</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span></div>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">mtc_issue</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">PhenotypeMtcIssue</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mtc_issue</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">PhenotypeMtcIssue</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_issue</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">reason</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reason</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mtc_issue</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mtc_issue</span><span class="o">.</span><span class="n">reason</span>
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">PhenotypeMtcResult</span><span class="p">)</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_status</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_issue</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_issue</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_issue</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;PhenotypeMtcResult(status=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="si">}</span><span class="s2">, issue=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_issue</span><span class="si">}</span><span class="s2">)&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="PhenotypeMtcFilter">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcFilter">[docs]</a>
-<span class="k">class</span> <span class="nc">PhenotypeMtcFilter</span><span class="p">(</span><span class="n">typing</span><span class="o">.</span><span class="n">Generic</span><span class="p">[</span><span class="n">P</span><span class="p">],</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PhenotypeMtcFilter</span><span class="p">(</span><span class="n">typing</span><span class="o">.</span><span class="n">Generic</span><span class="p">[</span><span class="n">P</span><span class="p">],</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `PhenotypeMtcFilter` decides which phenotypes should be tested and which phenotypes</span>
 <span class="sd">    are not worth testing in order to reduce the multiple testing burden.</span>
@@ -227,7 +227,7 @@
 <div class="viewcode-block" id="PhenotypeMtcFilter.filter">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcFilter.filter">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">gt_clf</span><span class="p">:</span> <span class="n">GenotypeClassifier</span><span class="p">,</span>
         <span class="n">pheno_clfs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PhenotypeClassifier</span><span class="p">[</span><span class="n">P</span><span class="p">]],</span>
@@ -250,7 +250,7 @@
 <div class="viewcode-block" id="PhenotypeMtcFilter.possible_results">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcFilter.possible_results">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">possible_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">PhenotypeMtcResult</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">possible_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">PhenotypeMtcResult</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return all possible result types which the `PhenotypeMtcFilter` can produce.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -260,7 +260,7 @@
 <div class="viewcode-block" id="PhenotypeMtcFilter.filter_method_name">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcFilter.filter_method_name">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">filter_method_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter_method_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a `str` with the MTC filter name to display for humans.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -271,7 +271,7 @@
 
 <div class="viewcode-block" id="UseAllTermsMtcFilter">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.UseAllTermsMtcFilter">[docs]</a>
-<span class="k">class</span> <span class="nc">UseAllTermsMtcFilter</span><span class="p">(</span><span class="n">PhenotypeMtcFilter</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UseAllTermsMtcFilter</span><span class="p">(</span><span class="n">PhenotypeMtcFilter</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `UseAllTermsMtcFilter` filters out *no* phenotype terms.</span>
 
@@ -280,7 +280,7 @@
 
 <div class="viewcode-block" id="UseAllTermsMtcFilter.filter">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.UseAllTermsMtcFilter.filter">[docs]</a>
-    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">gt_clf</span><span class="p">:</span> <span class="n">GenotypeClassifier</span><span class="p">,</span>
         <span class="n">pheno_clfs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PhenotypeClassifier</span><span class="p">[</span><span class="n">P</span><span class="p">]],</span>
@@ -293,13 +293,13 @@
 
 <div class="viewcode-block" id="UseAllTermsMtcFilter.possible_results">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.UseAllTermsMtcFilter.possible_results">[docs]</a>
-    <span class="k">def</span> <span class="nf">possible_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">PhenotypeMtcResult</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">possible_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">PhenotypeMtcResult</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">PhenotypeMtcFilter</span><span class="o">.</span><span class="n">OK</span><span class="p">,)</span></div>
 
 
 <div class="viewcode-block" id="UseAllTermsMtcFilter.filter_method_name">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.UseAllTermsMtcFilter.filter_method_name">[docs]</a>
-    <span class="k">def</span> <span class="nf">filter_method_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter_method_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;All HPO terms&quot;</span></div>
 </div>
 
@@ -307,7 +307,7 @@
 
 <div class="viewcode-block" id="SpecifiedTermsMtcFilter">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter">[docs]</a>
-<span class="k">class</span> <span class="nc">SpecifiedTermsMtcFilter</span><span class="p">(</span><span class="n">PhenotypeMtcFilter</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SpecifiedTermsMtcFilter</span><span class="p">(</span><span class="n">PhenotypeMtcFilter</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `SpecifiedTermsMtcFilter` limits the HPO terms to be tested to a selection of provided terms.</span>
 
@@ -328,7 +328,7 @@
 <span class="sd">    :param terms_to_test: an iterable of items of CURIE `str` or :class:`~hpotk.TermId` representing the terms to test.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">terms_to_test</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]],</span>
     <span class="p">):</span>
@@ -337,12 +337,12 @@
         <span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">terms_to_test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">terms_to_test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_terms_to_test</span>
 
 <div class="viewcode-block" id="SpecifiedTermsMtcFilter.filter">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter.filter">[docs]</a>
-    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">gt_clf</span><span class="p">:</span> <span class="n">GenotypeClassifier</span><span class="p">,</span>
         <span class="n">pheno_clfs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PhenotypeClassifier</span><span class="p">[</span><span class="n">P</span><span class="p">]],</span>
@@ -360,7 +360,7 @@
 
 <div class="viewcode-block" id="SpecifiedTermsMtcFilter.possible_results">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter.possible_results">[docs]</a>
-    <span class="k">def</span> <span class="nf">possible_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">PhenotypeMtcResult</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">possible_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">PhenotypeMtcResult</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">PhenotypeMtcFilter</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span>
             <span class="n">SpecifiedTermsMtcFilter</span><span class="o">.</span><span class="n">NON_SPECIFIED_TERM</span><span class="p">,</span>
@@ -369,14 +369,14 @@
 
 <div class="viewcode-block" id="SpecifiedTermsMtcFilter.filter_method_name">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter.filter_method_name">[docs]</a>
-    <span class="k">def</span> <span class="nf">filter_method_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter_method_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;Specified terms MTC filter&quot;</span></div>
 
 
 <div class="viewcode-block" id="SpecifiedTermsMtcFilter.verify_term_id">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter.verify_term_id">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">verify_term_id</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">verify_term_id</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="o">.</span><span class="n">from_curie</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">):</span>
@@ -389,7 +389,7 @@
 
 <div class="viewcode-block" id="HpoMtcFilter">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter">[docs]</a>
-<span class="k">class</span> <span class="nc">HpoMtcFilter</span><span class="p">(</span><span class="n">PhenotypeMtcFilter</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">HpoMtcFilter</span><span class="p">(</span><span class="n">PhenotypeMtcFilter</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `HpoMtcFilter` decides which phenotypes should be tested and which phenotypes are not worth testing.</span>
 
@@ -418,7 +418,7 @@
 <div class="viewcode-block" id="HpoMtcFilter.default_filter">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter.default_filter">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">default_filter</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">default_filter</span><span class="p">(</span>
         <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
         <span class="n">term_frequency_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.4</span><span class="p">,</span>
         <span class="n">annotation_frequency_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.4</span><span class="p">,</span>
@@ -487,7 +487,7 @@
         <span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
         <span class="n">term_frequency_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
@@ -540,7 +540,7 @@
 
 <div class="viewcode-block" id="HpoMtcFilter.filter">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter.filter">[docs]</a>
-    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">gt_clf</span><span class="p">:</span> <span class="n">GenotypeClassifier</span><span class="p">,</span>
         <span class="n">pheno_clfs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PhenotypeClassifier</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]],</span>
@@ -661,7 +661,7 @@
 
 <div class="viewcode-block" id="HpoMtcFilter.possible_results">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter.possible_results">[docs]</a>
-    <span class="k">def</span> <span class="nf">possible_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">PhenotypeMtcResult</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">possible_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">PhenotypeMtcResult</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">PhenotypeMtcFilter</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_below_frequency_threshold</span><span class="p">,</span>  <span class="c1"># HMF01</span>
@@ -678,14 +678,14 @@
 
 <div class="viewcode-block" id="HpoMtcFilter.filter_method_name">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter.filter_method_name">[docs]</a>
-    <span class="k">def</span> <span class="nf">filter_method_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter_method_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;HPO MTC filter&quot;</span></div>
 
 
 <div class="viewcode-block" id="HpoMtcFilter.get_number_of_observed_hpo_observations">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter.get_number_of_observed_hpo_observations">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_number_of_observed_hpo_observations</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_number_of_observed_hpo_observations</span><span class="p">(</span>
         <span class="n">counts_frame</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">ph_clf</span><span class="p">:</span> <span class="n">PhenotypeClassifier</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -695,7 +695,7 @@
 <div class="viewcode-block" id="HpoMtcFilter.get_maximum_group_observed_HPO_frequency">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter.get_maximum_group_observed_HPO_frequency">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_maximum_group_observed_HPO_frequency</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_maximum_group_observed_HPO_frequency</span><span class="p">(</span>
         <span class="n">counts_frame</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">ph_clf</span><span class="p">:</span> <span class="n">PhenotypeClassifier</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -715,7 +715,7 @@
 <div class="viewcode-block" id="HpoMtcFilter.one_genotype_has_zero_hpo_observations">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter.one_genotype_has_zero_hpo_observations">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">one_genotype_has_zero_hpo_observations</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">one_genotype_has_zero_hpo_observations</span><span class="p">(</span>
         <span class="n">counts</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">gt_clf</span><span class="p">:</span> <span class="n">GenotypeClassifier</span><span class="p">,</span>
     <span class="p">):</span>
@@ -725,7 +725,7 @@
 <div class="viewcode-block" id="HpoMtcFilter.some_cell_has_greater_than_one_count">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter.some_cell_has_greater_than_one_count">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">some_cell_has_greater_than_one_count</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">some_cell_has_greater_than_one_count</span><span class="p">(</span>
         <span class="n">counts</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">ph_clf</span><span class="p">:</span> <span class="n">PhenotypeClassifier</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -743,7 +743,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="n">counts</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ph_clf</span><span class="o">.</span><span class="n">present_phenotype_category</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_get_ordered_terms</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_ordered_terms</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">term_ids</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]:</span>

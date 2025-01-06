@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>gpsea.view._viewers &mdash; GPSEA 0.9.1.dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../../../_static/gpsea.css?v=547657ed" />
@@ -76,16 +76,16 @@
            <div itemprop="articleBody">
              
   <h1>Source code for gpsea.view._viewers</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">typing</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
 
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span><span class="p">,</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">Counter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">namedtuple</span><span class="p">,</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">Counter</span>
 
-<span class="kn">import</span> <span class="nn">hpotk</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hpotk</span>
 
-<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Cohort</span><span class="p">,</span> <span class="n">Variant</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="n">ProteinMetadata</span>
-<span class="kn">from</span> <span class="nn">gpsea.analysis.pcats</span> <span class="kn">import</span> <span class="n">HpoTermAnalysisResult</span>
-<span class="kn">from</span> <span class="nn">._base</span> <span class="kn">import</span> <span class="n">BaseViewer</span><span class="p">,</span> <span class="n">GpseaReport</span><span class="p">,</span> <span class="n">HtmlGpseaReport</span>
-<span class="kn">from</span> <span class="nn">._formatter</span> <span class="kn">import</span> <span class="n">VariantFormatter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cohort</span><span class="p">,</span> <span class="n">Variant</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="n">ProteinMetadata</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.pcats</span><span class="w"> </span><span class="kn">import</span> <span class="n">HpoTermAnalysisResult</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseViewer</span><span class="p">,</span> <span class="n">GpseaReport</span><span class="p">,</span> <span class="n">HtmlGpseaReport</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._formatter</span><span class="w"> </span><span class="kn">import</span> <span class="n">VariantFormatter</span>
 
 
 <span class="n">ToDisplay</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;ToDisplay&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;hgvs_cdna&quot;</span><span class="p">,</span> <span class="s2">&quot;hgvsp&quot;</span><span class="p">,</span> <span class="s2">&quot;variant_effects&quot;</span><span class="p">])</span>
@@ -97,12 +97,12 @@
 
 <div class="viewcode-block" id="CohortViewer">
 <a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.CohortViewer">[docs]</a>
-<span class="k">class</span> <span class="nc">CohortViewer</span><span class="p">(</span><span class="n">BaseViewer</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CohortViewer</span><span class="p">(</span><span class="n">BaseViewer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `CohortViewer` summarizes the most salient :class:`~gpsea.model.Cohort` aspects into an HTML report.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
         <span class="n">top_phenotype_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
@@ -126,7 +126,7 @@
 
 <div class="viewcode-block" id="CohortViewer.process">
 <a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.CohortViewer.process">[docs]</a>
-    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
         <span class="n">transcript_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -149,7 +149,7 @@
         <span class="k">return</span> <span class="n">HtmlGpseaReport</span><span class="p">(</span><span class="n">html</span><span class="o">=</span><span class="n">report</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_prepare_context</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_context</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
         <span class="n">transcript_id</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
@@ -266,7 +266,7 @@
             <span class="s2">&quot;variant_effects&quot;</span><span class="p">:</span> <span class="n">variant_effects</span><span class="p">,</span>
         <span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">_summarize_hpo_counts</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summarize_hpo_counts</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">IdentifiedCount</span><span class="p">]:</span>
@@ -288,7 +288,7 @@
 
         <span class="k">return</span> <span class="n">counts</span>
 
-    <span class="k">def</span> <span class="nf">_summarize_measurement_counts</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summarize_measurement_counts</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">IdentifiedCount</span><span class="p">]:</span>
@@ -307,7 +307,7 @@
             <span class="p">)</span>
         <span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">_summarize_disease_counts</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summarize_disease_counts</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">IdentifiedCount</span><span class="p">]:</span>
@@ -325,7 +325,7 @@
         <span class="p">]</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_variant_description</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_variant_description</span><span class="p">(</span>
         <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
         <span class="n">transcript_id</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">only_hgvs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -382,12 +382,12 @@
 
 <div class="viewcode-block" id="DiseaseViewer">
 <a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.DiseaseViewer">[docs]</a>
-<span class="k">class</span> <span class="nc">DiseaseViewer</span><span class="p">(</span><span class="n">BaseViewer</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DiseaseViewer</span><span class="p">(</span><span class="n">BaseViewer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    TODO</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span> <span class="n">transcript_id</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -397,7 +397,7 @@
 
 <div class="viewcode-block" id="DiseaseViewer.process">
 <a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.DiseaseViewer.process">[docs]</a>
-    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GpseaReport</span><span class="p">:</span>
@@ -406,7 +406,7 @@
         <span class="k">return</span> <span class="n">HtmlGpseaReport</span><span class="p">(</span><span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_prepare_context</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_context</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
@@ -459,7 +459,7 @@
 
 <div class="viewcode-block" id="CohortVariantViewer">
 <a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.CohortVariantViewer">[docs]</a>
-<span class="k">class</span> <span class="nc">CohortVariantViewer</span><span class="p">(</span><span class="n">BaseViewer</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CohortVariantViewer</span><span class="p">(</span><span class="n">BaseViewer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `CohortVariantViewer` creates an HTML report with the cohort variants.</span>
 
@@ -468,7 +468,7 @@
 <span class="sd">    See :ref:show-cohort-variants: for an example usage.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            tx_id (str): The transcript identifier (Usually, the MANE RefSeq transcript, that should start with &quot;NM_&quot;)</span>
@@ -482,7 +482,7 @@
 
 <div class="viewcode-block" id="CohortVariantViewer.process">
 <a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.CohortVariantViewer.process">[docs]</a>
-    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span> <span class="n">only_hgvs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GpseaReport</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span> <span class="n">only_hgvs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GpseaReport</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate the variant report.</span>
 
@@ -499,7 +499,7 @@
         <span class="k">return</span> <span class="n">HtmlGpseaReport</span><span class="p">(</span><span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_prepare_context</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_context</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
         <span class="n">only_hgvs</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
@@ -536,7 +536,7 @@
             <span class="s2">&quot;variant_counts&quot;</span><span class="p">:</span> <span class="n">variant_counts</span><span class="p">,</span>
         <span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">_get_variant_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant</span><span class="p">:</span> <span class="n">Variant</span><span class="p">,</span> <span class="n">only_hgvs</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantData</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_variant_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant</span><span class="p">:</span> <span class="n">Variant</span><span class="p">,</span> <span class="n">only_hgvs</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VariantData</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get user-friendly strings (e.g., HGVS for our target transcript) to match to the chromosomal strings</span>
 <span class="sd">        Args:</span>
@@ -612,12 +612,12 @@
 
 <div class="viewcode-block" id="ProteinVariantViewer">
 <a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.ProteinVariantViewer">[docs]</a>
-<span class="k">class</span> <span class="nc">ProteinVariantViewer</span><span class="p">(</span><span class="n">BaseViewer</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProteinVariantViewer</span><span class="p">(</span><span class="n">BaseViewer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class to create a pretty HTML table to display the protein information in the Jupyter notebook.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">protein_metadata</span><span class="p">:</span> <span class="n">ProteinMetadata</span><span class="p">,</span>
         <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -629,7 +629,7 @@
 
 <div class="viewcode-block" id="ProteinVariantViewer.process">
 <a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.ProteinVariantViewer.process">[docs]</a>
-    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GpseaReport</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GpseaReport</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Summarize the data regarding the protein into a HTML table.</span>
 
@@ -645,7 +645,7 @@
         <span class="k">return</span> <span class="n">HtmlGpseaReport</span><span class="p">(</span><span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_prepare_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
         <span class="n">protein_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_meta</span><span class="o">.</span><span class="n">protein_id</span>
         <span class="n">protein_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_meta</span><span class="o">.</span><span class="n">label</span>
         <span class="n">protein_features</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
@@ -720,19 +720,19 @@
 
 <div class="viewcode-block" id="MtcStatsViewer">
 <a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.MtcStatsViewer">[docs]</a>
-<span class="k">class</span> <span class="nc">MtcStatsViewer</span><span class="p">(</span><span class="n">BaseViewer</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MtcStatsViewer</span><span class="p">(</span><span class="n">BaseViewer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `MtcStatsViewer` uses a Jinja2 template to create an HTML element for showing in the Jupyter notebook</span>
 <span class="sd">    or for writing into a standalone HTML file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cohort_template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_environment</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;stats.html&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MtcStatsViewer.process">
 <a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.MtcStatsViewer.process">[docs]</a>
-    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">result</span><span class="p">:</span> <span class="n">HpoTermAnalysisResult</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GpseaReport</span><span class="p">:</span>
@@ -753,7 +753,7 @@
 
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_prepare_context</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_context</span><span class="p">(</span>
         <span class="n">report</span><span class="p">:</span> <span class="n">HpoTermAnalysisResult</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
         <span class="n">counts</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>

@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Survival analysis &mdash; GPSEA 0.9.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../../_static/gpsea.css?v=547657ed" />
@@ -110,8 +110,8 @@ in exon 3 of <em>UMOD</em> vs. individuals with other <em>UMOD</em> mutation.</p
 from a <a class="reference external" href="https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/UMOD.0.1.20.json">JSON file</a>.
 The cohort was prepared from phenopackets as described in <a class="reference internal" href="../input-data.html#create-a-cohort"><span class="std std-ref">Create a cohort</span></a> section,
 and then serialized as a JSON file following the instructions in <a class="reference internal" href="../input-data.html#cohort-persistence"><span class="std std-ref">Persist the cohort for later</span></a> section.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">json</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.io</span> <span class="kn">import</span> <span class="n">GpseaJSONDecoder</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">GpseaJSONDecoder</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fpath_cohort_json</span> <span class="o">=</span> <span class="s1">&#39;docs/cohort-data/UMOD.0.1.20.json&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fpath_cohort_json</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="n">cohort</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">GpseaJSONDecoder</span><span class="p">)</span>
@@ -129,7 +129,7 @@ and then serialized as a JSON file following the instructions in <a class="refer
 <section id="genotype-classifier">
 <h4>Genotype classifier<a class="headerlink" href="#genotype-classifier" title="Link to this heading"></a></h4>
 <p>One allele of exon 3 vs. one allele of elsewhere.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate</span> <span class="kn">import</span> <span class="n">exon</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.predicate</span><span class="w"> </span><span class="kn">import</span> <span class="n">exon</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">is_in_exon3</span> <span class="o">=</span> <span class="n">exon</span><span class="p">(</span><span class="n">exon</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">is_in_exon3</span><span class="o">.</span><span class="n">description</span>
 <span class="go">&#39;overlaps with exon 3 of NM_003361.4&#39;</span>
@@ -137,7 +137,7 @@ and then serialized as a JSON file following the instructions in <a class="refer
 </div>
 <p>Monoallelic classifier to compare one allele of <em>UMOD</em> exon 3 variant
 versus one allele of other <em>UMOD</em> variant:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.clf</span> <span class="kn">import</span> <span class="n">monoallelic_classifier</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.clf</span><span class="w"> </span><span class="kn">import</span> <span class="n">monoallelic_classifier</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span> <span class="o">=</span> <span class="n">monoallelic_classifier</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">a_predicate</span><span class="o">=</span><span class="n">is_in_exon3</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">b_predicate</span><span class="o">=~</span><span class="n">is_in_exon3</span><span class="p">,</span>
@@ -156,14 +156,14 @@ In the <em>UMOD</em> cohort, this is encoded with
 (<cite>HP:0003774</cite>) HPO term.
 We need to leverage the HPO hierarchy when computing
 the onset of an HPO term. Let’s load HPO:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">hpotk</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">store</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">configure_ontology_store</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">load_minimal_hpo</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;v2024-07-01&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>and now we can create an <a class="reference internal" href="../../apidocs/gpsea.analysis.temporal.html#gpsea.analysis.temporal.Endpoint" title="gpsea.analysis.temporal.Endpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">Endpoint</span></code></a>
 to compute the time until an individual develops end stage renal disease:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.temporal.endpoint</span> <span class="kn">import</span> <span class="n">hpo_onset</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.temporal.endpoint</span><span class="w"> </span><span class="kn">import</span> <span class="n">hpo_onset</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">term_id</span> <span class="o">=</span> <span class="s2">&quot;HP:0003774&quot;</span>  <span class="c1"># Stage 5 chronic kidney disease</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">endpoint</span> <span class="o">=</span> <span class="n">hpo_onset</span><span class="p">(</span><span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span> <span class="n">term_id</span><span class="o">=</span><span class="n">term_id</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">endpoint</span><span class="o">.</span><span class="n">description</span>
@@ -175,7 +175,7 @@ to compute the time until an individual develops end stage renal disease:</p>
 <h4>Statistical test<a class="headerlink" href="#statistical-test" title="Link to this heading"></a></h4>
 <p>We will use Log rank test to compare the age until the endpoint between
 the genotype groups:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.temporal.stats</span> <span class="kn">import</span> <span class="n">LogRankTest</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.temporal.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogRankTest</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">survival_statistic</span> <span class="o">=</span> <span class="n">LogRankTest</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -183,7 +183,7 @@ the genotype groups:</p>
 <section id="final-analysis">
 <h4>Final analysis<a class="headerlink" href="#final-analysis" title="Link to this heading"></a></h4>
 <p>We will put the final analysis together into a <a class="reference internal" href="../../apidocs/gpsea.analysis.temporal.html#gpsea.analysis.temporal.SurvivalAnalysis" title="gpsea.analysis.temporal.SurvivalAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">SurvivalAnalysis</span></code></a>.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.temporal</span> <span class="kn">import</span> <span class="n">SurvivalAnalysis</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.temporal</span><span class="w"> </span><span class="kn">import</span> <span class="n">SurvivalAnalysis</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">survival_analysis</span> <span class="o">=</span> <span class="n">SurvivalAnalysis</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">statistic</span><span class="o">=</span><span class="n">survival_statistic</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
@@ -208,9 +208,9 @@ the genotype groups:</p>
 <section id="kaplan-meier-curves">
 <h4>Kaplan-Meier curves<a class="headerlink" href="#kaplan-meier-curves" title="Link to this heading"></a></h4>
 <p>We can plot Kaplan-Meier curves:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Age</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Age</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">plot_kaplan_meier_curves</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>

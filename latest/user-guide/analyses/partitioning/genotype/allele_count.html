@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Group by allele count &mdash; GPSEA 0.9.1.dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/gpsea.css?v=547657ed" />
@@ -131,7 +131,7 @@ between the individuals with no mutation in <em>EGFR</em>
 and the individuals harboring 1 variant allele.</p>
 <p>First, let’s create a <a class="reference internal" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a>
 to select variants that affect <em>EGFR</em>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate</span> <span class="kn">import</span> <span class="n">gene</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.predicate</span><span class="w"> </span><span class="kn">import</span> <span class="n">gene</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">affects_egfr</span> <span class="o">=</span> <span class="n">gene</span><span class="p">(</span><span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;EGFR&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">affects_egfr</span><span class="o">.</span><span class="n">description</span>
 <span class="go">&#39;affects EGFR&#39;</span>
@@ -143,7 +143,7 @@ based on presence of zero or one <em>EGFR</em> mutation allele:</p>
 <a class="reference internal image-reference" href="../../../../_images/allele-count-zero-one.png"><img alt="No mutation vs. monoallelic mutation" src="../../../../_images/allele-count-zero-one.png" style="width: 600px;" />
 </a>
 </figure>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.clf</span> <span class="kn">import</span> <span class="n">allele_count</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.clf</span><span class="w"> </span><span class="kn">import</span> <span class="n">allele_count</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span> <span class="o">=</span> <span class="n">allele_count</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">counts</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
 <span class="gp">... </span>    <span class="n">target</span><span class="o">=</span><span class="n">affects_egfr</span><span class="p">,</span>
@@ -166,7 +166,7 @@ e.g. to compare the patient survivals in a <cite>survival analysis &lt;survival&
 <h3>Compare the individuals with monoallelic and biallelic mutations<a class="headerlink" href="#compare-the-individuals-with-monoallelic-and-biallelic-mutations" title="Link to this heading"></a></h3>
 <p>As another example, let’s partition individuals based on one or two alleles of a target mutation.</p>
 <p>For this example, the target mutation is any mutation that affects <em>LMNA</em>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate</span> <span class="kn">import</span> <span class="n">gene</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.predicate</span><span class="w"> </span><span class="kn">import</span> <span class="n">gene</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">affects_lmna</span> <span class="o">=</span> <span class="n">gene</span><span class="p">(</span><span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;LMNA&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">affects_lmna</span><span class="o">.</span><span class="n">description</span>
 <span class="go">&#39;affects LMNA&#39;</span>

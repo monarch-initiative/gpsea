@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Compare genotype and phenotype classes &mdash; GPSEA 0.9.1.dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../../_static/gpsea.css?v=547657ed" />
@@ -124,7 +124,7 @@ We are comparing the frequency of <em>strabismus</em> in individuals with missen
 <a class="reference internal image-reference" href="../../_images/fisher.png"><img alt="Fisher exact text example" class="align-center" src="../../_images/fisher.png" style="width: 600px;" />
 </a>
 <p>To perform the corresponding test in Python, we would use the following code.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">stats</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">stats</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">contingency_table</span> <span class="o">=</span> <span class="p">[</span>
 <span class="gp">... </span><span class="c1">#   Missense,    Nonsense</span>
 <span class="gp">... </span>   <span class="p">[</span><span class="mi">17</span><span class="p">,</span>          <span class="mi">6</span>       <span class="p">],</span>  <span class="c1"># Strabismus observed</span>
@@ -163,8 +163,8 @@ and deposited in <a class="reference external" href="https://github.com/monarch-
 from a <a class="reference external" href="https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/TBX5.0.1.20.json">JSON file</a>.
 The cohort was prepared from phenopackets as described in <a class="reference internal" href="../input-data.html#create-a-cohort"><span class="std std-ref">Create a cohort</span></a> section,
 and then serialized as a JSON file following the instructions in <a class="reference internal" href="../input-data.html#cohort-persistence"><span class="std std-ref">Persist the cohort for later</span></a> section.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">json</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.io</span> <span class="kn">import</span> <span class="n">GpseaJSONDecoder</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">GpseaJSONDecoder</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fpath_cohort_json</span> <span class="o">=</span> <span class="s1">&#39;docs/cohort-data/TBX5.0.1.20.json&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fpath_cohort_json</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="n">cohort</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">GpseaJSONDecoder</span><span class="p">)</span>
@@ -191,8 +191,8 @@ We will use the <em>MANE</em> transcript for the analysis:</p>
 <p>Building a genotype classifier is a two step process.
 First, we create a <a class="reference internal" href="../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a>
 to test if the variant is predicted to lead to a frameshift in <cite>NM_181486.4</cite>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate</span> <span class="kn">import</span> <span class="n">variant_effect</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">VariantEffect</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.predicate</span><span class="w"> </span><span class="kn">import</span> <span class="n">variant_effect</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">is_frameshift</span> <span class="o">=</span> <span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">is_frameshift</span><span class="o">.</span><span class="n">description</span>
 <span class="go">&#39;FRAMESHIFT_VARIANT on NM_181486.4&#39;</span>
@@ -207,7 +207,7 @@ and <a class="reference internal" href="partitioning/genotype/variant_predicates
 in a Monoallelic classifier (<a class="reference internal" href="../../apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.monoallelic_classifier" title="gpsea.analysis.clf.monoallelic_classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">monoallelic_classifier</span></code></a>),
 to classify each <em>TBX5</em> cohort member either as an individual with one <em>frameshift</em> allele (<cite>Frameshift</cite>)
 or as an individual with one <em>non-frameshift</em> allele (<cite>Other</cite>):</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.clf</span> <span class="kn">import</span> <span class="n">monoallelic_classifier</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.clf</span><span class="w"> </span><span class="kn">import</span> <span class="n">monoallelic_classifier</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span> <span class="o">=</span> <span class="n">monoallelic_classifier</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">a_predicate</span><span class="o">=</span><span class="n">is_frameshift</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">a_label</span><span class="o">=</span><span class="s2">&quot;Frameshift&quot;</span><span class="p">,</span>
@@ -231,13 +231,13 @@ while taking advantage of the HPO graph structure and of the <a class="reference
 We will use the <a class="reference internal" href="../../apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.prepare_classifiers_for_terms_of_interest" title="gpsea.analysis.clf.prepare_classifiers_for_terms_of_interest"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_classifiers_for_terms_of_interest()</span></code></a>
 utility function to generate phenotype classifiers for all HPO terms.</p>
 <p>The function needs HPO to prepare classifiers, hence we need to load HPO:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">hpotk</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">store</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">configure_ontology_store</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">load_minimal_hpo</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;v2024-07-01&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>and then we can create the classifiers</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.clf</span> <span class="kn">import</span> <span class="n">prepare_classifiers_for_terms_of_interest</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.clf</span><span class="w"> </span><span class="kn">import</span> <span class="n">prepare_classifiers_for_terms_of_interest</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_clfs</span> <span class="o">=</span> <span class="n">prepare_classifiers_for_terms_of_interest</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span>
@@ -270,7 +270,7 @@ The available MTC procedures are listed in the <a class="reference internal" hre
 <p>We recommend using HPO MT filter (<a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter" title="gpsea.analysis.mtc_filter.HpoMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></a>) as a phenotype MT filter
 and Benjamini-Hochberg for MTC.
 The default analysis can be configured with <a class="reference internal" href="../../apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.configure_hpo_term_analysis" title="gpsea.analysis.pcats.configure_hpo_term_analysis"><code class="xref py py-func docutils literal notranslate"><span class="pre">configure_hpo_term_analysis()</span></code></a> convenience method.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pcats</span> <span class="kn">import</span> <span class="n">configure_hpo_term_analysis</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.pcats</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure_hpo_term_analysis</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">analysis</span> <span class="o">=</span> <span class="n">configure_hpo_term_analysis</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -282,7 +282,7 @@ a cohort for G/P associations.</p>
 <p>If the default selection of phenotype MT filter and multiple testing correction is not an option,
 we can configure the analysis manually.</p>
 <p>First, we choose a phenotype MT filter (e.g. <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter" title="gpsea.analysis.mtc_filter.HpoMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></a>):</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.mtc_filter</span> <span class="kn">import</span> <span class="n">HpoMtcFilter</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.mtc_filter</span><span class="w"> </span><span class="kn">import</span> <span class="n">HpoMtcFilter</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_filter</span> <span class="o">=</span> <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">default_filter</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">term_frequency_threshold</span><span class="o">=</span><span class="mf">.2</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -291,7 +291,7 @@ we can configure the analysis manually.</p>
 <p>See the <a class="reference internal" href="mtc.html#mtc-filters"><span class="std std-ref">MT filters: Choosing which terms to test</span></a> section for info regarding other phenotype MT filters.</p>
 </div>
 <p>then a statistical test (e.g. Fisher Exact test):</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pcats.stats</span> <span class="kn">import</span> <span class="n">FisherExactTest</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.pcats.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">FisherExactTest</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">count_statistic</span> <span class="o">=</span> <span class="n">FisherExactTest</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -311,7 +311,7 @@ we can configure the analysis manually.</p>
 <p>See the <a class="reference internal" href="mtc.html#mtc-correction-procedures"><span class="std std-ref">Multiple-testing correction procedures</span></a> section for a list of available MTC procedure codes.</p>
 </div>
 <p>The final <a class="reference internal" href="../../apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.HpoTermAnalysis" title="gpsea.analysis.pcats.HpoTermAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoTermAnalysis</span></code></a> is created as:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pcats</span> <span class="kn">import</span> <span class="n">HpoTermAnalysis</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.pcats</span><span class="w"> </span><span class="kn">import</span> <span class="n">HpoTermAnalysis</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">analysis</span> <span class="o">=</span> <span class="n">HpoTermAnalysis</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">count_statistic</span><span class="o">=</span><span class="n">count_statistic</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">mtc_filter</span><span class="o">=</span><span class="n">mtc_filter</span><span class="p">,</span>
@@ -342,7 +342,7 @@ we can configure the analysis manually.</p>
 and HPO terms (<code class="docutils literal notranslate"><span class="pre">pheno_clfs</span></code>).
 Thanks to phenotype MT filter, we only tested 24 out of 369 terms.
 The MT filter report shows the filtering details:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">MtcStatsViewer</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.view</span><span class="w"> </span><span class="kn">import</span> <span class="n">MtcStatsViewer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_viewer</span> <span class="o">=</span> <span class="n">MtcStatsViewer</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_report</span> <span class="o">=</span> <span class="n">mtc_viewer</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_report</span>  
@@ -530,7 +530,7 @@ The MT filter report shows the filtering details:</p>
 <p>Last, let’s explore the associations.</p>
 <p>GPSEA displays the associations between genotypes and HPO terms in a table,
 one HPO term per row. The rows are ordered by the corrected p value and nominal p value in descending order.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">summarize_hpo_analysis</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.view</span><span class="w"> </span><span class="kn">import</span> <span class="n">summarize_hpo_analysis</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span> <span class="o">=</span> <span class="n">summarize_hpo_analysis</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span>  
 </pre></div>

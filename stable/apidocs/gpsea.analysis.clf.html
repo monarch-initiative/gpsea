@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>gpsea.analysis.clf package &mdash; GPSEA 0.9.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../_static/gpsea.css?v=547657ed" />
@@ -359,7 +359,7 @@ An allele count can be included only in one partition.</p>
 <p class="rubric">Examples</p>
 <p>The following counts will partition the cohort into individuals
 with zero allele or one target allele:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.clf</span> <span class="kn">import</span> <span class="n">allele_count</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.clf</span><span class="w"> </span><span class="kn">import</span> <span class="n">allele_count</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">zero_vs_one</span> <span class="o">=</span> <span class="n">allele_count</span><span class="p">(</span><span class="n">counts</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">zero_vs_one</span><span class="o">.</span><span class="n">summarize_classes</span><span class="p">()</span>
 <span class="go">&#39;Allele count: 0, 1&#39;</span>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>gpsea.view._txp &mdash; GPSEA 0.9.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../../../_static/gpsea.css?v=547657ed" />
@@ -76,17 +76,17 @@
            <div itemprop="articleBody">
              
   <h1>Source code for gpsea.view._txp</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">typing</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
-<span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Rectangle</span>
-<span class="kn">from</span> <span class="nn">matplotlib.collections</span> <span class="kn">import</span> <span class="n">PatchCollection</span>
-<span class="kn">from</span> <span class="nn">matplotlib.lines</span> <span class="kn">import</span> <span class="n">Line2D</span>
-<span class="kn">import</span> <span class="nn">typing</span>
-<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Variant</span><span class="p">,</span> <span class="n">TranscriptCoordinates</span><span class="p">,</span> <span class="n">ProteinMetadata</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.patches</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rectangle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">PatchCollection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.lines</span><span class="w"> </span><span class="kn">import</span> <span class="n">Line2D</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Variant</span><span class="p">,</span> <span class="n">TranscriptCoordinates</span><span class="p">,</span> <span class="n">ProteinMetadata</span>
 
 
-<span class="k">def</span> <span class="nf">get_interpolated_location_in_protein</span><span class="p">(</span><span class="n">aa_pos_in_prot</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_interpolated_location_in_protein</span><span class="p">(</span><span class="n">aa_pos_in_prot</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span>
                                         <span class="n">prot_len</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span>
                                         <span class="n">plot_width</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">1200</span><span class="p">,</span>
                                         <span class="n">margin_size</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span><span class="nb">int</span><span class="p">]:</span>
@@ -99,7 +99,7 @@
 
 <div class="viewcode-block" id="VariantTranscriptVisualizer">
 <a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.VariantTranscriptVisualizer">[docs]</a>
-<span class="k">class</span> <span class="nc">VariantTranscriptVisualizer</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">VariantTranscriptVisualizer</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `VariantTranscriptProteinArtist` creates a graphic to show distributions of variants across a provided transcript</span>
 <span class="sd">    and its protein product.</span>
@@ -108,7 +108,7 @@
     <span class="c1"># noinspection PyMethodMayBeStatic</span>
 <div class="viewcode-block" id="VariantTranscriptVisualizer.draw_variants">
 <a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.VariantTranscriptVisualizer.draw_variants">[docs]</a>
-    <span class="k">def</span> <span class="nf">draw_variants</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variants</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Variant</span><span class="p">],</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">draw_variants</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variants</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Variant</span><span class="p">],</span>
                     <span class="n">tx</span><span class="p">:</span> <span class="n">TranscriptCoordinates</span><span class="p">,</span>
                     <span class="n">protein</span><span class="p">:</span> <span class="n">ProteinMetadata</span><span class="p">):</span>
         <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">protein</span><span class="o">.</span><span class="n">protein_id</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">protein</span><span class="o">.</span><span class="n">label</span><span class="si">}</span><span class="s2">)&quot;</span>

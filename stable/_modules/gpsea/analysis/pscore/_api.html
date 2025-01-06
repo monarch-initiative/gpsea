@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>gpsea.analysis.pscore._api &mdash; GPSEA 0.9.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/gpsea.css?v=547657ed" />
@@ -76,22 +76,22 @@
            <div itemprop="articleBody">
              
   <h1>Source code for gpsea.analysis.pscore._api</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">abc</span>
-<span class="kn">import</span> <span class="nn">typing</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
 
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Patient</span>
-<span class="kn">from</span> <span class="nn">..clf</span> <span class="kn">import</span> <span class="n">GenotypeClassifier</span>
-<span class="kn">from</span> <span class="nn">.stats</span> <span class="kn">import</span> <span class="n">PhenotypeScoreStatistic</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Patient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..clf</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenotypeClassifier</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhenotypeScoreStatistic</span>
 
-<span class="kn">from</span> <span class="nn">.._base</span> <span class="kn">import</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="p">,</span> <span class="n">Statistic</span><span class="p">,</span> <span class="n">StatisticResult</span>
-<span class="kn">from</span> <span class="nn">.._partition</span> <span class="kn">import</span> <span class="n">ContinuousPartitioning</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._base</span><span class="w"> </span><span class="kn">import</span> <span class="n">MonoPhenotypeAnalysisResult</span><span class="p">,</span> <span class="n">Statistic</span><span class="p">,</span> <span class="n">StatisticResult</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._partition</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContinuousPartitioning</span>
 
 
 <div class="viewcode-block" id="PhenotypeScorer">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.PhenotypeScorer">[docs]</a>
-<span class="k">class</span> <span class="nc">PhenotypeScorer</span><span class="p">(</span><span class="n">ContinuousPartitioning</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PhenotypeScorer</span><span class="p">(</span><span class="n">ContinuousPartitioning</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `PhenotypeScorer` assigns the patient with a phenotype score.</span>
 
@@ -103,7 +103,7 @@
 <div class="viewcode-block" id="PhenotypeScorer.wrap_scoring_function">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.PhenotypeScorer.wrap_scoring_function">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">wrap_scoring_function</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wrap_scoring_function</span><span class="p">(</span>
         <span class="n">func</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Patient</span><span class="p">],</span> <span class="nb">float</span><span class="p">],</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Custom Scoring Function&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;PhenotypeScorer&quot;</span><span class="p">:</span>
@@ -133,7 +133,7 @@
 <div class="viewcode-block" id="PhenotypeScorer.score">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.PhenotypeScorer.score">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the score for the `patient`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -142,7 +142,7 @@
 
 
 
-<span class="k">class</span> <span class="nc">FunctionPhenotypeScorer</span><span class="p">(</span><span class="n">PhenotypeScorer</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FunctionPhenotypeScorer</span><span class="p">(</span><span class="n">PhenotypeScorer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `FunctionPhenotypeScorer` computes the phenotype score using the provided function/closure.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -150,18 +150,18 @@
     <span class="c1"># NOT PART OF THE PUBLIC API</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;A custom function to compute the phenotype score&quot;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">variable_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">variable_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;Phenotype score&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">func</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Patient</span><span class="p">],</span> <span class="nb">float</span><span class="p">],</span>
@@ -170,7 +170,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_func</span> <span class="o">=</span> <span class="n">func</span>
 
-    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply the function to compute the phenotype score.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -179,7 +179,7 @@
 
 <div class="viewcode-block" id="PhenotypeScoreAnalysisResult">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.PhenotypeScoreAnalysisResult">[docs]</a>
-<span class="k">class</span> <span class="nc">PhenotypeScoreAnalysisResult</span><span class="p">(</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PhenotypeScoreAnalysisResult</span><span class="p">(</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `PhenotypeScoreAnalysisResult` is a container for :class:`PhenotypeScoreAnalysis` results.</span>
 
@@ -206,7 +206,7 @@
 <span class="sd">    if the phenotype score is impossible to compute.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">gt_clf</span><span class="p">:</span> <span class="n">GenotypeClassifier</span><span class="p">,</span>
         <span class="n">phenotype</span><span class="p">:</span> <span class="n">PhenotypeScorer</span><span class="p">,</span>
@@ -219,7 +219,7 @@
 
 <div class="viewcode-block" id="PhenotypeScoreAnalysisResult.phenotype_scorer">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.PhenotypeScoreAnalysisResult.phenotype_scorer">[docs]</a>
-    <span class="k">def</span> <span class="nf">phenotype_scorer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PhenotypeScorer</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">phenotype_scorer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PhenotypeScorer</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the scorer that computed the phenotype score.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -231,7 +231,7 @@
 
 <div class="viewcode-block" id="PhenotypeScoreAnalysisResult.plot_boxplots">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.PhenotypeScoreAnalysisResult.plot_boxplots">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot_boxplots</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_boxplots</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">ax</span><span class="p">,</span>
         <span class="n">colors</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;darksalmon&quot;</span><span class="p">,</span> <span class="s2">&quot;honeydew&quot;</span><span class="p">),</span>
@@ -273,15 +273,15 @@
             <span class="n">patch</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="n">color</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">PhenotypeScoreAnalysisResult</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">super</span><span class="p">(</span>
             <span class="n">MonoPhenotypeAnalysisResult</span><span class="p">,</span> <span class="bp">self</span>
         <span class="p">)</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="s2">&quot;PhenotypeScoreAnalysisResult(&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;gt_clf=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_gt_clf</span><span class="si">}</span><span class="s2">, &quot;</span>
@@ -291,14 +291,14 @@
             <span class="sa">f</span><span class="s2">&quot;statistic_result=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_statistic_result</span><span class="si">}</span><span class="s2">)&quot;</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="PhenotypeScoreAnalysis">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.PhenotypeScoreAnalysis">[docs]</a>
-<span class="k">class</span> <span class="nc">PhenotypeScoreAnalysis</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PhenotypeScoreAnalysis</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `PhenotypeScoreAnalysis` tests the association between two or more genotype classes</span>
 <span class="sd">    and a phenotype score.</span>
@@ -310,7 +310,7 @@
 <span class="sd">    and the results are reported as a :class:`PhenotypeScoreAnalysisResult`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">score_statistic</span><span class="p">:</span> <span class="n">PhenotypeScoreStatistic</span><span class="p">,</span>
     <span class="p">):</span>
@@ -319,7 +319,7 @@
 
 <div class="viewcode-block" id="PhenotypeScoreAnalysis.compare_genotype_vs_phenotype_score">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.PhenotypeScoreAnalysis.compare_genotype_vs_phenotype_score">[docs]</a>
-    <span class="k">def</span> <span class="nf">compare_genotype_vs_phenotype_score</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compare_genotype_vs_phenotype_score</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cohort</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Patient</span><span class="p">],</span>
         <span class="n">gt_clf</span><span class="p">:</span> <span class="n">GenotypeClassifier</span><span class="p">,</span>

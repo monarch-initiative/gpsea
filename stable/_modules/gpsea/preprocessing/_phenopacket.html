@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>gpsea.preprocessing._phenopacket &mdash; GPSEA 0.9.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../../../_static/gpsea.css?v=547657ed" />
@@ -76,28 +76,28 @@
            <div itemprop="articleBody">
              
   <h1>Source code for gpsea.preprocessing._phenopacket</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">typing</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
 
-<span class="kn">import</span> <span class="nn">hpotk</span>
-<span class="kn">from</span> <span class="nn">hpotk.util</span> <span class="kn">import</span> <span class="n">validate_instance</span>
-<span class="kn">from</span> <span class="nn">hpotk.validate</span> <span class="kn">import</span> <span class="n">ValidationRunner</span><span class="p">,</span> <span class="n">ValidationLevel</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hpotk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hpotk.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_instance</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hpotk.validate</span><span class="w"> </span><span class="kn">import</span> <span class="n">ValidationRunner</span><span class="p">,</span> <span class="n">ValidationLevel</span>
 
-<span class="kn">from</span> <span class="nn">stairval</span> <span class="kn">import</span> <span class="n">Level</span>
-<span class="kn">from</span> <span class="nn">stairval.notepad</span> <span class="kn">import</span> <span class="n">Notepad</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">stairval</span><span class="w"> </span><span class="kn">import</span> <span class="n">Level</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">stairval.notepad</span><span class="w"> </span><span class="kn">import</span> <span class="n">Notepad</span>
 
-<span class="kn">import</span> <span class="nn">phenopackets.schema.v2.core.individual_pb2</span> <span class="k">as</span> <span class="nn">ppi</span>
-<span class="kn">from</span> <span class="nn">phenopackets.schema.v2.phenopackets_pb2</span> <span class="kn">import</span> <span class="n">Phenopacket</span>
-<span class="kn">from</span> <span class="nn">phenopackets.schema.v2.core.base_pb2</span> <span class="kn">import</span> <span class="n">TimeElement</span> <span class="k">as</span> <span class="n">PPTimeElement</span><span class="p">,</span> <span class="n">OntologyClass</span> <span class="k">as</span> <span class="n">PPOntologyClass</span>
-<span class="kn">from</span> <span class="nn">phenopackets.schema.v2.core.phenotypic_feature_pb2</span> <span class="kn">import</span> <span class="n">PhenotypicFeature</span> <span class="k">as</span> <span class="n">PPPhenotypicFeature</span>
-<span class="kn">from</span> <span class="nn">phenopackets.schema.v2.core.disease_pb2</span> <span class="kn">import</span> <span class="n">Disease</span> <span class="k">as</span> <span class="n">PPDisease</span>
-<span class="kn">from</span> <span class="nn">phenopackets.schema.v2.core.measurement_pb2</span> <span class="kn">import</span> <span class="n">Measurement</span> <span class="k">as</span> <span class="n">PPMeasurement</span>
-<span class="kn">from</span> <span class="nn">phenopackets.schema.v2.core.interpretation_pb2</span> <span class="kn">import</span> <span class="n">GenomicInterpretation</span>
-<span class="kn">from</span> <span class="nn">phenopackets.vrsatile.v1.vrsatile_pb2</span> <span class="kn">import</span> <span class="n">VcfRecord</span><span class="p">,</span> <span class="n">VariationDescriptor</span>
-<span class="kn">from</span> <span class="nn">phenopackets.vrs.v1.vrs_pb2</span> <span class="kn">import</span> <span class="n">Variation</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">phenopackets.schema.v2.core.individual_pb2</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ppi</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">phenopackets.schema.v2.phenopackets_pb2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Phenopacket</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">phenopackets.schema.v2.core.base_pb2</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeElement</span> <span class="k">as</span> <span class="n">PPTimeElement</span><span class="p">,</span> <span class="n">OntologyClass</span> <span class="k">as</span> <span class="n">PPOntologyClass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">phenopackets.schema.v2.core.phenotypic_feature_pb2</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhenotypicFeature</span> <span class="k">as</span> <span class="n">PPPhenotypicFeature</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">phenopackets.schema.v2.core.disease_pb2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Disease</span> <span class="k">as</span> <span class="n">PPDisease</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">phenopackets.schema.v2.core.measurement_pb2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Measurement</span> <span class="k">as</span> <span class="n">PPMeasurement</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">phenopackets.schema.v2.core.interpretation_pb2</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenomicInterpretation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">phenopackets.vrsatile.v1.vrsatile_pb2</span><span class="w"> </span><span class="kn">import</span> <span class="n">VcfRecord</span><span class="p">,</span> <span class="n">VariationDescriptor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">phenopackets.vrs.v1.vrs_pb2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Variation</span>
 
-<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">SampleLabels</span><span class="p">,</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">Sex</span><span class="p">,</span> <span class="n">Disease</span><span class="p">,</span> <span class="n">Measurement</span>
-<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">SampleLabels</span><span class="p">,</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">Sex</span><span class="p">,</span> <span class="n">Disease</span><span class="p">,</span> <span class="n">Measurement</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">VariantClass</span><span class="p">,</span>
     <span class="n">VariantCoordinates</span><span class="p">,</span>
     <span class="n">ImpreciseSvInfo</span><span class="p">,</span>
@@ -110,21 +110,21 @@
     <span class="n">VitalStatus</span><span class="p">,</span>
     <span class="n">Status</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">gpsea.model.genome</span> <span class="kn">import</span> <span class="n">GenomeBuild</span><span class="p">,</span> <span class="n">GenomicRegion</span><span class="p">,</span> <span class="n">Strand</span>
-<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model.genome</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenomeBuild</span><span class="p">,</span> <span class="n">GenomicRegion</span><span class="p">,</span> <span class="n">Strand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._api</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">VariantCoordinateFinder</span><span class="p">,</span>
     <span class="n">FunctionalAnnotator</span><span class="p">,</span>
     <span class="n">ImpreciseSvFunctionalAnnotator</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">._patient</span> <span class="kn">import</span> <span class="n">PatientCreator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._patient</span><span class="w"> </span><span class="kn">import</span> <span class="n">PatientCreator</span>
 
 
-<span class="k">class</span> <span class="nc">PhenopacketGenotypeParser</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PhenopacketGenotypeParser</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `PhenopacketGenotypeParser` tries to extract :class:`Genotype` from `GenomicInterpretation`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">find_genotype</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_genotype</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">item</span><span class="p">:</span> <span class="n">GenomicInterpretation</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Genotype</span><span class="p">]:</span>
@@ -139,7 +139,7 @@
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_map_geno_genotype_label</span><span class="p">(</span><span class="n">genotype</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Genotype</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_map_geno_genotype_label</span><span class="p">(</span><span class="n">genotype</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Genotype</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Mapping from labels of the relevant GENO terms that is valid as of Oct 2nd, 2023.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -155,7 +155,7 @@
 
 <div class="viewcode-block" id="PhenopacketVariantCoordinateFinder">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PhenopacketVariantCoordinateFinder">[docs]</a>
-<span class="k">class</span> <span class="nc">PhenopacketVariantCoordinateFinder</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PhenopacketVariantCoordinateFinder</span><span class="p">(</span>
     <span class="n">VariantCoordinateFinder</span><span class="p">[</span><span class="n">GenomicInterpretation</span><span class="p">]</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -166,7 +166,7 @@
 <span class="sd">    :param hgvs_coordinate_finder: the coordinate finder to use for parsing HGVS expressions</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">build</span><span class="p">:</span> <span class="n">GenomeBuild</span><span class="p">,</span>
         <span class="n">hgvs_coordinate_finder</span><span class="p">:</span> <span class="n">VariantCoordinateFinder</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
@@ -179,7 +179,7 @@
 
 <div class="viewcode-block" id="PhenopacketVariantCoordinateFinder.find_coordinates">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PhenopacketVariantCoordinateFinder.find_coordinates">[docs]</a>
-    <span class="k">def</span> <span class="nf">find_coordinates</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_coordinates</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">item</span><span class="p">:</span> <span class="n">GenomicInterpretation</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">VariantCoordinates</span><span class="p">]:</span>
@@ -256,7 +256,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unable to find variant coordinates.&quot;</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_check_assembly</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">genome_assembly</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_assembly</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">genome_assembly</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">if</span> <span class="s2">&quot;38&quot;</span> <span class="ow">in</span> <span class="n">genome_assembly</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="o">.</span><span class="n">identifier</span> <span class="o">==</span> <span class="s2">&quot;GRCh38.p13&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">elif</span> <span class="p">(</span>
@@ -267,7 +267,7 @@
             <span class="k">return</span> <span class="kc">False</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_vcf_is_available</span><span class="p">(</span><span class="n">vcf_record</span><span class="p">:</span> <span class="n">VcfRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_vcf_is_available</span><span class="p">(</span><span class="n">vcf_record</span><span class="p">:</span> <span class="n">VcfRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if we can parse data out of VCF record.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -280,7 +280,7 @@
         <span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_cnv_is_available</span><span class="p">(</span><span class="n">variation</span><span class="p">:</span> <span class="n">Variation</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cnv_is_available</span><span class="p">(</span><span class="n">variation</span><span class="p">:</span> <span class="n">Variation</span><span class="p">):</span>
         <span class="n">seq_location</span> <span class="o">=</span> <span class="n">variation</span><span class="o">.</span><span class="n">copy_number</span><span class="o">.</span><span class="n">allele</span><span class="o">.</span><span class="n">sequence_location</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">seq_location</span><span class="o">.</span><span class="n">sequence_id</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span>
@@ -290,7 +290,7 @@
         <span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_looks_like_large_sv</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_looks_like_large_sv</span><span class="p">(</span>
         <span class="n">variation_descriptor</span><span class="p">:</span> <span class="n">VariationDescriptor</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="n">structural_type</span> <span class="o">=</span> <span class="p">(</span>
@@ -312,7 +312,7 @@
 
 <div class="viewcode-block" id="PhenopacketOntologyTermOnsetParser">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PhenopacketOntologyTermOnsetParser">[docs]</a>
-<span class="k">class</span> <span class="nc">PhenopacketOntologyTermOnsetParser</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PhenopacketOntologyTermOnsetParser</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parser for mapping an onset formatted as an ontology class to the corresponding :class:`~gpsea.model.Age`.</span>
 
@@ -326,7 +326,7 @@
 <div class="viewcode-block" id="PhenopacketOntologyTermOnsetParser.default_parser">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PhenopacketOntologyTermOnsetParser.default_parser">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">default_parser</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="s2">&quot;PhenopacketOntologyTermOnsetParser&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">default_parser</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="s2">&quot;PhenopacketOntologyTermOnsetParser&quot;</span><span class="p">:</span>
         <span class="c1"># These ranges are horribly general.</span>
         <span class="c1"># Assuming 40 weeks as birth date and 80 years as age of death.</span>
         <span class="n">weeks_at_birth</span> <span class="o">=</span> <span class="mi">40</span>
@@ -365,7 +365,7 @@
 
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_median_age</span><span class="p">(</span><span class="n">left</span><span class="p">:</span> <span class="n">Age</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="n">Age</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Age</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_median_age</span><span class="p">(</span><span class="n">left</span><span class="p">:</span> <span class="n">Age</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="n">Age</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Age</span><span class="p">:</span>
         <span class="c1"># Assuming right is at or after left</span>
         <span class="n">days</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">days</span> <span class="o">+</span> <span class="p">((</span><span class="n">right</span><span class="o">.</span><span class="n">days</span> <span class="o">-</span> <span class="n">left</span><span class="o">.</span><span class="n">days</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> 
         <span class="k">if</span> <span class="n">left</span><span class="o">.</span><span class="n">is_gestational</span> <span class="ow">and</span> <span class="n">right</span><span class="o">.</span><span class="n">is_gestational</span><span class="p">:</span>
@@ -375,7 +375,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;`left` and `right` must be on the same timeline, but left=</span><span class="si">{</span><span class="n">left</span><span class="o">.</span><span class="n">timeline</span><span class="si">}</span><span class="s1">, right=</span><span class="si">{</span><span class="n">right</span><span class="o">.</span><span class="n">timeline</span><span class="si">}</span><span class="s1">`&#39;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">term_id_to_age</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Age</span><span class="p">],</span>
     <span class="p">):</span>
@@ -388,7 +388,7 @@
 
 <div class="viewcode-block" id="PhenopacketOntologyTermOnsetParser.process">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PhenopacketOntologyTermOnsetParser.process">[docs]</a>
-    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">ontology_class</span><span class="p">:</span> <span class="n">PPOntologyClass</span><span class="p">,</span>
         <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
@@ -414,7 +414,7 @@
 
 <div class="viewcode-block" id="PhenopacketPatientCreator">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PhenopacketPatientCreator">[docs]</a>
-<span class="k">class</span> <span class="nc">PhenopacketPatientCreator</span><span class="p">(</span><span class="n">PatientCreator</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">]):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PhenopacketPatientCreator</span><span class="p">(</span><span class="n">PatientCreator</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `PhenopacketPatientCreator` transforms `Phenopacket` into :class:`~gpsea.model.Patient`.</span>
 
@@ -427,7 +427,7 @@
 <span class="sd">    :param hgvs_coordinate_finder: for finding chromosomal coordinates for HGVS variant descriptions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
         <span class="n">validator</span><span class="p">:</span> <span class="n">ValidationRunner</span><span class="p">,</span>
@@ -482,7 +482,7 @@
 
 <div class="viewcode-block" id="PhenopacketPatientCreator.process">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PhenopacketPatientCreator.process">[docs]</a>
-    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">pp</span><span class="p">:</span> <span class="n">Phenopacket</span><span class="p">,</span>
         <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
@@ -548,7 +548,7 @@
         <span class="p">)</span></div>
 
     
-    <span class="k">def</span> <span class="nf">_add_phenotypes</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_phenotypes</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">pfs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">PPPhenotypicFeature</span><span class="p">],</span>
         <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
@@ -576,7 +576,7 @@
         
         <span class="k">return</span> <span class="n">phenotypes</span>
 
-    <span class="k">def</span> <span class="nf">_add_diseases</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_diseases</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">diseases</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PPDisease</span><span class="p">],</span> <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Disease</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a list of Disease objects from the data in a given Phenopacket</span>
@@ -621,7 +621,7 @@
 
         <span class="k">return</span> <span class="n">final_diseases</span>
 
-    <span class="k">def</span> <span class="nf">_add_measurements</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_measurements</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">measurements</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PPMeasurement</span><span class="p">],</span>
         <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
@@ -666,7 +666,7 @@
         <span class="k">return</span> <span class="n">final_measurements</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_extract_sex</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_sex</span><span class="p">(</span>
         <span class="n">individual</span><span class="p">:</span> <span class="n">ppi</span><span class="o">.</span><span class="n">Individual</span><span class="p">,</span>
         <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Sex</span><span class="p">]:</span>
@@ -683,7 +683,7 @@
             <span class="k">return</span> <span class="n">Sex</span><span class="o">.</span><span class="n">UNKNOWN_SEX</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_extract_age</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_age</span><span class="p">(</span>
         <span class="n">individual</span><span class="p">:</span> <span class="n">ppi</span><span class="o">.</span><span class="n">Individual</span><span class="p">,</span>
         <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Age</span><span class="p">]:</span>
@@ -693,7 +693,7 @@
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_extract_vital_status</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_vital_status</span><span class="p">(</span>
         <span class="n">individual</span><span class="p">:</span> <span class="n">ppi</span><span class="o">.</span><span class="n">Individual</span><span class="p">,</span>
         <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">VitalStatus</span><span class="p">]:</span>
@@ -726,7 +726,7 @@
                 
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">_add_variants</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_variants</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">sample_id</span><span class="p">:</span> <span class="n">SampleLabels</span><span class="p">,</span>
         <span class="n">pp</span><span class="p">:</span> <span class="n">Phenopacket</span><span class="p">,</span>
@@ -810,7 +810,7 @@
 
         <span class="k">return</span> <span class="n">variants</span>
 
-    <span class="k">def</span> <span class="nf">_extract_variant_info</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_variant_info</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">sample_id</span><span class="p">:</span> <span class="n">SampleLabels</span><span class="p">,</span>
         <span class="n">genomic_interpretation</span><span class="p">:</span> <span class="n">GenomicInterpretation</span><span class="p">,</span>
@@ -848,7 +848,7 @@
             <span class="n">sv_info</span><span class="o">=</span><span class="n">sv_info</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_map_to_imprecise_sv</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_map_to_imprecise_sv</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">genomic_interpretation</span><span class="p">:</span> <span class="n">GenomicInterpretation</span><span class="p">,</span>
         <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
@@ -889,7 +889,7 @@
 
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">_map_structural_type_to_variant_class</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_map_structural_type_to_variant_class</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">structural_type</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">VariantClass</span><span class="p">]:</span>
@@ -912,7 +912,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown structural type </span><span class="si">{</span><span class="n">structural_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_translate_level</span><span class="p">(</span><span class="n">lvl</span><span class="p">:</span> <span class="n">ValidationLevel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Level</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_translate_level</span><span class="p">(</span><span class="n">lvl</span><span class="p">:</span> <span class="n">ValidationLevel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Level</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">lvl</span> <span class="o">==</span> <span class="n">ValidationLevel</span><span class="o">.</span><span class="n">WARNING</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">Level</span><span class="o">.</span><span class="n">WARN</span>
         <span class="k">elif</span> <span class="n">lvl</span> <span class="o">==</span> <span class="n">ValidationLevel</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span>
@@ -922,10 +922,10 @@
 
 
 
-<span class="k">class</span> <span class="nc">PhenopacketPhenotypicFeatureCreator</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PhenopacketPhenotypicFeatureCreator</span><span class="p">:</span>
     <span class="c1"># NOT PART OF THE PUBLIC API</span>
     
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
         <span class="n">term_onset_parser</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">PhenopacketOntologyTermOnsetParser</span><span class="p">],</span>
@@ -933,7 +933,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span> <span class="o">=</span> <span class="n">hpo</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_term_onset_parser</span> <span class="o">=</span> <span class="n">term_onset_parser</span>
 
-    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">pf</span><span class="p">:</span> <span class="n">PPPhenotypicFeature</span><span class="p">,</span>
         <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
@@ -994,7 +994,7 @@
             <span class="n">onset</span><span class="o">=</span><span class="n">onset</span><span class="p">,</span>
         <span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">parse_onset_element</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_onset_element</span><span class="p">(</span>
     <span class="n">time_element</span><span class="p">:</span> <span class="n">PPTimeElement</span><span class="p">,</span>
     <span class="n">term_onset_parser</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">PhenopacketOntologyTermOnsetParser</span><span class="p">],</span>
     <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
@@ -1017,7 +1017,7 @@
             <span class="n">notepad</span><span class="o">=</span><span class="n">notepad</span><span class="p">,</span>
         <span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">parse_age_element</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_age_element</span><span class="p">(</span>
     <span class="n">time_element</span><span class="p">:</span> <span class="n">PPTimeElement</span><span class="p">,</span>
     <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Age</span><span class="p">]:</span>

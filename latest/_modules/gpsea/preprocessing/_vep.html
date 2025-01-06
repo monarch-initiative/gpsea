@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>gpsea.preprocessing._vep &mdash; GPSEA 0.9.1.dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../../../_static/gpsea.css?v=547657ed" />
@@ -77,19 +77,19 @@
              
   <h1>Source code for gpsea.preprocessing._vep</h1><div class="highlight"><pre>
 <span></span><span class="c1"># A module with classes that interact with Ensembl&#39;s REST API to fetch required data.</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
 
-<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
 
-<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantCoordinates</span><span class="p">,</span> <span class="n">TranscriptAnnotation</span><span class="p">,</span> <span class="n">VariantEffect</span>
-<span class="kn">from</span> <span class="nn">gpsea.model.genome</span> <span class="kn">import</span> <span class="n">Region</span>
-<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">FunctionalAnnotator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">VariantCoordinates</span><span class="p">,</span> <span class="n">TranscriptAnnotation</span><span class="p">,</span> <span class="n">VariantEffect</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model.genome</span><span class="w"> </span><span class="kn">import</span> <span class="n">Region</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._api</span><span class="w"> </span><span class="kn">import</span> <span class="n">FunctionalAnnotator</span>
 
 
 <div class="viewcode-block" id="VepFunctionalAnnotator">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.VepFunctionalAnnotator">[docs]</a>
-<span class="k">class</span> <span class="nc">VepFunctionalAnnotator</span><span class="p">(</span><span class="n">FunctionalAnnotator</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">VepFunctionalAnnotator</span><span class="p">(</span><span class="n">FunctionalAnnotator</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `VepFunctionalAnnotator` uses the Variant Effect Predictor (VEP) REST API </span>
 <span class="sd">    to perform functional variant annotation.</span>
@@ -115,7 +115,7 @@
 <span class="sd">    Non-coding variant effects where we do not complain if the functional annotation lacks the protein effects.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">include_computational_txs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                  <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -128,14 +128,14 @@
 
 <div class="viewcode-block" id="VepFunctionalAnnotator.annotate">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.VepFunctionalAnnotator.annotate">[docs]</a>
-    <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant_coordinates</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant_coordinates</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">]:</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch_response</span><span class="p">(</span><span class="n">variant_coordinates</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_response</span><span class="p">(</span><span class="n">variant_coordinates</span><span class="o">.</span><span class="n">variant_key</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="VepFunctionalAnnotator.process_response">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.VepFunctionalAnnotator.process_response">[docs]</a>
-    <span class="k">def</span> <span class="nf">process_response</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_response</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">variant_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
             <span class="n">response</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span>
@@ -154,7 +154,7 @@
         <span class="k">return</span> <span class="n">annotations</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_parse_variant_effect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">effect</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">VariantEffect</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_variant_effect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">effect</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">VariantEffect</span><span class="p">]:</span>
         <span class="n">effect</span> <span class="o">=</span> <span class="n">effect</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">effect</span> <span class="o">==</span> <span class="s2">&quot;5_PRIME_UTR_VARIANT&quot;</span><span class="p">:</span>
             <span class="n">effect</span> <span class="o">=</span> <span class="s2">&quot;FIVE_PRIME_UTR_VARIANT&quot;</span>
@@ -167,7 +167,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;VariantEffect </span><span class="si">%s</span><span class="s2"> was not found in our record of possible effects.&quot;</span><span class="p">,</span> <span class="n">effect</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">var_effect</span>
 
-    <span class="k">def</span> <span class="nf">_process_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_process_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse one transcript annotation from the JSON response.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -219,7 +219,7 @@
 
 <div class="viewcode-block" id="VepFunctionalAnnotator.fetch_response">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.VepFunctionalAnnotator.fetch_response">[docs]</a>
-    <span class="k">def</span> <span class="nf">fetch_response</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fetch_response</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">variant_coordinates</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
@@ -251,7 +251,7 @@
 <div class="viewcode-block" id="VepFunctionalAnnotator.format_coordinates_for_vep_query">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.VepFunctionalAnnotator.format_coordinates_for_vep_query">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">format_coordinates_for_vep_query</span><span class="p">(</span><span class="n">vc</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">format_coordinates_for_vep_query</span><span class="p">(</span><span class="n">vc</span><span class="p">:</span> <span class="n">VariantCoordinates</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts the 0-based VariantCoordinates to ones that will be interpreted</span>
 <span class="sd">        correctly by VEP</span>

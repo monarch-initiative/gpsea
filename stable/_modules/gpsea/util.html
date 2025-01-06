@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>gpsea.util &mdash; GPSEA 0.9.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../../_static/gpsea.css?v=547657ed" />
@@ -76,14 +76,14 @@
            <div itemprop="articleBody">
              
   <h1>Source code for gpsea.util</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">io</span>
-<span class="kn">import</span> <span class="nn">platform</span>
-<span class="kn">import</span> <span class="nn">typing</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">platform</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
 
 
 <div class="viewcode-block" id="open_text_io_handle_for_reading">
 <a class="viewcode-back" href="../../apidocs/gpsea.util.html#gpsea.util.open_text_io_handle_for_reading">[docs]</a>
-<span class="k">def</span> <span class="nf">open_text_io_handle_for_reading</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">open_text_io_handle_for_reading</span><span class="p">(</span>
     <span class="n">file</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">io</span><span class="o">.</span><span class="n">IOBase</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">io</span><span class="o">.</span><span class="n">TextIOWrapper</span><span class="p">:</span>
@@ -111,7 +111,7 @@
 
 <div class="viewcode-block" id="open_text_io_handle_for_writing">
 <a class="viewcode-back" href="../../apidocs/gpsea.util.html#gpsea.util.open_text_io_handle_for_writing">[docs]</a>
-<span class="k">def</span> <span class="nf">open_text_io_handle_for_writing</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">open_text_io_handle_for_writing</span><span class="p">(</span>
     <span class="n">file</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">io</span><span class="o">.</span><span class="n">IOBase</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">io</span><span class="o">.</span><span class="n">TextIOWrapper</span><span class="p">:</span>
@@ -139,7 +139,7 @@
 
 <div class="viewcode-block" id="open_resource">
 <a class="viewcode-back" href="../../apidocs/gpsea.util.html#gpsea.util.open_resource">[docs]</a>
-<span class="k">def</span> <span class="nf">open_resource</span><span class="p">(</span><span class="n">package</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">IO</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">open_resource</span><span class="p">(</span><span class="n">package</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">IO</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get an IO handle for reading a package resource on the current platform.</span>
 
@@ -150,7 +150,7 @@
     <span class="n">major</span><span class="p">,</span> <span class="n">minor</span><span class="p">,</span> <span class="n">patch</span> <span class="o">=</span> <span class="n">platform</span><span class="o">.</span><span class="n">python_version_tuple</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">major</span> <span class="o">==</span> <span class="s2">&quot;3&quot;</span><span class="p">:</span>
-        <span class="kn">import</span> <span class="nn">importlib.resources</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">importlib.resources</span>
 
         <span class="n">minor</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">minor</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">minor</span> <span class="o">&lt;</span> <span class="mi">9</span><span class="p">:</span>

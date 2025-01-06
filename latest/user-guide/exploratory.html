@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cohort exploratory analysis &mdash; GPSEA 0.9.1.dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../_static/gpsea.css?v=547657ed" />
@@ -142,8 +142,8 @@ in the <a class="reference internal" href="input-data.html#input-data"><span cla
 at <a class="reference external" href="https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/TBX5.0.1.20.json">docs/cohort-data/TBX5.0.1.20.json</a>
 in JSON format.</p>
 <p>We start by loading the cohort from the JSON file:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">json</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.io</span> <span class="kn">import</span> <span class="n">GpseaJSONDecoder</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">GpseaJSONDecoder</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fpath_cohort</span> <span class="o">=</span> <span class="s1">&#39;docs/cohort-data/TBX5.0.1.20.json&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fpath_cohort</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="n">cohort</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">GpseaJSONDecoder</span><span class="p">)</span>
@@ -153,7 +153,7 @@ in JSON format.</p>
 </div>
 <p>Then we choose the transcript and protein identifiers, and we fetch the corresponding data:
 (see <a class="reference internal" href="input-data.html#choose-tx-and-protein"><span class="std std-ref">Choose the transcript and protein of interest</span></a> for more info):</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.preprocessing</span> <span class="kn">import</span> <span class="n">configure_default_tx_coordinate_service</span><span class="p">,</span> <span class="n">configure_default_protein_metadata_service</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure_default_tx_coordinate_service</span><span class="p">,</span> <span class="n">configure_default_protein_metadata_service</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tx_id</span> <span class="o">=</span> <span class="s2">&quot;NM_181486.4&quot;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pt_id</span> <span class="o">=</span> <span class="s2">&quot;NP_852259.1&quot;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tx_service</span> <span class="o">=</span> <span class="n">configure_default_tx_coordinate_service</span><span class="p">(</span><span class="n">genome_build</span><span class="o">=</span><span class="s2">&quot;GRCh38.p13&quot;</span><span class="p">)</span>
@@ -163,7 +163,7 @@ in JSON format.</p>
 </pre></div>
 </div>
 <p>Last, we load HPO <cite>v2024-07-01</cite> to use in the exploratory analysis:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hpotk</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">hpotk</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">store</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">configure_ontology_store</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">load_minimal_hpo</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;v2024-07-01&#39;</span><span class="p">)</span>
 </pre></div>
@@ -181,7 +181,7 @@ Returning the report object as the last cell expression will render the report i
 with an overview about the HPO terms, variants, diseases, and variant effects that occur most frequently.
 We create the <cite>viewer</cite> and we generate the <cite>report</cite> for a cohort and transcript.
 The implicit return of the <cite>report</cite> at the end of the cell renders the report in the cell output:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">CohortViewer</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.view</span><span class="w"> </span><span class="kn">import</span> <span class="n">CohortViewer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">viewer</span> <span class="o">=</span> <span class="n">CohortViewer</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">report</span> <span class="o">=</span> <span class="n">viewer</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span> <span class="n">transcript_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">report</span>  
@@ -658,7 +658,7 @@ located in them in order to decide whether it might be sensible to test for corr
 located in one or more protein domains and a certain phenotype.</p>
 <p>This code will produce the following table on the basis of a cohort of individuals
 with variants in the <em>TBX5</em> gene:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">ProteinVariantViewer</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.view</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProteinVariantViewer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cpd_viewer</span> <span class="o">=</span> <span class="n">ProteinVariantViewer</span><span class="p">(</span><span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">,</span> <span class="n">protein_metadata</span><span class="o">=</span><span class="n">protein_meta</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">report</span> <span class="o">=</span> <span class="n">cpd_viewer</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">report</span>  
@@ -863,8 +863,8 @@ with variants in the <em>TBX5</em> gene:</p>
 <section id="plot-distribution-of-variants-with-respect-to-the-protein-sequence">
 <h3>Plot distribution of variants with respect to the protein sequence<a class="headerlink" href="#plot-distribution-of-variants-with-respect-to-the-protein-sequence" title="Link to this heading"></a></h3>
 <p>We use Matplotlib to plot the distribution of variants on a protein diagram:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.view</span> <span class="kn">import</span> <span class="n">ProteinVisualizer</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.view</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProteinVisualizer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">visualizer</span> <span class="o">=</span> <span class="n">ProteinVisualizer</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">visualizer</span><span class="o">.</span><span class="n">draw_protein_diagram</span><span class="p">(</span>

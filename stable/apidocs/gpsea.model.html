@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>gpsea.model package &mdash; GPSEA 0.9.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../_static/gpsea.css?v=547657ed" />
@@ -740,7 +740,7 @@ is parsed into a postnatal age. An error is raised if a value for weeks and mont
 at the same time.</p>
 <p class="rubric">Examples</p>
 <p>Parse gestational age:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Age</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Age</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gestational</span> <span class="o">=</span> <span class="n">Age</span><span class="o">.</span><span class="n">from_iso8601_period</span><span class="p">(</span><span class="s2">&quot;P2W6D&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gestational</span>
 <span class="go">Age(days=20.0, timeline=Timeline.GESTATIONAL)</span>
@@ -1078,7 +1078,7 @@ Use <a class="reference internal" href="#gpsea.model.VariantCoordinates.from_vcf
 <span class="pre">chr1</span>&#160;&#160;&#160; <span class="pre">1001</span>&#160;&#160;&#160; <span class="pre">.</span>&#160;&#160; <span class="pre">C</span>&#160;&#160; <span class="pre">T</span>
 <span class="pre">`</span></code></p>
 <p>We first must decide on the genome build. Most of the time, we should use GRCh38:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model.genome</span> <span class="kn">import</span> <span class="n">GRCh38</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model.genome</span><span class="w"> </span><span class="kn">import</span> <span class="n">GRCh38</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">build</span> <span class="o">=</span> <span class="n">GRCh38</span>
 </pre></div>
 </div>
@@ -1087,7 +1087,7 @@ Use <a class="reference internal" href="#gpsea.model.VariantCoordinates.from_vcf
 </pre></div>
 </div>
 <p>Last, we create the variant coordinates:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantCoordinates</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">VariantCoordinates</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">vc</span> <span class="o">=</span> <span class="n">VariantCoordinates</span><span class="o">.</span><span class="n">from_vcf_literal</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">contig</span><span class="o">=</span><span class="n">chr1</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="mi">1001</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="n">alt</span><span class="o">=</span><span class="s1">&#39;T&#39;</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
@@ -1123,7 +1123,7 @@ Use <a class="reference internal" href="#gpsea.model.VariantCoordinates.from_vcf
 <span class="pre">2</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">321682</span>&#160;&#160; <span class="pre">.</span>&#160;&#160;&#160; <span class="pre">T</span>&#160;&#160;&#160;&#160; <span class="pre">&lt;DEL&gt;</span>&#160;&#160; <span class="pre">6</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">PASS</span>&#160;&#160;&#160;&#160; <span class="pre">SVTYPE=DEL;END=321887;SVLEN=-205</span>
 <span class="pre">`</span></code></p>
 <p>We first must decide on the genome build. Most of the time, we should use GRCh38:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model.genome</span> <span class="kn">import</span> <span class="n">GRCh38</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model.genome</span><span class="w"> </span><span class="kn">import</span> <span class="n">GRCh38</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">contig</span> <span class="o">=</span> <span class="n">GRCh38</span><span class="o">.</span><span class="n">contig_by_name</span><span class="p">(</span><span class="s1">&#39;2&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1563,7 +1563,7 @@ affected by the variant.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.model.</span></span><span class="sig-name descname"><span class="pre">VariantEffect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/model/_variant_effects.html#VariantEffect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.VariantEffect" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
 <p><cite>VariantEffect</cite> represents consequences of a variant on transcript that are supported by GPSEA.</p>
-<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">VariantEffect</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">missense</span> <span class="o">=</span> <span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">missense</span><span class="p">)</span>
 <span class="go">missense_variant</span>
@@ -1780,7 +1780,7 @@ affected by the variant.</p>
 <span class="sig-name descname"><span class="pre">to_display</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_variant_effects.html#VariantEffect.to_display"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.VariantEffect.to_display" title="Link to this definition"></a></dt>
 <dd><p>Get a concise name of the variant effect that is suitable for showing to humans.</p>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">VariantEffect</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="o">.</span><span class="n">to_display</span><span class="p">()</span>
 <span class="go">&#39;missense&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">SPLICE_DONOR_5TH_BASE_VARIANT</span><span class="o">.</span><span class="n">to_display</span><span class="p">()</span>
@@ -1799,7 +1799,7 @@ affected by the variant.</p>
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">structural_so_id_to_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">so_term</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://ielis.github.io/hpo-toolkit/stable/apidocs/hpotk.model.html#hpotk.model.TermId" title="(in hpo-toolkit)"><span class="pre">TermId</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_variant_effects.html#VariantEffect.structural_so_id_to_display"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.VariantEffect.structural_so_id_to_display" title="Link to this definition"></a></dt>
 <dd><p>Get a <cite>str</cite> with a concise name for representing a Sequence Ontology (SO) term identifier.</p>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">VariantEffect</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">structural_so_id_to_display</span><span class="p">(</span><span class="s1">&#39;SO:1000029&#39;</span><span class="p">)</span>
 <span class="go">&#39;chromosomal deletion&#39;</span>
 </pre></div>
@@ -2021,7 +2021,7 @@ a label, a data frame with protein features, and the number of aminoacids of the
 </pre></div>
 </div>
 <p>Now let’s prepare a data frame with the protein features. We will prepare a domain and a region:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">features</span> <span class="o">=</span> <span class="p">[</span>
 <span class="gp">... </span>    <span class="p">{</span>
 <span class="gp">... </span>        <span class="s2">&quot;region&quot;</span><span class="p">:</span> <span class="s2">&quot;Suppresor domain&quot;</span><span class="p">,</span>
@@ -2040,7 +2040,7 @@ a label, a data frame with protein features, and the number of aminoacids of the
 </pre></div>
 </div>
 <p>last, we can put the protein info together:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">ProteinMetadata</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProteinMetadata</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">protein_meta</span> <span class="o">=</span> <span class="n">ProteinMetadata</span><span class="o">.</span><span class="n">from_feature_frame</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">protein_id</span><span class="o">=</span><span class="n">protein_id</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
@@ -2294,7 +2294,7 @@ Region: a protein region spanned by the feature.</p>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
 <p>An enum representing the protein feature types supported in GPSEA.</p>
 <p>Use <a class="reference internal" href="#gpsea.model.FeatureType.from_string" title="gpsea.model.FeatureType.from_string"><code class="xref py py-func docutils literal notranslate"><span class="pre">from_string()</span></code></a> to parse a feature from Uniprot:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">FeatureType</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">FeatureType</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">val</span> <span class="o">=</span> <span class="s2">&quot;Dna Binding&quot;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">feature_type</span> <span class="o">=</span> <span class="n">FeatureType</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">feature_type</span><span class="o">.</span><span class="n">name</span>

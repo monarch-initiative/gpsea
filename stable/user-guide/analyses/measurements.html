@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Compare measurements &mdash; GPSEA 0.9.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../../_static/gpsea.css?v=547657ed" />
@@ -112,8 +112,8 @@ and other clinical signs and symptoms encoded as HPO terms.</p>
 from a <a class="reference external" href="https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/CYP21A2.0.1.20.json">JSON file</a>.
 The cohort was prepared from phenopackets as described in <a class="reference internal" href="../input-data.html#create-a-cohort"><span class="std std-ref">Create a cohort</span></a> section,
 and then serialized as a JSON file following the instructions in <a class="reference internal" href="../input-data.html#cohort-persistence"><span class="std std-ref">Persist the cohort for later</span></a> section.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">json</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.io</span> <span class="kn">import</span> <span class="n">GpseaJSONDecoder</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">GpseaJSONDecoder</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fpath_cohort_json</span> <span class="o">=</span> <span class="s1">&#39;docs/cohort-data/CYP21A2.0.1.20.json&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fpath_cohort_json</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="n">cohort</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">GpseaJSONDecoder</span><span class="p">)</span>
@@ -134,15 +134,15 @@ and then serialized as a JSON file following the instructions in <a class="refer
 Nonsense variants + big SVs,
 Missense should <em>NOT</em> be severe.
 TODO - create real predicate.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">VariantEffect</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.predicate</span> <span class="kn">import</span> <span class="n">variant_effect</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">VariantEffect</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.predicate</span><span class="w"> </span><span class="kn">import</span> <span class="n">variant_effect</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">is_missense</span> <span class="o">=</span> <span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">is_missense</span><span class="o">.</span><span class="n">description</span>
 <span class="go">&#39;MISSENSE_VARIANT on NM_000500.9&#39;</span>
 </pre></div>
 </div>
 <p>Assuming AR inheritance, we compare missense vs. rest:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.clf</span> <span class="kn">import</span> <span class="n">biallelic_classifier</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.clf</span><span class="w"> </span><span class="kn">import</span> <span class="n">biallelic_classifier</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span> <span class="o">=</span> <span class="n">biallelic_classifier</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">a_predicate</span><span class="o">=</span><span class="n">is_missense</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">b_predicate</span><span class="o">=~</span><span class="n">is_missense</span><span class="p">,</span>
@@ -159,7 +159,7 @@ TODO - create real predicate.</p>
 <p>We investigate an association between a measurement value and a genotype group.</p>
 <p>We use the measurement of <a class="reference external" href="https://loinc.org/2986-8/">Testosterone [Mass/volume] in Serum or Plasma</a>
 (<cite>LOINC:2986-8</cite>).</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pscore</span> <span class="kn">import</span> <span class="n">MeasurementPhenotypeScorer</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.pscore</span><span class="w"> </span><span class="kn">import</span> <span class="n">MeasurementPhenotypeScorer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">testosterone</span> <span class="o">=</span> <span class="s1">&#39;LOINC:2986-8&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_scorer</span> <span class="o">=</span> <span class="n">MeasurementPhenotypeScorer</span><span class="o">.</span><span class="n">from_measurement_id</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">term_id</span><span class="o">=</span><span class="n">testosterone</span><span class="p">,</span>
@@ -174,7 +174,7 @@ TODO - create real predicate.</p>
 <h4>Statistical test<a class="headerlink" href="#statistical-test" title="Link to this heading"></a></h4>
 <p>We will use T test to test for differences between scores
 of the different genotype groups</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pscore.stats</span> <span class="kn">import</span> <span class="n">TTestStatistic</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.pscore.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">TTestStatistic</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">score_statistic</span> <span class="o">=</span> <span class="n">TTestStatistic</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -182,7 +182,7 @@ of the different genotype groups</p>
 <section id="final-analysis">
 <h4>Final analysis<a class="headerlink" href="#final-analysis" title="Link to this heading"></a></h4>
 <p>We will put the final analysis together into <a class="reference internal" href="../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.PhenotypeScoreAnalysis" title="gpsea.analysis.pscore.PhenotypeScoreAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeScoreAnalysis</span></code></a>.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pscore</span> <span class="kn">import</span> <span class="n">PhenotypeScoreAnalysis</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.pscore</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhenotypeScoreAnalysis</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">score_analysis</span> <span class="o">=</span> <span class="n">PhenotypeScoreAnalysis</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">score_statistic</span><span class="o">=</span><span class="n">score_statistic</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>gpsea.preprocessing._generic &mdash; GPSEA 0.9.1.dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../../../_static/gpsea.css?v=547657ed" />
@@ -76,18 +76,18 @@
            <div itemprop="articleBody">
              
   <h1>Source code for gpsea.preprocessing._generic</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">typing</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
 
-<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">ImpreciseSvInfo</span><span class="p">,</span> <span class="n">TranscriptAnnotation</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="n">VariantClass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImpreciseSvInfo</span><span class="p">,</span> <span class="n">TranscriptAnnotation</span><span class="p">,</span> <span class="n">VariantEffect</span><span class="p">,</span> <span class="n">VariantClass</span>
 
-<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">ImpreciseSvFunctionalAnnotator</span><span class="p">,</span> <span class="n">GeneCoordinateService</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._api</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImpreciseSvFunctionalAnnotator</span><span class="p">,</span> <span class="n">GeneCoordinateService</span>
 
 
 <div class="viewcode-block" id="DefaultImpreciseSvFunctionalAnnotator">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.DefaultImpreciseSvFunctionalAnnotator">[docs]</a>
-<span class="k">class</span> <span class="nc">DefaultImpreciseSvFunctionalAnnotator</span><span class="p">(</span><span class="n">ImpreciseSvFunctionalAnnotator</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DefaultImpreciseSvFunctionalAnnotator</span><span class="p">(</span><span class="n">ImpreciseSvFunctionalAnnotator</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">gene_coordinate_service</span><span class="p">:</span> <span class="n">GeneCoordinateService</span><span class="p">,</span>
     <span class="p">):</span>
@@ -95,7 +95,7 @@
 
 <div class="viewcode-block" id="DefaultImpreciseSvFunctionalAnnotator.annotate">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.DefaultImpreciseSvFunctionalAnnotator.annotate">[docs]</a>
-    <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">ImpreciseSvInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">ImpreciseSvInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">TranscriptAnnotation</span><span class="p">]:</span>
         <span class="n">gene_id</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">gene_id</span>
         <span class="n">tx_coordinates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_service</span><span class="o">.</span><span class="n">fetch_for_gene</span><span class="p">(</span><span class="n">gene_id</span><span class="p">)</span>
         
@@ -122,7 +122,7 @@
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">tx_annotations</span><span class="p">)</span></div>
 
     
-    <span class="k">def</span> <span class="nf">_map_to_variant_effects</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_map_to_variant_effects</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="n">variant_class</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">VariantEffect</span><span class="p">]:</span>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>gpsea.preprocessing._config &mdash; GPSEA 0.9.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../../../_static/gpsea.css?v=547657ed" />
@@ -76,55 +76,55 @@
            <div itemprop="articleBody">
              
   <h1>Source code for gpsea.preprocessing._config</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">typing</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-<span class="kn">import</span> <span class="nn">hpotk</span>
-<span class="kn">from</span> <span class="nn">hpotk.validate</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hpotk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hpotk.validate</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ValidationRunner</span><span class="p">,</span>
     <span class="n">ObsoleteTermIdsValidator</span><span class="p">,</span>
     <span class="n">AnnotationPropagationValidator</span><span class="p">,</span>
     <span class="n">PhenotypicAbnormalityValidator</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">stairval.notepad</span> <span class="kn">import</span> <span class="n">create_notepad</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">stairval.notepad</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_notepad</span>
 
 <span class="c1"># pyright: reportGeneralTypeIssues=false</span>
-<span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="kn">import</span> <span class="n">Parse</span>
-<span class="kn">from</span> <span class="nn">phenopackets</span> <span class="kn">import</span> <span class="n">Phenopacket</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">google.protobuf.json_format</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">phenopackets</span><span class="w"> </span><span class="kn">import</span> <span class="n">Phenopacket</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
 
-<span class="kn">from</span> <span class="nn">gpsea.config</span> <span class="kn">import</span> <span class="n">get_cache_dir_path</span>
-<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Cohort</span>
-<span class="kn">from</span> <span class="nn">gpsea.model.genome</span> <span class="kn">import</span> <span class="n">GRCh37</span><span class="p">,</span> <span class="n">GRCh38</span><span class="p">,</span> <span class="n">GenomeBuild</span>
-<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_cache_dir_path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cohort</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model.genome</span><span class="w"> </span><span class="kn">import</span> <span class="n">GRCh37</span><span class="p">,</span> <span class="n">GRCh38</span><span class="p">,</span> <span class="n">GenomeBuild</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._api</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">FunctionalAnnotator</span><span class="p">,</span>
     <span class="n">ProteinMetadataService</span><span class="p">,</span>
     <span class="n">PreprocessingValidationResult</span><span class="p">,</span>
     <span class="n">TranscriptCoordinateService</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">._generic</span> <span class="kn">import</span> <span class="n">DefaultImpreciseSvFunctionalAnnotator</span>
-<span class="kn">from</span> <span class="nn">._patient</span> <span class="kn">import</span> <span class="n">CohortCreator</span>
-<span class="kn">from</span> <span class="nn">._phenopacket</span> <span class="kn">import</span> <span class="n">PhenopacketPatientCreator</span><span class="p">,</span> <span class="n">PhenopacketOntologyTermOnsetParser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._generic</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultImpreciseSvFunctionalAnnotator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._patient</span><span class="w"> </span><span class="kn">import</span> <span class="n">CohortCreator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._phenopacket</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhenopacketPatientCreator</span><span class="p">,</span> <span class="n">PhenopacketOntologyTermOnsetParser</span>
 
-<span class="kn">from</span> <span class="nn">._caching</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._caching</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">JsonCache</span><span class="p">,</span>
     <span class="n">CachingFunctionalAnnotator</span><span class="p">,</span>
     <span class="n">CachingProteinMetadataService</span><span class="p">,</span>
     <span class="n">CachingTranscriptCoordinateService</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">._uniprot</span> <span class="kn">import</span> <span class="n">UniprotProteinMetadataService</span>
-<span class="kn">from</span> <span class="nn">._vep</span> <span class="kn">import</span> <span class="n">VepFunctionalAnnotator</span>
-<span class="kn">from</span> <span class="nn">._vv</span> <span class="kn">import</span> <span class="n">VVHgvsVariantCoordinateFinder</span><span class="p">,</span> <span class="n">VVMultiCoordinateService</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._uniprot</span><span class="w"> </span><span class="kn">import</span> <span class="n">UniprotProteinMetadataService</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._vep</span><span class="w"> </span><span class="kn">import</span> <span class="n">VepFunctionalAnnotator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._vv</span><span class="w"> </span><span class="kn">import</span> <span class="n">VVHgvsVariantCoordinateFinder</span><span class="p">,</span> <span class="n">VVMultiCoordinateService</span>
 
 <span class="n">VALIDATION_POLICIES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;permissive&quot;</span><span class="p">,</span> <span class="s2">&quot;lenient&quot;</span><span class="p">,</span> <span class="s2">&quot;strict&quot;</span><span class="p">}</span>
 
 
 <div class="viewcode-block" id="configure_caching_cohort_creator">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_caching_cohort_creator">[docs]</a>
-<span class="k">def</span> <span class="nf">configure_caching_cohort_creator</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">configure_caching_cohort_creator</span><span class="p">(</span>
     <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
     <span class="n">genome_build</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;GRCh38.p13&quot;</span><span class="p">,</span>
     <span class="n">validation_runner</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">ValidationRunner</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -183,7 +183,7 @@
 
 <div class="viewcode-block" id="configure_cohort_creator">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_cohort_creator">[docs]</a>
-<span class="k">def</span> <span class="nf">configure_cohort_creator</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">configure_cohort_creator</span><span class="p">(</span>
     <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
     <span class="n">genome_build</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;GRCh37.p13&quot;</span><span class="p">,</span> <span class="s2">&quot;GRCh38.p13&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;GRCh38.p13&quot;</span><span class="p">,</span>
     <span class="n">validation_runner</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">ValidationRunner</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -239,7 +239,7 @@
 
 <div class="viewcode-block" id="configure_protein_metadata_service">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_protein_metadata_service">[docs]</a>
-<span class="k">def</span> <span class="nf">configure_protein_metadata_service</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">configure_protein_metadata_service</span><span class="p">(</span>
     <span class="n">cache_dir</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">30.0</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProteinMetadataService</span><span class="p">:</span>
@@ -267,7 +267,7 @@
 
 <div class="viewcode-block" id="configure_default_protein_metadata_service">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_default_protein_metadata_service">[docs]</a>
-<span class="k">def</span> <span class="nf">configure_default_protein_metadata_service</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">configure_default_protein_metadata_service</span><span class="p">(</span>
     <span class="n">protein_source</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;UNIPROT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;UNIPROT&quot;</span><span class="p">,</span>
     <span class="n">cache_dir</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mf">30.0</span><span class="p">,</span>
@@ -295,7 +295,7 @@
 
 <div class="viewcode-block" id="configure_default_tx_coordinate_service">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_default_tx_coordinate_service">[docs]</a>
-<span class="k">def</span> <span class="nf">configure_default_tx_coordinate_service</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">configure_default_tx_coordinate_service</span><span class="p">(</span>
     <span class="n">tx_source</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;VV&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;VV&quot;</span><span class="p">,</span>
     <span class="n">genome_build</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">GenomeBuild</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;hg19&quot;</span><span class="p">,</span> <span class="s2">&quot;hg38&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;hg38&quot;</span><span class="p">,</span>
     <span class="n">cache_dir</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -316,7 +316,7 @@
 
 <div class="viewcode-block" id="configure_default_functional_annotator">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_default_functional_annotator">[docs]</a>
-<span class="k">def</span> <span class="nf">configure_default_functional_annotator</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">configure_default_functional_annotator</span><span class="p">(</span>
     <span class="n">ann_source</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;VEP&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;VEP&quot;</span><span class="p">,</span>
     <span class="n">cache_dir</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mf">30.0</span><span class="p">,</span>
@@ -332,7 +332,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_configure_protein_service</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_configure_protein_service</span><span class="p">(</span>
     <span class="n">protein_fallback</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">cache_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
@@ -357,7 +357,7 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_configure_fallback_protein_service</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_configure_fallback_protein_service</span><span class="p">(</span>
     <span class="n">protein_fallback</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProteinMetadataService</span><span class="p">:</span>
@@ -367,7 +367,7 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown protein fallback annotator type </span><span class="si">{</span><span class="n">protein_fallback</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_configure_tx_service</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_configure_tx_service</span><span class="p">(</span>
     <span class="n">tx_source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">genome_build</span><span class="p">:</span> <span class="n">GenomeBuild</span><span class="p">,</span>
     <span class="n">cache_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -388,7 +388,7 @@
     <span class="k">return</span> <span class="n">CachingTranscriptCoordinateService</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="n">tx_cache</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_configure_func_annotator</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_configure_func_annotator</span><span class="p">(</span>
     <span class="n">ann_source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">cache_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
@@ -406,7 +406,7 @@
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">CachingFunctionalAnnotator</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="n">tx_cache</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">_configure_cache_dir</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_configure_cache_dir</span><span class="p">(</span>
     <span class="n">cache_dir</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">cache_path</span> <span class="o">=</span> <span class="n">get_cache_dir_path</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">)</span>
@@ -415,7 +415,7 @@
     <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">cache_path</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_normalize_timeout</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_normalize_timeout</span><span class="p">(</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
@@ -424,7 +424,7 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`timeout` must be a `float` or `int` but got </span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_configure_build</span><span class="p">(</span><span class="n">genome_build</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">GenomeBuild</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">GenomeBuild</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_configure_build</span><span class="p">(</span><span class="n">genome_build</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">GenomeBuild</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">GenomeBuild</span><span class="p">:</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">genome_build</span><span class="p">,</span> <span class="n">GenomeBuild</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">genome_build</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">genome_build</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -440,7 +440,7 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported `genome_build`: </span><span class="si">{</span><span class="n">genome_build</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_setup_hpo_validator</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_setup_hpo_validator</span><span class="p">(</span>
     <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
     <span class="n">validator</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">ValidationRunner</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ValidationRunner</span><span class="p">:</span>
@@ -458,7 +458,7 @@
         <span class="k">return</span> <span class="n">validator</span>
 
 
-<span class="k">def</span> <span class="nf">_configure_functional_annotator</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_configure_functional_annotator</span><span class="p">(</span>
     <span class="n">cache_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">variant_fallback</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
@@ -479,7 +479,7 @@
     <span class="k">return</span> <span class="n">CachingFunctionalAnnotator</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_configure_fallback_functional</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_configure_fallback_functional</span><span class="p">(</span>
     <span class="n">variant_fallback</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionalAnnotator</span><span class="p">:</span>
@@ -490,7 +490,7 @@
     <span class="k">return</span> <span class="n">fallback</span>
 
 
-<span class="k">def</span> <span class="nf">_configure_imprecise_sv_annotator</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_configure_imprecise_sv_annotator</span><span class="p">(</span>
     <span class="n">genome_build</span><span class="p">:</span> <span class="n">GenomeBuild</span><span class="p">,</span>
     <span class="n">cache_dir</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">30.0</span><span class="p">,</span>
@@ -512,7 +512,7 @@
 
 <div class="viewcode-block" id="load_phenopacket_folder">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.load_phenopacket_folder">[docs]</a>
-<span class="k">def</span> <span class="nf">load_phenopacket_folder</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_phenopacket_folder</span><span class="p">(</span>
     <span class="n">pp_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">cohort_creator</span><span class="p">:</span> <span class="n">CohortCreator</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">],</span>
     <span class="n">validation_policy</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;permissive&quot;</span><span class="p">,</span> <span class="s2">&quot;lenient&quot;</span><span class="p">,</span> <span class="s2">&quot;strict&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;permissive&quot;</span><span class="p">,</span>
@@ -545,7 +545,7 @@
 
 <div class="viewcode-block" id="load_phenopacket_files">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.load_phenopacket_files">[docs]</a>
-<span class="k">def</span> <span class="nf">load_phenopacket_files</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_phenopacket_files</span><span class="p">(</span>
     <span class="n">pp_files</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">cohort_creator</span><span class="p">:</span> <span class="n">CohortCreator</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">],</span>
     <span class="n">validation_policy</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;permissive&quot;</span><span class="p">,</span> <span class="s2">&quot;lenient&quot;</span><span class="p">,</span> <span class="s2">&quot;strict&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;permissive&quot;</span><span class="p">,</span>
@@ -572,7 +572,7 @@
 
 <div class="viewcode-block" id="load_phenopackets">
 <a class="viewcode-back" href="../../../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.load_phenopackets">[docs]</a>
-<span class="k">def</span> <span class="nf">load_phenopackets</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_phenopackets</span><span class="p">(</span>
     <span class="n">phenopackets</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">],</span>
     <span class="n">cohort_creator</span><span class="p">:</span> <span class="n">CohortCreator</span><span class="p">[</span><span class="n">Phenopacket</span><span class="p">],</span>
     <span class="n">validation_policy</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;permissive&quot;</span><span class="p">,</span> <span class="s2">&quot;lenient&quot;</span><span class="p">,</span> <span class="s2">&quot;strict&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;permissive&quot;</span><span class="p">,</span>
@@ -613,7 +613,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_find_phenopacket_files</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_find_phenopacket_files</span><span class="p">(</span>
     <span class="n">pp_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
     <span class="n">fpath_pp_abs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">pp_dir</span><span class="p">)</span>
@@ -625,7 +625,7 @@
             <span class="k">yield</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pp_dir</span><span class="p">,</span> <span class="n">patient_file</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_load_phenopacket</span><span class="p">(</span><span class="n">phenopacket_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Phenopacket</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_load_phenopacket</span><span class="p">(</span><span class="n">phenopacket_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Phenopacket</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load phenopacket JSON file.</span>
 

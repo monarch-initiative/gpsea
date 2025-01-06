@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>gpsea.analysis.pscore._hpo &mdash; GPSEA 0.9.1.dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/gpsea.css?v=547657ed" />
@@ -76,12 +76,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for gpsea.analysis.pscore._hpo</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">typing</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
 
-<span class="kn">import</span> <span class="nn">hpotk</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hpotk</span>
 
-<span class="kn">from</span> <span class="nn">gpsea.model</span> <span class="kn">import</span> <span class="n">Patient</span>
-<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">PhenotypeScorer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Patient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._api</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhenotypeScorer</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">A module with HPO-driven phenotype scores. The score generally work with the phenotypes of an individual</span>
@@ -90,7 +90,7 @@
 
 <div class="viewcode-block" id="CountingPhenotypeScorer">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.CountingPhenotypeScorer">[docs]</a>
-<span class="k">class</span> <span class="nc">CountingPhenotypeScorer</span><span class="p">(</span><span class="n">PhenotypeScorer</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CountingPhenotypeScorer</span><span class="p">(</span><span class="n">PhenotypeScorer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `CountingPhenotypeScorer` assigns the patient with a phenotype score</span>
 <span class="sd">    that is equivalent to the count of observed phenotypes that are either</span>
@@ -105,7 +105,7 @@
 <div class="viewcode-block" id="CountingPhenotypeScorer.from_query_curies">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.CountingPhenotypeScorer.from_query_curies">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_query_curies</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_query_curies</span><span class="p">(</span>
         <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
         <span class="n">query</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]],</span>
     <span class="p">):</span>
@@ -151,7 +151,7 @@
         <span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
             <span class="n">query</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
@@ -160,11 +160,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_query</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;HPO Group Count&quot;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="s2">&quot;Assign a phenotype score that is equivalent to the count &quot;</span>
             <span class="s2">&quot;of present phenotypes that are either an exact match to &quot;</span>
@@ -172,12 +172,12 @@
         <span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">variable_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">variable_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;HPO group count&quot;</span>
 
 <div class="viewcode-block" id="CountingPhenotypeScorer.score">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.CountingPhenotypeScorer.score">[docs]</a>
-    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">score</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -208,7 +208,7 @@
 
 <div class="viewcode-block" id="DeVriesPhenotypeScorer">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.DeVriesPhenotypeScorer">[docs]</a>
-<span class="k">class</span> <span class="nc">DeVriesPhenotypeScorer</span><span class="p">(</span><span class="n">PhenotypeScorer</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DeVriesPhenotypeScorer</span><span class="p">(</span><span class="n">PhenotypeScorer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `DeVriesPhenotypeScorer` computes &quot;adapted De Vries Score&quot;</span>
 <span class="sd">    as described in `Feenstra et al. &lt;https://pubmed.ncbi.nlm.nih.gov/21712853&gt;`_.</span>
@@ -216,7 +216,7 @@
 <span class="sd">    See more in :ref:`devries-scorer` section.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
     <span class="p">):</span>
@@ -236,20 +236,20 @@
         <span class="p">}</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;De Vries Score&quot;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="s2">&quot;A phenotypic severity score for individuals with intellectual disability&quot;</span>
         <span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">variable_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">variable_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;De Vries score&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_developmental_delay_score</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_developmental_delay_score</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">observed_term_ids</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -274,7 +274,7 @@
 
         <span class="k">return</span> <span class="mi">0</span>
 
-    <span class="k">def</span> <span class="nf">_term_or_descendant_count</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_term_or_descendant_count</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">target_tid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">observed_term_ids</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
@@ -292,7 +292,7 @@
                 <span class="k">return</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="mi">0</span>
 
-    <span class="k">def</span> <span class="nf">_postnatal_growth_score</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_postnatal_growth_score</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">observed_term_ids</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -315,7 +315,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inconsistent annotations for postnatal growth score </span><span class="si">{</span><span class="n">total_count</span><span class="si">}</span><span class="s2">:  </span><span class="si">{</span><span class="n">observed_term_ids</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">total_count</span>
 
-    <span class="k">def</span> <span class="nf">_facial_dysmorphism_score</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_facial_dysmorphism_score</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">observed_term_ids</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -352,7 +352,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
 
-    <span class="k">def</span> <span class="nf">_congenital_score</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_congenital_score</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">observed_term_ids</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -375,7 +375,7 @@
         <span class="n">total_count</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_or_descendant_count</span><span class="p">(</span><span class="n">target_tid</span><span class="o">=</span><span class="n">abnormal_heart_morphology</span><span class="p">,</span> <span class="n">observed_term_ids</span><span class="o">=</span><span class="n">observed_term_ids</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">total_count</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_prenatal_growth_score</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prenatal_growth_score</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">observed_term_ids</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -398,7 +398,7 @@
 
 <div class="viewcode-block" id="DeVriesPhenotypeScorer.score">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.DeVriesPhenotypeScorer.score">[docs]</a>
-    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate score based on list of strings with term identifiers or observed HPO terms.</span>
 

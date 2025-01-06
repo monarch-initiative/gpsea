@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>gpsea.model._tx &mdash; GPSEA 0.9.1.dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../../../_static/gpsea.css?v=547657ed" />
@@ -76,16 +76,16 @@
            <div itemprop="articleBody">
              
   <h1>Source code for gpsea.model._tx</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">typing</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
 
-<span class="kn">import</span> <span class="nn">hpotk</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hpotk</span>
 
-<span class="kn">from</span> <span class="nn">.genome</span> <span class="kn">import</span> <span class="n">GenomicRegion</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.genome</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenomicRegion</span>
 
 
 <div class="viewcode-block" id="TranscriptCoordinates">
 <a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.TranscriptCoordinates">[docs]</a>
-<span class="k">class</span> <span class="nc">TranscriptCoordinates</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TranscriptCoordinates</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `TranscriptCoordinates` knows about genomic region of the transcript, exonic/intronic regions, as well as</span>
 <span class="sd">    the coding and non-coding regions.</span>
@@ -93,7 +93,7 @@
 <span class="sd">    If both CDS coordinates are `None`, then the transcript coordinates are assumed to represent a non-coding transcript.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">region</span><span class="p">:</span> <span class="n">GenomicRegion</span><span class="p">,</span>
@@ -124,28 +124,28 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_preferred</span> <span class="o">=</span> <span class="n">is_preferred</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get transcript&#39;s identifier (e.g. `ENST00000123456.7`, `NM_123456.7`).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">region</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenomicRegion</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">region</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenomicRegion</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the genomic region spanned by the transcript, corresponding to 5&#39;UTR, exonic, intronic, and 3&#39;UTR regions.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">exons</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">GenomicRegion</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">exons</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">GenomicRegion</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the exon regions.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exons</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">cds_start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cds_start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the 0-based (excluded) start coordinate of the first base of the start codon of the transcript or `None`</span>
 <span class="sd">        if the transcript is not coding.</span>
@@ -153,7 +153,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cds_start</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">cds_end</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cds_end</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the 0-based (included) end coordinate of the last base of the termination codon of the transcript or `None`</span>
 <span class="sd">        if the transcript is not coding.</span>
@@ -162,7 +162,7 @@
 
 <div class="viewcode-block" id="TranscriptCoordinates.is_coding">
 <a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.TranscriptCoordinates.is_coding">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_coding</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_coding</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return `True` if the transcript is coding/translated.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -171,7 +171,7 @@
 
 <div class="viewcode-block" id="TranscriptCoordinates.get_coding_base_count">
 <a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.TranscriptCoordinates.get_coding_base_count">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_coding_base_count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_coding_base_count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the number of coding bases present in the transcript. Note, the count does *NOT* include</span>
 <span class="sd">        the termination codon since it does not code for an aminoacid.</span>
@@ -192,7 +192,7 @@
 
 <div class="viewcode-block" id="TranscriptCoordinates.get_codon_count">
 <a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.TranscriptCoordinates.get_codon_count">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_codon_count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_codon_count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the count of codons present in the transcript. Note, the count does *NOT* include the termination codon!</span>
 
@@ -208,7 +208,7 @@
 
 <div class="viewcode-block" id="TranscriptCoordinates.get_five_prime_utrs">
 <a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.TranscriptCoordinates.get_five_prime_utrs">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_five_prime_utrs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">GenomicRegion</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_five_prime_utrs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">GenomicRegion</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a sequence of genomic regions that correspond to 5&#39; untranslated regions of the transcript.</span>
 
@@ -235,7 +235,7 @@
 
 <div class="viewcode-block" id="TranscriptCoordinates.get_three_prime_utrs">
 <a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.TranscriptCoordinates.get_three_prime_utrs">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_three_prime_utrs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">GenomicRegion</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_three_prime_utrs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">GenomicRegion</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a sequence of genomic regions that correspond to 3&#39; untranslated regions of the transcript.</span>
 
@@ -263,7 +263,7 @@
 
 <div class="viewcode-block" id="TranscriptCoordinates.get_cds_regions">
 <a class="viewcode-back" href="../../../apidocs/gpsea.model.html#gpsea.model.TranscriptCoordinates.get_cds_regions">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_cds_regions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">GenomicRegion</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_cds_regions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">GenomicRegion</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a sequence of genomic regions that correspond to coding regions of the transcript, including</span>
 <span class="sd">        BOTH the initiation and termination codons.</span>
@@ -299,7 +299,7 @@
 
     
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_preferred</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_preferred</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the transcript belongs among the preferred transcripts of the gene. </span>
 <span class="sd">        This usually means that the transcript was chosen by the MANE project or similar.</span>
@@ -308,7 +308,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_preferred</span>
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">TranscriptCoordinates</span><span class="p">)</span>
                 <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_id</span>
                 <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_region</span>
@@ -317,13 +317,13 @@
                 <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cds_end</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_cds_end</span>
                 <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_preferred</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_is_preferred</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_region</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exons</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cds_start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cds_end</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_preferred</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;TranscriptCoordinates(identifier=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="si">}</span><span class="s1">, region=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="si">}</span><span class="s1">)&#39;</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 </pre></div>

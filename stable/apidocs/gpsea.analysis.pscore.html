@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>gpsea.analysis.pscore package &mdash; GPSEA 0.9.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../_static/gpsea.css?v=547657ed" />
@@ -110,8 +110,8 @@
 <p>The function must take exactly one argument of type <a class="reference internal" href="gpsea.model.html#gpsea.model.Patient" title="gpsea.model.Patient"><code class="xref py py-class docutils literal notranslate"><span class="pre">Patient</span></code></a>
 and return a <cite>float</cite> with the corresponding phenotype score.</p>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pscore</span> <span class="kn">import</span> <span class="n">PhenotypeScorer</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">p</span><span class="p">):</span> <span class="mf">123.4</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.pscore</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhenotypeScorer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">p</span><span class="p">):</span> <span class="mf">123.4</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">phenotype_scorer</span> <span class="o">=</span> <span class="n">PhenotypeScorer</span><span class="o">.</span><span class="n">wrap_scoring_function</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -330,7 +330,7 @@ as described in <a class="reference external" href="https://pubmed.ncbi.nlm.nih.
 <p>Create a scorer that uses the level of testosterone represented by the
 <a class="reference external" href="https://loinc.org/2986-8/">Testosterone [Mass/volume] in Serum or Plasma</a>
 LOINC code as a phenotype score.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpsea.analysis.pscore</span> <span class="kn">import</span> <span class="n">MeasurementPhenotypeScorer</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.pscore</span><span class="w"> </span><span class="kn">import</span> <span class="n">MeasurementPhenotypeScorer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_scorer</span> <span class="o">=</span> <span class="n">MeasurementPhenotypeScorer</span><span class="o">.</span><span class="n">from_measurement_id</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">term_id</span><span class="o">=</span><span class="s2">&quot;LOINC:2986-8&quot;</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Testosterone [Mass/volume] in Serum or Plasma&quot;</span><span class="p">,</span>
