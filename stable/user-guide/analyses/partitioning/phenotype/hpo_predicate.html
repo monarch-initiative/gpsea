@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HPO classifier &mdash; GPSEA 0.9.0 documentation</title>
+  <title>HPO classifier &mdash; GPSEA 0.9.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=39bb1c6d"></script>
+      <script src="../../../../_static/documentation_options.js?v=9dc39874"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -156,7 +156,7 @@ The <a class="reference internal" href="../../../../apidocs/gpsea.analysis.clf.h
 function cuts down the tedium.</p>
 <section id="id3">
 <h2>Example<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
-<p>For a phenopacket collection (e.g. 156 patients with mutations in <em>WWOX</em> gene included in Phenopacket Store version <cite>0.1.18</cite>)</p>
+<p>For a phenopacket collection (e.g. 156 patients with mutations in <em>TBX5</em> gene included in Phenopacket Store version <cite>0.1.18</cite>)</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">ppktstore.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure_phenopacket_registry</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">configure_phenopacket_registry</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">registry</span><span class="o">.</span><span class="n">open_phenopacket_store</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;0.1.18&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ps</span><span class="p">:</span>

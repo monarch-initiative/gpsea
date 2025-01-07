@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tutorial &mdash; GPSEA 0.9.0 documentation</title>
+  <title>Tutorial &mdash; GPSEA 0.9.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=39bb1c6d"></script>
+      <script src="_static/documentation_options.js?v=9dc39874"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -739,7 +739,7 @@ The diagram also highlights the protein features (domains, repeats, etc.).</p>
 </section>
 <section id="summarize-all-variant-alleles">
 <span id="show-cohort-variants"></span><h4><a class="toc-backref" href="#id13" role="doc-backlink">Summarize all variant alleles</a><a class="headerlink" href="#summarize-all-variant-alleles" title="Link to this heading"></a></h4>
-<p>We can prepare a table of all variant alleles that occurr in the cohort.</p>
+<p>We can prepare a table of all variant alleles that occur in the cohort.</p>
 <p>Each table row corresponds to a single allele and lists the variant key,
 the predicted effect on the transcript (<em>cDNA</em>) and protein of interest,
 the variant effects, and the number of patients who present
@@ -1331,11 +1331,23 @@ with one or more variant alleles (<em>Count</em>):</p>
 </section>
 <section id="partition-the-cohort-by-genotype-and-phenotype">
 <h3><a class="toc-backref" href="#id14" role="doc-backlink">Partition the cohort by genotype and phenotype</a><a class="headerlink" href="#partition-the-cohort-by-genotype-and-phenotype" title="Link to this heading"></a></h3>
-<p>To test for genotype-phenotype associations, we need to divide the cohort into classes.
-In GPSEA, we always assign a cohort member into a genotype class,
-where each individual is assigned into a single class and the classes do not overlap.
-The phenotype is then used to either assign an individual into a class,
-or to calculate a numeric score or survival.</p>
+<p>Testing for a genotype-phenotype association uses genotype and phenotype as variables.
+In GPSEA, the variable value for an individual is computed
+either by a <a class="reference internal" href="apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.Classifier" title="gpsea.analysis.clf.Classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">Classifier</span></code></a>
+or by a <a class="reference internal" href="apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.PhenotypeScorer" title="gpsea.analysis.pscore.PhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeScorer</span></code></a>.
+A <cite>Classifier</cite> assigns the individual into a class,
+whereas a <cite>PhenotypeScorer</cite> computes a continuous score.
+The classifiers and scorers are applied on all individuals of the cohort
+and the resulting variable distributions are then assessed by a statistical test.</p>
+<p>In GPSEA, genotype is always treated as a class
+and a genotype <cite>Classifier</cite> is a prerequisite for each analysis.
+However, there is much more flexibility on the phenotype part,
+where either a <cite>Classifier</cite> or a <cite>PhenotypeScorer</cite> can be used to compute the values,
+depending on the analysis goals.</p>
+<p>In this tutorial section, we first configure a <cite>Classifier</cite> for assigning
+the individuals into a genotype class,
+and we follow with generating classifiers for testing the presence or exclusion
+of HPO terms in the individuals.</p>
 <section id="partition-by-genotype">
 <h4><a class="toc-backref" href="#id15" role="doc-backlink">Partition by genotype</a><a class="headerlink" href="#partition-by-genotype" title="Link to this heading"></a></h4>
 <p>In context of the tutorial, we assign each cohort member into a class
