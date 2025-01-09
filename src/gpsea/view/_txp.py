@@ -2,9 +2,7 @@ import typing
 from collections import defaultdict
 from matplotlib import pyplot as plt
 from matplotlib.patches import Rectangle
-from matplotlib.collections import PatchCollection
 from matplotlib.lines import Line2D
-import typing
 from gpsea.model import Variant, TranscriptCoordinates, ProteinMetadata
 
 
@@ -30,15 +28,15 @@ class VariantTranscriptVisualizer:
                     tx: TranscriptCoordinates,
                     protein: ProteinMetadata):
         title = f"{protein.protein_id} ({protein.label})"
-        fig, ax = plt.subplots(1, figsize=(10, 10))
+        _, ax = plt.subplots(1, figsize=(10, 10))
         protein_domains = set()
-        THRESHOLD = 2
+        _THRESHOLD = 2
         BOTTOM_MARGIN = 20
         amino_acid_len = tx.get_codon_count()
         # draw a box that is ten aax tall, where aax is the dimension of one amino acid
         prot_start = get_interpolated_location_in_protein(1, amino_acid_len)
         prot_end = get_interpolated_location_in_protein(amino_acid_len, amino_acid_len)
-        box_height = 10/amino_acid_len
+        _box_height = 10/amino_acid_len
         prot_width = prot_end - prot_start + 1
         protein_height = prot_width/20
         #rect = Rectangle((prot_start, BOTTOM_MARGIN), prot_width, protein_height)
@@ -59,11 +57,11 @@ class VariantTranscriptVisualizer:
                 hgvs_cdna = hgvs
             variant_effects = tx_annot.variant_effects
             if len(variant_effects) > 1:
-                var_effect = "MULTIPLE"
+                _var_effect = "MULTIPLE"
             elif len(variant_effects) == 0:
-                var_effect = "UNKNOWN"
+                _var_effect = "UNKNOWN"
             else:
-                var_effect = variant_effects[0].name
+                _var_effect = variant_effects[0].name
             for p in tx_annot.protein_affected:
                 for f in p.domains():
                     protein_domains.add(f.info)
@@ -92,7 +90,7 @@ class VariantTranscriptVisualizer:
                 start = feature.start
                 end = feature.end
                 #print(name, start, end, box_color)
-                box_height = 10/amino_acid_len
+                _box_height = 10/amino_acid_len
                 prot_width = prot_end - prot_start + 1
                 protein_height = prot_width/20
                 #rect = Rectangle((prot_start, BOTTOM_MARGIN), prot_width, protein_height)

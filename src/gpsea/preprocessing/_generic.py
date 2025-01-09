@@ -41,7 +41,7 @@ class DefaultImpreciseSvFunctionalAnnotator(ImpreciseSvFunctionalAnnotator):
     
     def _map_to_variant_effects(
         self, 
-        variant_class: str,
+        variant_class: VariantClass,
     ) -> typing.Sequence[VariantEffect]:
         if variant_class == VariantClass.DEL:
             return (VariantEffect.TRANSCRIPT_ABLATION,)
