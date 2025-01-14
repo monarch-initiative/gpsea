@@ -36,7 +36,7 @@ def _calc_aa_based_pos(pos_bases, tx_coordinates):
     :param exons: exon positions
     """
     print(f'{pos_bases=}')
-    exons, cds_start, cds_end = tx_coordinates.exons, tx_coordinates.cds_start, tx_coordinates.cds_end
+    exons, _cds_start, _cds_end = tx_coordinates.exons, tx_coordinates.cds_start, tx_coordinates.cds_end
 
     num_nt = 0
 
@@ -325,7 +325,7 @@ class GenomicVariantVisualizer:
         # get minimum position on chromosome for all transcripts
         min_exon_limit = np.min(exon_limits)
         feature_limits = np.array([(feature.info.start, feature.info.end) for feature in protein_meta.protein_features])
-        feature_types = [pf.feature_type for pf in protein_meta.protein_features]
+        _feature_types = [pf.feature_type for pf in protein_meta.protein_features]
         feature_limits = (feature_limits * 3) - 2 + min_exon_limit  # to convert from codons to bases
         variant_locations = list()
         for ann in tx_anns:
@@ -334,11 +334,11 @@ class GenomicVariantVisualizer:
                 if prot_eff_loc is not None:
                     variant_locations.append([prot_eff_loc.start, prot_eff_loc.end])
         variant_locations = np.array(variant_locations)
-        variant_effects = np.array([(ann.variant_effects[0]) for ann in tx_anns])
+        _variant_effects = np.array([(ann.variant_effects[0]) for ann in tx_anns])
         exon_labels = [f'{i + 1}' for i in range(len(exon_limits))]
 
         protein_track_x_min, protein_track_x_max = 0.15, 0.85
-        protein_track_y_min, protein_track_y_max = 0.492, 0.508
+        protein_track_y_min, _protein_track_y_max = 0.492, 0.508
         exon_y_min, exon_y_max = 0.39, 0.43
         font_size = 12
         text_padding = 0.004
@@ -364,7 +364,7 @@ class GenomicVariantVisualizer:
         # x_axis
         x_axis_y = protein_track_y_min - 0.02
         x_axis_min_x, x_axis_max_x = protein_track_x_min, protein_track_x_max
-        big_tick_length, small_tick_length = 0.01, 0.005
+        big_tick_length, _small_tick_length = 0.01, 0.005
         draw_line(x_axis_min_x, x_axis_y, x_axis_max_x, x_axis_y, line_color=self.axis_color,
                   line_width=1.0)  # main line
         draw_line(x_axis_min_x, x_axis_y - big_tick_length, x_axis_min_x, x_axis_y, line_color=self.axis_color,

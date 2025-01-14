@@ -186,7 +186,7 @@ class VepFunctionalAnnotator(FunctionalAnnotator):
             # TODO: Verify <INS> are working correctly
         else:
             if len(vc.ref) == 0 or len(vc.alt) == 0:
-                raise ValueError(f'Trimmed alleles are not yet supported!')
+                raise ValueError('Trimmed alleles are not yet supported!')
             if len(vc.ref) == 1 and len(vc.alt) != 1:
                 # INS/DUP
                 start = start + 1  # we must "trim"

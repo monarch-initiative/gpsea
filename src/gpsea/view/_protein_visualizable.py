@@ -1,16 +1,24 @@
 import typing
 
-from gpsea.model import *
+from gpsea.model import (
+    Cohort,
+    ProteinMetadata,
+    TranscriptAnnotation,
+    TranscriptCoordinates,
+    Variant,
+    VariantEffect,
+)
 import numpy as np
+
+from gpsea.model.genome._genome import Region
 
 
 class ProteinVisualizable:
-
     def __init__(
-            self,
-            tx_coordinates: TranscriptCoordinates,
-            protein_meta: ProteinMetadata,
-            cohort: Cohort,
+        self,
+        tx_coordinates: TranscriptCoordinates,
+        protein_meta: ProteinMetadata,
+        cohort: Cohort,
     ) -> None:
         self._tx_coordinates = tx_coordinates
         self._protein_meta = protein_meta
@@ -19,7 +27,7 @@ class ProteinVisualizable:
         transcript_annotations = ProteinVisualizable._get_tx_anns(
             cohort.all_variants(), self._tx_coordinates.identifier
         )
-        self._variant_regions_on_protein = list()
+        variant_regions_on_protein: typing.List[Region] = list()
         self._variant_effect = list()
         for tx_ann in transcript_annotations:
             variant_effects = tx_ann.variant_effects
@@ -27,7 +35,7 @@ class ProteinVisualizable:
                 continue
             prot_eff_loc = tx_ann.protein_effect_location
             if prot_eff_loc is not None:
-                self._variant_regions_on_protein.append(prot_eff_loc)
+                variant_regions_on_protein.append(prot_eff_loc)
                 self._variant_effect.append(variant_effects[0])
 
         self._protein_feature_names = list()
@@ -40,13 +48,17 @@ class ProteinVisualizable:
             self._protein_feature_starts.append(feature.info.start)
             self._protein_feature_ends.append(feature.info.end)
 
-        self._variant_locations = np.array([item.start for item in self._variant_regions_on_protein])
+        self._variant_locations = np.array(
+            [item.start for item in variant_regions_on_protein]
+        )
 
-        #variant_locations = (variant_locations * 3) - 2 + min_exon_limit  # to convert from codons to bases
-        #variant_effects = np.array([(ann.variant_effects[0]) for ann in tx_anns])
+        # variant_locations = (variant_locations * 3) - 2 + min_exon_limit  # to convert from codons to bases
+        # variant_effects = np.array([(ann.variant_effects[0]) for ann in tx_anns])
         # count marker occurrences and remove duplicates
         self._variant_locations_counted_absolute, self._marker_counts = np.unique(
-            self._variant_locations, axis=0, return_counts=True,
+            self._variant_locations,
+            axis=0,
+            return_counts=True,
         )
 
         if protein_meta.protein_length > 0:
@@ -59,8 +71,8 @@ class ProteinVisualizable:
 
     @staticmethod
     def _get_tx_anns(
-            variants: typing.Iterable[Variant],
-            tx_id: str,
+        variants: typing.Iterable[Variant],
+        tx_id: str,
     ) -> typing.Sequence[TranscriptAnnotation]:
         """
         By default, the API returns transcript annotations for many transcripts.
@@ -74,7 +86,9 @@ class ProteinVisualizable:
                     tx_ann = ann
                     break
             if tx_ann is None:
-                raise ValueError(f'The transcript annotation for {tx_id} was not found!')
+                raise ValueError(
+                    f"The transcript annotation for {tx_id} was not found!"
+                )
             else:
                 tx_anns.append(tx_ann)
 
@@ -103,7 +117,7 @@ class ProteinVisualizable:
     @property
     def protein_feature_ends(self) -> typing.Sequence[int]:
         return self._protein_feature_ends
-    
+
     @property
     def protein_feature_types(self) -> typing.Sequence[str]:
         return self._protein_feature_types
@@ -129,7 +143,7 @@ class ProteinVisualizable:
     @property
     def protein_feature_names(self) -> typing.Sequence[str]:
         return self._protein_feature_names
-            
+
     @property
     def variant_effects(self) -> typing.Sequence[VariantEffect]:
         return self._variant_effect
