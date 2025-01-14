@@ -25,6 +25,7 @@ class VariantEffect(enum.Enum):
     """
 
     TRANSCRIPT_ABLATION = "SO:0001893"
+    TRANSCRIPT_TRANSLOCATION = "SO:0001883"
     SPLICE_ACCEPTOR_VARIANT = "SO:0001574"
     SPLICE_DONOR_VARIANT = "SO:0001575"
     STOP_GAINED = "SO:0001587"
@@ -119,6 +120,7 @@ class VariantEffect(enum.Enum):
 
 effect_to_display = {
     VariantEffect.TRANSCRIPT_ABLATION: "transcript ablation",
+    VariantEffect.TRANSCRIPT_TRANSLOCATION: "transcript translocation",
     VariantEffect.SPLICE_ACCEPTOR_VARIANT: "splice acceptor",
     VariantEffect.SPLICE_DONOR_VARIANT: "splice donor",
     VariantEffect.STOP_GAINED: "stop gained",
