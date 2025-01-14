@@ -26,13 +26,11 @@ The predicates operate on several lines of information:
 +------------------------+-------------------------------------------------------------------------------------------------+
 | Protein data           | variant is located in a region encoding a protein domain, protein feature type                  |
 +------------------------+-------------------------------------------------------------------------------------------------+
-| Genome                 | overlap with a genomic region of interest                                                       |
-+------------------------+-------------------------------------------------------------------------------------------------+
 
 
 The scope of the builtin predicates is fairly narrow
 and likely insufficient for real-life analyses.
-However, the predicates can be chained into a compound predicate
+However, several predicates can be "chained" into a compound predicate using a boolean logic,
 to achive more expressivity for testing complex conditions,
 such as "variant is a missense or synonymous variant located in exon 6 of `NM_013275.6`".
 
@@ -41,8 +39,9 @@ such as "variant is a missense or synonymous variant located in exon 6 of `NM_01
 Examples
 ********
 
-Here we show examples of several simple variant predicates and 
-how to chain them for testing complex conditions.
+Here we show how to use the builtin predicates for simple tests
+and how to build a compound predicate from the builtin predicates,
+for testing complex conditions.
 
 
 Load cohort
@@ -112,10 +111,10 @@ See the :mod:`gpsea.analysis.predicate` module
 for a complete list of the builtin predicates.
 
 
-Predicate chain
-===============
+Compound predicates
+===================
 
-Using the builtin predicates, we can build a logical chain to test complex conditions.
+A compound predicate for testing complex conditions can be built from two or more predicates.
 For instance, we can test if the variant meets any of several conditions:
 
 >>> import gpsea.analysis.predicate as vp
@@ -130,7 +129,13 @@ or *all* conditions:
 >>> missense_and_exon20.test(variant)
 True
 
-All variant predicates overload Python ``&`` (AND) and ``|`` (OR) operators, to allow chaining.
+All variant predicates overload Python ``&`` (AND) and ``|`` (OR) operators,
+to combine a predicate pair into a compound predicate.
+
+.. note::
+
+  Combining three or or more predicates can be achieved with :func:`~gpsea.analysis.allof`
+  and :func:`~gpsea.analysis.anyof` functions.
 
 Therefore, there is nothing that prevents us to combine the predicates into multi-level tests, 
 e.g. to test if the variant is a *"chromosomal deletion" or a deletion which removes at least 50 bp*:
