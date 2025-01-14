@@ -47,6 +47,8 @@ class DefaultImpreciseSvFunctionalAnnotator(ImpreciseSvFunctionalAnnotator):
             return (VariantEffect.TRANSCRIPT_ABLATION,)
         elif variant_class == VariantClass.DUP:
             return (VariantEffect.TRANSCRIPT_AMPLIFICATION,)
+        elif variant_class == VariantClass.TRANSLOCATION:
+            return (VariantEffect.TRANSCRIPT_TRANSLOCATION,)
         else:
             # This mapping is most likely incomplete.
             # Please open a ticket if support 

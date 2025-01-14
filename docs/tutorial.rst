@@ -273,10 +273,14 @@ depending on presence of a single allele of a missense or truncating variant
 >>> from gpsea.analysis.clf import monoallelic_classifier
 >>> is_missense = variant_effect(VariantEffect.MISSENSE_VARIANT, tx_id)
 >>> truncating_effects = (
+...    VariantEffect.TRANSCRIPT_ABLATION,
+...    VariantEffect.TRANSCRIPT_TRANSLOCATION,
 ...    VariantEffect.FRAMESHIFT_VARIANT,
+...    VariantEffect.START_LOST,
 ...    VariantEffect.STOP_GAINED,
 ...    VariantEffect.SPLICE_DONOR_VARIANT,
 ...    VariantEffect.SPLICE_ACCEPTOR_VARIANT,
+...    # more effects could be listed here ...
 ... )
 >>> is_truncating = anyof(variant_effect(e, tx_id) for e in truncating_effects)
 >>> gt_clf = monoallelic_classifier(
