@@ -189,8 +189,10 @@ is a point mutation or a loss of function mutation.</p>
 <span class="go">&#39;((change length == 0 AND reference allele length == 1) AND MISSENSE_VARIANT on NM_001042681.2)&#39;</span>
 </pre></div>
 </div>
-<p>For the loss of function predicate, the following variant effects are considered loss of function:</p>
+<p>For the loss-of-function predicate, the following is a non-exhausting list
+of variant effects considered as a loss-of-function:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lof_effects</span> <span class="o">=</span> <span class="p">(</span>
+<span class="gp">... </span>    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">TRANSCRIPT_TRANSLOCATION</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">TRANSCRIPT_ABLATION</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">VariantEffect</span><span class="o">.</span><span class="n">START_LOST</span><span class="p">,</span>
@@ -198,7 +200,7 @@ is a point mutation or a loss of function mutation.</p>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">lof_mutation</span> <span class="o">=</span> <span class="n">anyof</span><span class="p">(</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">eff</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">eff</span> <span class="ow">in</span> <span class="n">lof_effects</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">lof_mutation</span><span class="o">.</span><span class="n">description</span>
-<span class="go">&#39;(TRANSCRIPT_ABLATION on NM_001042681.2 OR FRAMESHIFT_VARIANT on NM_001042681.2 OR START_LOST on NM_001042681.2 OR STOP_GAINED on NM_001042681.2)&#39;</span>
+<span class="go">&#39;(TRANSCRIPT_TRANSLOCATION on NM_001042681.2 OR TRANSCRIPT_ABLATION on NM_001042681.2 OR FRAMESHIFT_VARIANT on NM_001042681.2 OR START_LOST on NM_001042681.2 OR STOP_GAINED on NM_001042681.2)&#39;</span>
 </pre></div>
 </div>
 <p>The genotype predicate will bin the patient into two classes: a point mutation or the loss of function:</p>

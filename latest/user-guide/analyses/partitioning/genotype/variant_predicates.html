@@ -127,20 +127,18 @@ of the <a class="reference internal" href="../../../../apidocs/gpsea.analysis.pr
 <tr class="row-even"><td><p>Protein data</p></td>
 <td><p>variant is located in a region encoding a protein domain, protein feature type</p></td>
 </tr>
-<tr class="row-odd"><td><p>Genome</p></td>
-<td><p>overlap with a genomic region of interest</p></td>
-</tr>
 </tbody>
 </table>
 <p>The scope of the builtin predicates is fairly narrow
 and likely insufficient for real-life analyses.
-However, the predicates can be chained into a compound predicate
+However, several predicates can be “chained” into a compound predicate using a boolean logic,
 to achive more expressivity for testing complex conditions,
 such as “variant is a missense or synonymous variant located in exon 6 of <cite>NM_013275.6</cite>”.</p>
 <section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
-<p>Here we show examples of several simple variant predicates and
-how to chain them for testing complex conditions.</p>
+<p>Here we show how to use the builtin predicates for simple tests
+and how to build a compound predicate from the builtin predicates,
+for testing complex conditions.</p>
 <section id="load-cohort">
 <h3>Load cohort<a class="headerlink" href="#load-cohort" title="Link to this heading"></a></h3>
 <p>Let’s start by loading a <a class="reference internal" href="../../../../apidocs/gpsea.model.html#gpsea.model.Cohort" title="gpsea.model.Cohort"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cohort</span></code></a>
@@ -200,9 +198,9 @@ We can retrieve the variant by querying the cohort by the variant key:</p>
 <p>See the <a class="reference internal" href="../../../../apidocs/gpsea.analysis.predicate.html#module-gpsea.analysis.predicate" title="gpsea.analysis.predicate"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gpsea.analysis.predicate</span></code></a> module
 for a complete list of the builtin predicates.</p>
 </section>
-<section id="predicate-chain">
-<h3>Predicate chain<a class="headerlink" href="#predicate-chain" title="Link to this heading"></a></h3>
-<p>Using the builtin predicates, we can build a logical chain to test complex conditions.
+<section id="compound-predicates">
+<h3>Compound predicates<a class="headerlink" href="#compound-predicates" title="Link to this heading"></a></h3>
+<p>A compound predicate for testing complex conditions can be built from two or more predicates.
 For instance, we can test if the variant meets any of several conditions:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">gpsea.analysis.predicate</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">vp</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">nonsense</span> <span class="o">=</span> <span class="n">vp</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">STOP_GAINED</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">rere_mane_tx_id</span><span class="p">)</span>
@@ -217,7 +215,13 @@ For instance, we can test if the variant meets any of several conditions:</p>
 <span class="go">True</span>
 </pre></div>
 </div>
-<p>All variant predicates overload Python <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> (AND) and <code class="docutils literal notranslate"><span class="pre">|</span></code> (OR) operators, to allow chaining.</p>
+<p>All variant predicates overload Python <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> (AND) and <code class="docutils literal notranslate"><span class="pre">|</span></code> (OR) operators,
+to combine a predicate pair into a compound predicate.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Combining three or or more predicates can be achieved with <code class="xref py py-func docutils literal notranslate"><span class="pre">allof()</span></code>
+and <code class="xref py py-func docutils literal notranslate"><span class="pre">anyof()</span></code> functions.</p>
+</div>
 <p>Therefore, there is nothing that prevents us to combine the predicates into multi-level tests,
 e.g. to test if the variant is a <em>“chromosomal deletion” or a deletion which removes at least 50 bp</em>:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">VariantClass</span>
