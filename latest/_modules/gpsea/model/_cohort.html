@@ -91,7 +91,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">._variant</span><span class="w"> </span><span class="kn">import</span> <span class="n">Variant</span><span class="p">,</span> <span class="n">VariantInfo</span>
 
 
-<span class="n">I</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;I&#39;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">hpotk</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">Identified</span><span class="p">)</span>
+<span class="n">IDENTIFIED</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;IDENTIFIED&#39;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">hpotk</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">Identified</span><span class="p">)</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Anything that extends `Identified` (e.g. `Disease`, `Phenotype`, `Measurement`).</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -408,8 +408,8 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_find_first_by_id</span><span class="p">(</span>
         <span class="n">term_id</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">,</span>
-        <span class="n">items</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">I</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">I</span><span class="p">]:</span>
+        <span class="n">items</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">IDENTIFIED</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">IDENTIFIED</span><span class="p">]:</span>
         <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">identifier</span> <span class="o">==</span> <span class="n">term_id</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">m</span>
@@ -418,13 +418,13 @@
     
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_unique_identifiers_of_identified</span><span class="p">(</span>
-        <span class="n">items</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">I</span><span class="p">],</span>
+        <span class="n">items</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">IDENTIFIED</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]:</span>
         <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">identifier</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_count_unique_identifiers</span><span class="p">(</span>
-        <span class="n">items</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">I</span><span class="p">],</span>
+        <span class="n">items</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">IDENTIFIED</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">Patient</span><span class="o">.</span><span class="n">_unique_identifiers_of_identified</span><span class="p">(</span><span class="n">items</span><span class="p">))</span>
 
@@ -868,8 +868,8 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_iterate_through_items</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">extract_items</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Patient</span><span class="p">,],</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">I</span><span class="p">]],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterator</span><span class="p">[</span><span class="n">I</span><span class="p">]:</span>
+        <span class="n">extract_items</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Patient</span><span class="p">,],</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">IDENTIFIED</span><span class="p">]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterator</span><span class="p">[</span><span class="n">IDENTIFIED</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="n">item</span> <span class="k">for</span> <span class="n">individual</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_members</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">extract_items</span><span class="p">(</span><span class="n">individual</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_most_common</span><span class="p">(</span>
@@ -889,7 +889,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_count_distinct_items</span><span class="p">(</span>
-        <span class="n">items</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">I</span><span class="p">],</span>
+        <span class="n">items</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">IDENTIFIED</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">identifier</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">))</span>
 

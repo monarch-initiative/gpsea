@@ -124,7 +124,7 @@
     
     <span class="k">def</span><span class="w"> </span><span class="nf">_map_to_variant_effects</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
-        <span class="n">variant_class</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">variant_class</span><span class="p">:</span> <span class="n">VariantClass</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">VariantEffect</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">variant_class</span> <span class="o">==</span> <span class="n">VariantClass</span><span class="o">.</span><span class="n">DEL</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">TRANSCRIPT_ABLATION</span><span class="p">,)</span>
