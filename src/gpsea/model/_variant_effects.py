@@ -24,6 +24,7 @@ class VariantEffect(enum.Enum):
       'SO:0001583'
     """
 
+    TRANSCRIPT_AMPLIFICATION = "SO:0001889"
     TRANSCRIPT_ABLATION = "SO:0001893"
     TRANSCRIPT_TRANSLOCATION = "SO:0001883"
     SPLICE_ACCEPTOR_VARIANT = "SO:0001574"
@@ -32,7 +33,6 @@ class VariantEffect(enum.Enum):
     FRAMESHIFT_VARIANT = "SO:0001589"
     STOP_LOST = "SO:0001578"
     START_LOST = "SO:0002012"
-    TRANSCRIPT_AMPLIFICATION = "SO:0001889"
     INFRAME_INSERTION = "SO:0001821"
     INFRAME_DELETION = "SO:0001822"
     MISSENSE_VARIANT = "SO:0001583"
@@ -119,6 +119,7 @@ class VariantEffect(enum.Enum):
 
 
 effect_to_display = {
+    VariantEffect.TRANSCRIPT_AMPLIFICATION: "transcript amplification",
     VariantEffect.TRANSCRIPT_ABLATION: "transcript ablation",
     VariantEffect.TRANSCRIPT_TRANSLOCATION: "transcript translocation",
     VariantEffect.SPLICE_ACCEPTOR_VARIANT: "splice acceptor",
@@ -127,7 +128,6 @@ effect_to_display = {
     VariantEffect.FRAMESHIFT_VARIANT: "frameshift",
     VariantEffect.STOP_LOST: "stop lost",
     VariantEffect.START_LOST: "start lost",
-    VariantEffect.TRANSCRIPT_AMPLIFICATION: "transcript amplification",
     VariantEffect.INFRAME_INSERTION: "inframe insertion",
     VariantEffect.INFRAME_DELETION: "inframe deletion",
     VariantEffect.MISSENSE_VARIANT: "missense",
