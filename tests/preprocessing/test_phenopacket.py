@@ -138,7 +138,7 @@ def read_genomic_interpretation_json(fpath: str) -> GenomicInterpretation:
 
 class TestPhenopacketPatientCreator:
 
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def functional_annotator(
         self,
         fpath_project_dir: str,
@@ -152,7 +152,7 @@ class TestPhenopacketPatientCreator:
             cache_dir=fpath_variant_cache_dir,
         )
 
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def imprecise_sv_functional_annotator(
         self,
         genome_build: GenomeBuild,
@@ -163,7 +163,7 @@ class TestPhenopacketPatientCreator:
             ),
         )
 
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def variant_coordinate_finder(
         self,
         genome_build: GenomeBuild,
@@ -176,7 +176,7 @@ class TestPhenopacketPatientCreator:
     def onset_term_parser(self) -> PhenopacketOntologyTermOnsetParser:
         return PhenopacketOntologyTermOnsetParser.default_parser()
 
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def patient_creator(
         self,
         hpo: hpotk.MinimalOntology,
@@ -197,7 +197,7 @@ class TestPhenopacketPatientCreator:
             term_onset_parser=onset_term_parser,
         )
 
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def phenopacket(
         self,
         fpath_phenopacket_dir: str,
