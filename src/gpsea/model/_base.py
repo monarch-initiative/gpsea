@@ -1,7 +1,6 @@
 import enum
 import typing
 
-import hpotk
 
 
 class Sex(enum.Enum):

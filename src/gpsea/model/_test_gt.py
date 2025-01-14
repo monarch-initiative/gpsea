@@ -30,7 +30,7 @@ class TestGenotypes:
 
         assert len(labels) == len(gts) == len(genotypes)
         
-        assert all(l.label in ('A', 'C', 'D') for l in labels)
+        assert all(sample_labels.label in ('A', 'C', 'D') for sample_labels in labels)
         assert all(
             gt in (Genotype.HETEROZYGOUS, Genotype.HEMIZYGOUS, Genotype.HOMOZYGOUS_REFERENCE)
             for gt in gts

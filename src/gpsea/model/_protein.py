@@ -83,7 +83,7 @@ class FeatureInfo:
 
 def _deprecation_warning():
     warnings.warn(
-            f"`FeatureType` was deprecated and will be removed prior `v1.0.0`. Use a `str` instead!",
+            "`FeatureType` was deprecated and will be removed prior `v1.0.0`. Use a `str` instead!",
             DeprecationWarning,
         )
 
