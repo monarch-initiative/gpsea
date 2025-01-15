@@ -141,13 +141,15 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
         self,
         ax,
         colors=("darksalmon", "honeydew"),
+        median_color: str = "red",
     ):
         """
         Draw box plot with distributions of phenotype scores for the genotype groups.
 
         :param gt_predicate: the genotype predicate used to produce the genotype groups.
         :param ax: the Matplotlib :class:`~matplotlib.axes.Axes` to draw on.
-        :param colors: a tuple with colors to use for coloring the box patches of the box plot.
+        :param colors: a sequence with colors to use for coloring the box patches of the box plot.
+        :param median_color: a `str` with the color for the boxplot median line.
         """
         # skip the patients with unassigned genotype group
         bla = self._data.notna()
@@ -175,8 +177,12 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
             tick_labels=gt_cat_names,
         )
 
+        # Set face colors of the boxes
         for patch, color in zip(bplot["boxes"], colors):
             patch.set_facecolor(color)
+
+        for median in bplot['medians']:
+            median.set_color(median_color)
 
     def __eq__(self, value: object) -> bool:
         return isinstance(value, PhenotypeScoreAnalysisResult) and super(
