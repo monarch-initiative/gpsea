@@ -185,12 +185,16 @@ The builtin predicates should cover majority of use cases.
 However, if a predicate seems to be missing,
 feel free to submit an issue in our
 `GitHub tracker <https://github.com/monarch-initiative/gpsea/issues>`_,
-or to implement a custom predicate
-by extending the :class:`~gpsea.analysis.predicate.VariantPredicate` class 😎.
+or implement your own predicate by following the :ref:`custom-variant-predicate`
+guide.
 
 
+****
+Next
+****
 
 The variant predicate offers a flexible API for testing if variants meet a condition.
-However, the genotype phenotype correlations are done on the individual level
-and the variant predicates are used as a component of the genotype predicate.
-The next sections show how to use variant predicates to assign individuals into groups.
+However, the genotype phenotype correlations are studied on the level of individuals.
+As described in :ref:`genotype-classifiers`, GPSEA uses the :class:`~gpsea.analysis.clf.GenotypeClassifier` API
+to assign individuals into non-overlapping classes. Variant predicates are essential for creating such classifier.
+We explain the details in the following sections.

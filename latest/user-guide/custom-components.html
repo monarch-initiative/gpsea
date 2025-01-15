@@ -1,0 +1,251 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Custom components &mdash; GPSEA 0.9.2.dev0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/gpsea.css?v=547657ed" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=232cdbbf"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=6dbb43f8"></script>
+      <script>window.MathJax = {"TeX": {"Macros": {"RR": "{\\mathbb{R}}"}}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Glossary" href="glossary.html" />
+    <link rel="prev" title="Survival analysis" href="analyses/survival.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GPSEA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="input-data.html">Input data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exploratory.html">Cohort exploratory analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analyses/index.html">Statistical analyses</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Custom components</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenotype-scorer">Phenotype scorer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#variant-predicate">Variant predicate</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../apidocs/modules.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GPSEA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">User guide</a></li>
+      <li class="breadcrumb-item active">Custom components</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/user-guide/custom-components.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="custom-components">
+<span id="id1"></span><h1>Custom components<a class="headerlink" href="#custom-components" title="Link to this heading"></a></h1>
+<p>GPSEA aims to stay useful in the long run. Therefore, we took a great care
+to adhere to “good software development practices” and we framed GPSEA functionalities
+as a set of loosely coupled components. As a rule of thumb, each component corresponds
+to a Python abstract base class which is then extended by the builtin components
+and can also be extended by the future components, to serve both common or exotic use cases.</p>
+<p>The abstract base classes define the component API.
+Per guidelines in Python’s <a class="reference external" href="https://docs.python.org/3/library/abc.html#module-abc" title="(in Python v3.13)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">abc</span></code></a> module, the abstract classes use <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABCMeta" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABCMeta</span></code></a> as a metaclass
+and the class API consists of methods annotated with the <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.abstractmethod" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">abc.abstractmethod()</span></code></a> decorator.
+These decorated methods must be overridden in the subclasses.</p>
+<p>The following sections provide guidance for customizing the most commonly used GPSEA components.</p>
+<section id="phenotype-scorer">
+<span id="custom-phenotype-scorer"></span><h2>Phenotype scorer<a class="headerlink" href="#phenotype-scorer" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.PhenotypeScorer" title="gpsea.analysis.pscore.PhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeScorer</span></code></a> computes a phenotype score for an individual.
+The phenotype score is a <cite>float</cite> with range <span class="math notranslate nohighlight">\((-\infty, \infty)\)</span> where <cite>NaN</cite> indicates
+that a score cannot be computed (e.g. the lab measurement value was not ascertained for the individual).</p>
+<p>Here we show an example of a toy phenotype scorer
+for using body mass index (BMI) as a phenotype score.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Patient</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.pscore</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhenotypeScorer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">BmiScorer</span><span class="p">(</span><span class="n">PhenotypeScorer</span><span class="p">):</span>  <span class="c1"># ❶</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span> <span class="c1"># ❷</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">id2bmi</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">_id2bmi</span> <span class="o">=</span> <span class="n">id2bmi</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="nd">@property</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="c1"># ❸</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="s2">&quot;BMI phenotype scorer&quot;</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="nd">@property</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="c1"># ❹</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="s2">&quot;Body mass index used as a phenotype score&quot;</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="nd">@property</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">variable_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="c1"># ❺</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="s2">&quot;BMI&quot;</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span> <span class="c1"># ❻</span>
+<span class="gp">... </span>        <span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id2bmi</span><span class="p">[</span><span class="n">patient</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">label</span><span class="p">]</span>
+<span class="gp">... </span>        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>❶ The <code class="docutils literal notranslate"><span class="pre">BmiScorer</span></code> must extend <a class="reference internal" href="../apidocs/gpsea.analysis.pscore.html#gpsea.analysis.pscore.PhenotypeScorer" title="gpsea.analysis.pscore.PhenotypeScorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeScorer</span></code></a>
+to be used as a phenotype scorer.
+❷ The scorer needs a <code class="docutils literal notranslate"><span class="pre">dict</span></code> with <cite>label</cite> → <cite>BMI</cite> for the analyzed individuals.
+We assume the user will pre-compute the corresponding <code class="docutils literal notranslate"><span class="pre">dict</span></code>.</p>
+<p>Then, the scorer must expose several properties, including ❸ <code class="docutils literal notranslate"><span class="pre">name</span></code>, ❹ <code class="docutils literal notranslate"><span class="pre">description</span></code>,
+and the ❺ <code class="docutils literal notranslate"><span class="pre">variable_name</span></code> it operates on.
+The properties provide bookkeeping metadata to use in e.g. visualizations.
+Try to choose short and concise names.</p>
+<p>The most important part of the scorer is the ❻ <cite>score</cite> method
+which retrieves the BMI for an individual or returns <cite>NaN</cite> if the value is not available
+and the individual should be omitted from the analysis.</p>
+</section>
+<section id="variant-predicate">
+<span id="custom-variant-predicate"></span><h2>Variant predicate<a class="headerlink" href="#variant-predicate" title="Link to this heading"></a></h2>
+<p>The purpose of a <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> is to test
+if a variant meets a certain criterion and GPSEA ships with an array
+of builtin predicates (see <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.html#module-gpsea.analysis.predicate" title="gpsea.analysis.predicate"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gpsea.analysis.predicate</span></code></a> module).
+However, chances are a custom predicate will be needed in future,
+so we show how to how to extend
+the <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> class
+to create one’s own predicate.</p>
+<p>Specifically, we show how to create a predicate to test if the variant affects a glycine residue
+of the transcript of interest.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Variant</span><span class="p">,</span> <span class="n">VariantEffect</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.predicate</span><span class="w"> </span><span class="kn">import</span> <span class="n">VariantPredicate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">AffectsGlycinePredicate</span><span class="p">(</span><span class="n">VariantPredicate</span><span class="p">):</span> <span class="c1"># ❶</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span> <span class="c1"># ❷</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span> <span class="o">=</span> <span class="n">tx_id</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">_aa_code</span> <span class="o">=</span> <span class="s2">&quot;Gly&quot;</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="nd">@property</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="c1"># ❸</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="s2">&quot;Affects Glycine&quot;</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="nd">@property</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="c1"># ❹</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="s2">&quot;affects a glycine residue&quot;</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="nd">@property</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">variable_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="c1"># ❺</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="s2">&quot;affected aminoacid residue&quot;</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variant</span><span class="p">:</span> <span class="n">Variant</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span> <span class="c1"># ❻</span>
+<span class="gp">... </span>        <span class="n">tx_ann</span> <span class="o">=</span> <span class="n">variant</span><span class="o">.</span><span class="n">get_tx_anno_by_tx_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="n">tx_ann</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="gp">... </span>           <span class="n">hgvsp</span> <span class="o">=</span> <span class="n">tx_ann</span><span class="o">.</span><span class="n">hgvsp</span>
+<span class="gp">... </span>           <span class="k">if</span> <span class="n">hgvsp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="gp">... </span>               <span class="k">return</span> <span class="n">hgvsp</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;p.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_aa_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="kc">False</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span> <span class="c1"># ➐</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">AffectsGlycinePredicate</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">_tx_id</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="c1"># ❽</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="p">,))</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="c1"># ❾</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="c1"># ➓</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;AffectsGlycinePredicate(tx_id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="si">}</span><span class="s2">)&quot;</span>
+</pre></div>
+</div>
+<p>❶ The <code class="docutils literal notranslate"><span class="pre">AffectsGlycinePredicate</span></code> must extend <a class="reference internal" href="../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a>.
+❷ We ask the user to provide the transcript accession <cite>str</cite> and we set the target aminoacid code to glycine <code class="docutils literal notranslate"><span class="pre">Gly</span></code>.
+Like in the <a class="reference internal" href="#custom-phenotype-scorer"><span class="std std-ref">Phenotype scorer</span></a> above, ❸❹❺ provide metadata required for the bookkeeping.
+The ❻ <code class="docutils literal notranslate"><span class="pre">test</span></code> method includes the most interesting part - we retrieve the <a class="reference internal" href="../apidocs/gpsea.model.html#gpsea.model.TranscriptAnnotation" title="gpsea.model.TranscriptAnnotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">TranscriptAnnotation</span></code></a>
+with the functional annotation data for the transcript of interest, and we test if the HGVS protein indicates
+that the reference aminoacid is glycine.
+Last, we override ➐ <code class="docutils literal notranslate"><span class="pre">__eq__()</span></code> and ❽ <code class="docutils literal notranslate"><span class="pre">__hash__()</span></code> (required) as well as ❾ <code class="docutils literal notranslate"><span class="pre">__repr__()</span></code> and ➓ <code class="docutils literal notranslate"><span class="pre">__str__()</span></code> (recommended).</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="analyses/survival.html" class="btn btn-neutral float-left" title="Survival analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="glossary.html" class="btn btn-neutral float-right" title="Glossary" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

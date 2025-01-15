@@ -67,6 +67,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../survival.html">Survival analysis</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../../custom-components.html">Custom components</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../glossary.html">Glossary</a></li>
 </ul>
 </li>
@@ -265,12 +266,16 @@ and results in an inverted predicate.</p>
 However, if a predicate seems to be missing,
 feel free to submit an issue in our
 <a class="reference external" href="https://github.com/monarch-initiative/gpsea/issues">GitHub tracker</a>,
-or to implement a custom predicate
-by extending the <a class="reference internal" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> class 😎.</p>
+or implement your own predicate by following the <a class="reference internal" href="../../../custom-components.html#custom-variant-predicate"><span class="std std-ref">Variant predicate</span></a>
+guide.</p>
+</section>
+<section id="next">
+<h2>Next<a class="headerlink" href="#next" title="Link to this heading"></a></h2>
 <p>The variant predicate offers a flexible API for testing if variants meet a condition.
-However, the genotype phenotype correlations are done on the individual level
-and the variant predicates are used as a component of the genotype predicate.
-The next sections show how to use variant predicates to assign individuals into groups.</p>
+However, the genotype phenotype correlations are studied on the level of individuals.
+As described in <a class="reference internal" href="index.html#genotype-classifiers"><span class="std std-ref">Genotype classifiers</span></a>, GPSEA uses the <a class="reference internal" href="../../../../apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.GenotypeClassifier" title="gpsea.analysis.clf.GenotypeClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenotypeClassifier</span></code></a> API
+to assign individuals into non-overlapping classes. Variant predicates are essential for creating such classifier.
+We explain the details in the following sections.</p>
 </section>
 </section>
 

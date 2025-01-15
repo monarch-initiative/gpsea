@@ -210,6 +210,7 @@
                     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">variation_descriptor</span><span class="o">.</span><span class="n">vcf_record</span><span class="o">.</span><span class="n">genome_assembly</span><span class="si">}</span><span class="s2"> is not </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="o">.</span><span class="n">identifier</span><span class="si">}</span><span class="s2">.&quot;</span>
                 <span class="p">)</span>
             <span class="n">contig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="o">.</span><span class="n">contig_by_name</span><span class="p">(</span><span class="n">variation_descriptor</span><span class="o">.</span><span class="n">vcf_record</span><span class="o">.</span><span class="n">chrom</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">contig</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
             <span class="n">start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">variation_descriptor</span><span class="o">.</span><span class="n">vcf_record</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
             <span class="n">ref</span> <span class="o">=</span> <span class="n">variation_descriptor</span><span class="o">.</span><span class="n">vcf_record</span><span class="o">.</span><span class="n">ref</span>
             <span class="n">alt</span> <span class="o">=</span> <span class="n">variation_descriptor</span><span class="o">.</span><span class="n">vcf_record</span><span class="o">.</span><span class="n">alt</span>
@@ -224,6 +225,7 @@
             <span class="n">seq_location</span> <span class="o">=</span> <span class="n">variation</span><span class="o">.</span><span class="n">copy_number</span><span class="o">.</span><span class="n">allele</span><span class="o">.</span><span class="n">sequence_location</span>
             <span class="n">refseq_contig_name</span> <span class="o">=</span> <span class="n">seq_location</span><span class="o">.</span><span class="n">sequence_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">contig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="o">.</span><span class="n">contig_by_name</span><span class="p">(</span><span class="n">refseq_contig_name</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">contig</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
             <span class="c1"># Assuming SV coordinates are 1-based (VCF style),</span>
             <span class="c1"># so we subtract 1 to transform to 0-based coordinate system</span>
@@ -689,7 +691,11 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Age</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">individual</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;time_at_last_encounter&quot;</span><span class="p">):</span>
             <span class="n">tale</span> <span class="o">=</span> <span class="n">individual</span><span class="o">.</span><span class="n">time_at_last_encounter</span>
-            <span class="k">return</span> <span class="n">parse_age_element</span><span class="p">(</span><span class="n">tale</span><span class="p">,</span> <span class="n">notepad</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">parse_age_element</span><span class="p">(</span>
+                <span class="s1">&#39;time_at_last_encounter&#39;</span><span class="p">,</span>
+                <span class="n">tale</span><span class="p">,</span>
+                <span class="n">notepad</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@staticmethod</span>
@@ -712,6 +718,7 @@
             
             <span class="k">if</span> <span class="n">vital_status</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s2">&quot;time_of_death&quot;</span><span class="p">):</span>
                 <span class="n">age_of_death</span> <span class="o">=</span> <span class="n">parse_age_element</span><span class="p">(</span>
+                    <span class="s1">&#39;time_of_death&#39;</span><span class="p">,</span>
                     <span class="n">time_element</span><span class="o">=</span><span class="n">vital_status</span><span class="o">.</span><span class="n">time_of_death</span><span class="p">,</span>
                     <span class="n">notepad</span><span class="o">=</span><span class="n">notepad</span><span class="p">,</span>
                 <span class="p">)</span>
@@ -1003,21 +1010,27 @@
 <span class="sd">    We allow to use `GestationalAge`, `Age` or `OntologyClass` as onset.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">case</span> <span class="o">=</span> <span class="n">time_element</span><span class="o">.</span><span class="n">WhichOneof</span><span class="p">(</span><span class="s2">&quot;element&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">case</span> <span class="o">==</span> <span class="s2">&quot;ontology_class&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">case</span> <span class="o">==</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span>
+        <span class="n">age</span> <span class="o">=</span> <span class="n">time_element</span><span class="o">.</span><span class="n">age</span>
+        <span class="k">return</span> <span class="n">Age</span><span class="o">.</span><span class="n">from_iso8601_period</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">iso8601duration</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">case</span> <span class="o">==</span> <span class="s2">&quot;gestational_age&quot;</span><span class="p">:</span>
+        <span class="n">age</span> <span class="o">=</span> <span class="n">time_element</span><span class="o">.</span><span class="n">gestational_age</span>
+        <span class="k">return</span> <span class="n">Age</span><span class="o">.</span><span class="n">gestational</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">weeks</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">days</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">case</span> <span class="o">==</span> <span class="s2">&quot;ontology_class&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">term_onset_parser</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">term_onset_parser</span><span class="o">.</span><span class="n">process</span><span class="p">(</span>
                 <span class="n">ontology_class</span><span class="o">=</span><span class="n">time_element</span><span class="o">.</span><span class="n">ontology_class</span><span class="p">,</span>
                 <span class="n">notepad</span><span class="o">=</span><span class="n">notepad</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="p">)</span>    
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">parse_age_element</span><span class="p">(</span>
-            <span class="n">time_element</span><span class="o">=</span><span class="n">time_element</span><span class="p">,</span>
-            <span class="n">notepad</span><span class="o">=</span><span class="n">notepad</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`time_element` is in currently unsupported format `</span><span class="si">{</span><span class="n">case</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
 
 <span class="k">def</span><span class="w"> </span><span class="nf">parse_age_element</span><span class="p">(</span>
+    <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">time_element</span><span class="p">:</span> <span class="n">PPTimeElement</span><span class="p">,</span>
     <span class="n">notepad</span><span class="p">:</span> <span class="n">Notepad</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Age</span><span class="p">]:</span>
@@ -1032,7 +1045,10 @@
         <span class="n">age</span> <span class="o">=</span> <span class="n">time_element</span><span class="o">.</span><span class="n">age</span>
         <span class="k">return</span> <span class="n">Age</span><span class="o">.</span><span class="n">from_iso8601_period</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">iso8601duration</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`time_element` is in currently unsupported format `</span><span class="si">{</span><span class="n">case</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+        <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">case</span><span class="si">}</span><span class="s2"> of the </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> field cannot be parsed into age&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Consider formatting the age as ISO8601 duration (e.g., </span><span class="se">\&quot;</span><span class="s2">P31Y2M</span><span class="se">\&quot;</span><span class="s2"> for 31 years and 2 months)&quot;</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 </pre></div>
 

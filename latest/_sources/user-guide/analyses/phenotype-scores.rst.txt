@@ -156,6 +156,26 @@ Phenotype score
 This component is responsible for computing a phenotype score for an individual.
 As far as GPSEA framework is concerned, the phenotype score must be a floating point number
 or a `NaN` value if the score cannot be computed for an individual.
+This is the essence of the :class:`~gpsea.analysis.pscore.PhenotypeScorer` class.
+
+GPSEA ships with several builtin phenotype scorers which can be used as  
+
++------------------------------------------------------------+---------------------------------------------+
+| Name                                                       | Description                                 |
++============================================================+=============================================+
+|                                                            | Compute the total number of occurrences     |
+| * :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer`  | of specific phenotypic features             |
+|                                                            | (used in this section)                      |
++------------------------------------------------------------+---------------------------------------------+
+|                                                            | Compute the "adapted De Vries Score"        |
+| * :class:`~gpsea.analysis.pscore.DeVriesPhenotypeScorer`   | for assessing severity                      |
+|                                                            | of intellectual disability                  |
++------------------------------------------------------------+---------------------------------------------+
+
+.. tip::
+
+   See :ref:`custom-phenotype-scorer` section to learn how to build a phenotype scorer from scratch.
+
 
 Here we use the :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer` for scoring
 the individuals based on the number of structural defects
