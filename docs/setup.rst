@@ -4,8 +4,8 @@
 Setup
 #####
 
-Here we show how to install GPSEA and to prepare your Python environment
-for genotype-phenotype association analysis.
+Here we show how to install GPSEA and prepare your Python environment
+for genotype-phenotype association analyses.
 
 
 .. contents:: Table of Contents
