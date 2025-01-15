@@ -141,7 +141,7 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
         self,
         ax,
         colors=("darksalmon", "honeydew"),
-        median_color: str = "red",
+        median_color: str = "black",
     ):
         """
         Draw box plot with distributions of phenotype scores for the genotype groups.
