@@ -495,7 +495,7 @@ def load_phenopackets(
     # Keep track of the progress by wrapping the list of phenopackets
     # with TQDM 😎
     cohort_iter = tqdm(
-        phenopackets, desc="Individuals Processed", file=sys.stdout, unit="individuals"
+        phenopackets, desc="Individuals Processed", file=sys.stdout, unit=" individuals"
     )
     notepad = create_notepad(label="Phenopackets")
     cohort = cohort_creator.process(cohort_iter, notepad)
