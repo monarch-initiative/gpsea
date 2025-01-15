@@ -74,3 +74,69 @@ The most important part of the scorer is the ❻ `score` method
 which retrieves the BMI for an individual or returns `NaN` if the value is not available
 and the individual should be omitted from the analysis.
 
+.. _custom-variant-predicate:
+
+*****************
+Variant predicate
+*****************
+
+The purpose of a :class:`~gpsea.analysis.predicate.VariantPredicate` is to test
+if a variant meets a certain criterion and GPSEA ships with an array
+of builtin predicates (see :mod:`gpsea.analysis.predicate` module).
+However, chances are a custom predicate will be needed in future,
+so we show how to how to extend
+the :class:`~gpsea.analysis.predicate.VariantPredicate` class
+to create one's own predicate.
+
+Specifically, we show how to create a predicate to test if the variant affects a glycine residue
+of the transcript of interest.
+
+>>> from gpsea.model import Variant, VariantEffect
+>>> from gpsea.analysis.predicate import VariantPredicate
+>>> class AffectsGlycinePredicate(VariantPredicate): # ❶
+...     def __init__( # ❷
+...         self,
+...         tx_id: str,
+...     ):
+...         self._tx_id = tx_id
+...         self._aa_code = "Gly"
+... 
+...     @property
+...     def name(self) -> str: # ❸
+...         return "Affects Glycine"
+...    
+...     @property
+...     def description(self) -> str: # ❹
+...         return "affects a glycine residue"
+...    
+...     @property
+...     def variable_name(self) -> str: # ❺
+...         return "affected aminoacid residue"
+...     
+...     def test(self, variant: Variant) -> bool: # ❻
+...         tx_ann = variant.get_tx_anno_by_tx_id(self._tx_id)
+...         if tx_ann is not None:
+...            hgvsp = tx_ann.hgvsp
+...            if hgvsp is not None:
+...                return hgvsp.startswith(f"p.{self._aa_code}")
+...         return False
+...     
+...     def __eq__(self, value: object) -> bool: # ➐
+...         return isinstance(value, AffectsGlycinePredicate) and self._tx_id == value._tx_id
+...     
+...     def __hash__(self) -> int: # ❽
+...         return hash((self._tx_id,))
+...     
+...     def __repr__(self) -> str: # ❾
+...         return str(self)
+...     
+...     def __str__(self) -> str: # ➓
+...         return f"AffectsGlycinePredicate(tx_id={self._tx_id})"
+
+❶ The ``AffectsGlycinePredicate`` must extend :class:`~gpsea.analysis.predicate.VariantPredicate`.
+❷ We ask the user to provide the transcript accession `str` and we set the target aminoacid code to glycine ``Gly``.
+Like in the :ref:`custom-phenotype-scorer` above, ❸❹❺ provide metadata required for the bookkeeping.
+The ❻ ``test`` method includes the most interesting part - we retrieve the :class:`~gpsea.model.TranscriptAnnotation`
+with the functional annotation data for the transcript of interest, and we test if the HGVS protein indicates
+that the reference aminoacid is glycine.
+Last, we override ➐ ``__eq__()`` and ❽ ``__hash__()`` (required) as well as ❾ ``__repr__()`` and ➓ ``__str__()`` (recommended).
