@@ -28,4 +28,5 @@ in an interactive Python environment, such as Jupyter notebook.
   input-data
   exploratory
   analyses/index
+  custom-components
   glossary
