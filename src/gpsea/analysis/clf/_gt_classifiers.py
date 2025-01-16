@@ -1,3 +1,4 @@
+import random
 import typing
 
 from collections import Counter
@@ -639,4 +640,63 @@ def diagnosis_classifier(
     return DiagnosisClassifier.create(
         diagnoses=diagnoses,
         labels=labels,
+    )
+
+
+class RandomClassifier(GenotypeClassifier):
+    
+    CATS = (
+        Categorization(
+            category=PatientCategory(
+                cat_id=0, name="A",
+            )
+        ),
+        Categorization(
+            category=PatientCategory(
+                cat_id=1, name="B",
+            )
+        )
+    )
+
+    def __init__(
+        self,
+        seed: typing.Optional[float] = None,
+    ):
+        self._rng = random.Random(x=seed)
+
+    @property
+    def name(self) -> str:
+        return "Random Classifier"
+
+    @property
+    def description(self) -> str:
+        return "Classify the individual into random classes"
+
+    @property
+    def variable_name(self) -> str:
+        return "Randomness"
+
+    def get_categorizations(self) -> typing.Sequence[Categorization]:
+        return RandomClassifier.CATS
+
+    def test(self, _: Patient) -> typing.Optional[Categorization]:
+        return self._rng.choice(RandomClassifier.CATS)
+
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, RandomClassifier) and self._rng == value._rng
+
+    def __hash__(self) -> int:
+        return hash((self._rng, ))
+
+
+def random_classifier(
+    seed: typing.Optional[float] = None,
+) -> GenotypeClassifier:
+    """
+    Genotype classifier to assign an individual into one of two classes, `A` and `B` on random..
+
+    :param seed: the seed for the random number generator.
+    """
+    return RandomClassifier(
+        seed=seed,
     )

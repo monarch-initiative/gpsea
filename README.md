@@ -5,10 +5,9 @@
 
 GPSEA (Genotypes and Phenotypes - Statistical Evaluation of Associations) is a Python package for finding genotype-phenotype associations.
 
-
-See the [Tutorial](https://monarch-initiative.github.io/gpsea/stable/tutorial.html) 
-and a comprehensive [User guide](https://monarch-initiative.github.io/gpsea/stable/user-guide/index.html)
-for more information.
+See our documentation for the [setup](https://monarch-initiative.github.io/gpsea/stable/setup.html) instructions,
+a [tutorial](https://monarch-initiative.github.io/gpsea/stable/tutorial.html) with an end-to-end genotype-phenotype association analysis,
+and a comprehensive [user guide](https://monarch-initiative.github.io/gpsea/stable/user-guide/index.html) with everything else.
 
 The documentation comes in two flavors:
 

@@ -395,6 +395,11 @@ class MonoPhenotypeAnalysisResult(AnalysisResult, metaclass=abc.ABCMeta):
     that tested a single genotype-phenotype association.
     """
 
+    SAMPLE_ID = "patient_id"
+    """
+    Name of the data index.
+    """
+    
     GT_COL = "genotype"
     """
     Name of column for storing genotype data.

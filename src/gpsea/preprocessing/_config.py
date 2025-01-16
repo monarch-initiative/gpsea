@@ -401,7 +401,7 @@ def _configure_imprecise_sv_annotator(
 ):
     # Setup cache for SVs
     if cache_dir is not None:
-        sv_cache_dir = os.path.join(cache_dir, "sv_cache")
+        _sv_cache_dir = os.path.join(cache_dir, "sv_cache")
         # TODO: implement the cache.
         # os.makedirs(sv_cache_dir, exist_ok=True)
         # var_cache = VariantAnnotationCache(sv_cache_dir)
@@ -495,7 +495,7 @@ def load_phenopackets(
     # Keep track of the progress by wrapping the list of phenopackets
     # with TQDM 😎
     cohort_iter = tqdm(
-        phenopackets, desc="Individuals Processed", file=sys.stdout, unit="individuals"
+        phenopackets, desc="Individuals Processed", file=sys.stdout, unit=" individuals"
     )
     notepad = create_notepad(label="Phenopackets")
     cohort = cohort_creator.process(cohort_iter, notepad)

@@ -128,6 +128,7 @@ class PhenopacketVariantCoordinateFinder(
                     f"{variation_descriptor.vcf_record.genome_assembly} is not {self._build.identifier}."
                 )
             contig = self._build.contig_by_name(variation_descriptor.vcf_record.chrom)
+            assert contig is not None
             start = int(variation_descriptor.vcf_record.pos) - 1
             ref = variation_descriptor.vcf_record.ref
             alt = variation_descriptor.vcf_record.alt
@@ -142,6 +143,7 @@ class PhenopacketVariantCoordinateFinder(
             seq_location = variation.copy_number.allele.sequence_location
             refseq_contig_name = seq_location.sequence_id.split(":")[1]
             contig = self._build.contig_by_name(refseq_contig_name)
+            assert contig is not None
 
             # Assuming SV coordinates are 1-based (VCF style),
             # so we subtract 1 to transform to 0-based coordinate system
@@ -591,7 +593,11 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
     ) -> typing.Optional[Age]:
         if individual.HasField("time_at_last_encounter"):
             tale = individual.time_at_last_encounter
-            return parse_age_element(tale, notepad)
+            return parse_age_element(
+                'time_at_last_encounter',
+                tale,
+                notepad,
+            )
         return None
 
     @staticmethod
@@ -614,6 +620,7 @@ class PhenopacketPatientCreator(PatientCreator[Phenopacket]):
             
             if vital_status.HasField("time_of_death"):
                 age_of_death = parse_age_element(
+                    'time_of_death',
                     time_element=vital_status.time_of_death,
                     notepad=notepad,
                 )
@@ -904,21 +911,27 @@ def parse_onset_element(
     We allow to use `GestationalAge`, `Age` or `OntologyClass` as onset.
     """
     case = time_element.WhichOneof("element")
-    if case == "ontology_class":
+    if case == "age":
+        age = time_element.age
+        return Age.from_iso8601_period(value=age.iso8601duration)
+    elif case == "gestational_age":
+        age = time_element.gestational_age
+        return Age.gestational(weeks=age.weeks, days=age.days)
+    elif case == "ontology_class":
         if term_onset_parser is None:
             return None
         else:
             return term_onset_parser.process(
                 ontology_class=time_element.ontology_class,
                 notepad=notepad,
-            )
+            )    
     else:
-        return parse_age_element(
-            time_element=time_element,
-            notepad=notepad,
-        )
+        notepad.add_warning(f"`time_element` is in currently unsupported format `{case}`")
+        return None
+
 
 def parse_age_element(
+    field: str,
     time_element: PPTimeElement,
     notepad: Notepad,
 ) -> typing.Optional[Age]:
@@ -933,5 +946,8 @@ def parse_age_element(
         age = time_element.age
         return Age.from_iso8601_period(value=age.iso8601duration)
     else:
-        notepad.add_warning(f"`time_element` is in currently unsupported format `{case}`")
+        notepad.add_warning(
+            f"{case} of the {field} field cannot be parsed into age",
+            "Consider formatting the age as ISO8601 duration (e.g., \"P31Y2M\" for 31 years and 2 months)"
+        )
         return None

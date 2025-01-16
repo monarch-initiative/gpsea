@@ -11,6 +11,7 @@ from google.protobuf.json_format import Parse
 from phenopackets.schema.v2.core.interpretation_pb2 import GenomicInterpretation
 from phenopackets.schema.v2.phenopackets_pb2 import Phenopacket
 
+from gpsea.model import VariantClass
 from gpsea.model.genome import GenomeBuild, Strand
 
 from gpsea.preprocessing import VVHgvsVariantCoordinateFinder
@@ -138,7 +139,7 @@ def read_genomic_interpretation_json(fpath: str) -> GenomicInterpretation:
 
 class TestPhenopacketPatientCreator:
 
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def functional_annotator(
         self,
         fpath_project_dir: str,
@@ -152,7 +153,7 @@ class TestPhenopacketPatientCreator:
             cache_dir=fpath_variant_cache_dir,
         )
 
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def imprecise_sv_functional_annotator(
         self,
         genome_build: GenomeBuild,
@@ -163,7 +164,7 @@ class TestPhenopacketPatientCreator:
             ),
         )
 
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def variant_coordinate_finder(
         self,
         genome_build: GenomeBuild,
@@ -176,7 +177,7 @@ class TestPhenopacketPatientCreator:
     def onset_term_parser(self) -> PhenopacketOntologyTermOnsetParser:
         return PhenopacketOntologyTermOnsetParser.default_parser()
 
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def patient_creator(
         self,
         hpo: hpotk.MinimalOntology,
@@ -197,7 +198,7 @@ class TestPhenopacketPatientCreator:
             term_onset_parser=onset_term_parser,
         )
 
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def phenopacket(
         self,
         fpath_phenopacket_dir: str,
@@ -298,6 +299,39 @@ class TestPhenopacketPatientCreator:
         assert disease.onset is not None
         assert disease.onset.is_postnatal is True
         assert disease.onset.days == pytest.approx(20.)
+
+        # variants
+        assert len(patient.variants) == 3
+        snp = patient.variants[0]
+        assert snp.variant_info.has_variant_coordinates()
+        snp_vc = snp.variant_info.variant_coordinates
+        assert snp_vc is not None
+        assert snp_vc.chrom == "6"
+        assert snp_vc.start == 32_040_420
+        assert snp_vc.end == 32_040_421
+        assert snp_vc.ref == "C"
+        assert snp_vc.alt == "T"
+        assert snp_vc.change_length == 0
+        assert snp_vc.variant_class == VariantClass.SNV
+
+        imprecise_sv = patient.variants[1]
+        assert imprecise_sv.variant_info.has_sv_info()
+        sv_vi = imprecise_sv.variant_info.sv_info
+        assert sv_vi is not None
+        assert sv_vi.gene_id == "HGNC:2600"
+        assert sv_vi.gene_symbol == "CYP21A2"
+        assert sv_vi.structural_type.value == "SO:1000029"  # `chromosomal_deletion`
+        assert sv_vi.variant_class == VariantClass.DEL
+
+        imprecise_tra = patient.variants[2]
+        assert imprecise_tra.variant_info.has_sv_info()
+        tra_vi = imprecise_tra.variant_info.sv_info
+        assert tra_vi is not None
+        assert tra_vi.gene_id == "HGNC:24650"
+        assert tra_vi.gene_symbol == "EHMT1"
+        assert tra_vi.structural_type.value == "SO:1000044"  # `chromosomal_translocation`
+        assert tra_vi.variant_class == VariantClass.TRANSLOCATION
+
 
     def test_individual_with_no_genotype(
         self,

@@ -13,7 +13,7 @@ from ._temporal import Age
 from ._variant import Variant, VariantInfo
 
 
-I = typing.TypeVar('I', bound=hpotk.model.Identified)
+IDENTIFIED = typing.TypeVar('IDENTIFIED', bound=hpotk.model.Identified)
 """
 Anything that extends `Identified` (e.g. `Disease`, `Phenotype`, `Measurement`).
 """
@@ -289,8 +289,8 @@ class Patient:
     @staticmethod
     def _find_first_by_id(
         term_id: hpotk.TermId,
-        items: typing.Iterable[I],
-    ) -> typing.Optional[I]:
+        items: typing.Iterable[IDENTIFIED],
+    ) -> typing.Optional[IDENTIFIED]:
         for m in items:
             if m.identifier == term_id:
                 return m
@@ -299,13 +299,13 @@ class Patient:
     
     @staticmethod
     def _unique_identifiers_of_identified(
-        items: typing.Iterable[I],
+        items: typing.Iterable[IDENTIFIED],
     ) -> typing.Collection[hpotk.TermId]:
         return set(item.identifier for item in items)
 
     @staticmethod
     def _count_unique_identifiers(
-        items: typing.Iterable[I],
+        items: typing.Iterable[IDENTIFIED],
     ) -> int:
         return len(Patient._unique_identifiers_of_identified(items))
 
@@ -668,8 +668,8 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
 
     def _iterate_through_items(
         self,
-        extract_items: typing.Callable[[Patient,], typing.Iterable[I]],
-    ) -> typing.Iterator[I]:
+        extract_items: typing.Callable[[Patient,], typing.Iterable[IDENTIFIED]],
+    ) -> typing.Iterator[IDENTIFIED]:
         return itertools.chain(item for individual in self._members for item in extract_items(individual))
 
     def _get_most_common(
@@ -689,7 +689,7 @@ class Cohort(typing.Sized, typing.Iterable[Patient]):
 
     @staticmethod
     def _count_distinct_items(
-        items: typing.Iterable[I],
+        items: typing.Iterable[IDENTIFIED],
     ) -> int:
         return len(set(item.identifier for item in items))
 
