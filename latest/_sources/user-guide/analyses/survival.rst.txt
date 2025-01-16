@@ -188,3 +188,96 @@ or `None` if computing the survival was impossible (see :func:`~gpsea.analysis.t
 The `Survival` reports the number of days until attaining the endpoint,
 here defined as end stage renal disease (`is_censored=False`),
 or until the individual dropped out of the analysis (`is_censored=True`).
+
+
+Troubleshooting
+===============
+
+Sometimes the survival analysis fails and an :class:`~gpsea.analysis.AnalysisException` is raised.
+For instance, the current Logrank test implementation reports a p value of `NaN`
+if the survival is the same for all individuals.
+This is unlikely an expected outcome, therefore GPSEA raises
+an :class:`~gpsea.analysis.AnalysisException` to force the user to troubleshoot.
+
+To help with troubleshooting, the data computed prior detecting the error is included in the exception's
+:attr:`~gpsea.analysis.AnalysisException.data` attribute. In survival analysis, the data should include
+the identifiers, genotype classes, and survivals of the tested individuals.
+
+Let's show this on an example. We will create a toy cohort of 10 individuals
+with onset of `Lynch syndrome I <https://hpo.jax.org/browse/disease/OMIM:120435>`_
+(`OMIM:120435`) at 40 years.
+
+>>> from gpsea.model import Cohort, Patient, Disease, Age
+>>> onset = Age.from_iso8601_period("P40Y")
+>>> individuals = [
+...     Patient.from_raw_parts(
+...         labels=label,
+...         diseases=(
+...             Disease.from_raw_parts(
+...                 term_id="OMIM:120435",
+...                 name="Lynch syndrome I",
+...                 is_observed=True,
+...                 onset=onset,
+...             ),
+...         ),
+...     )
+...     for label in "ABCDEFGHIJ"  # 10 individuals
+... ]
+>>> cohort = Cohort.from_patients(individuals)
+
+We will assign them into genotype classes on random, ...
+
+>>> from gpsea.analysis.clf import random_classifier
+>>> gt_clf = random_classifier(seed=123)
+>>> gt_clf.description
+'Classify the individual into random classes'
+
+... using the Lynch syndrome I diagnosis as the endpoint ...
+
+>>> from gpsea.analysis.temporal.endpoint import disease_onset
+>>> endpoint = disease_onset(disease_id="OMIM:120435")
+>>> endpoint.description
+'Compute time until OMIM:120435 onset'
+
+... and we will use Logrank test for differences in survival.
+
+>>> from gpsea.analysis.temporal.stats import LogRankTest
+>>> survival_statistic = LogRankTest()
+
+We put together the survival analysis ...
+
+>>> from gpsea.analysis.temporal import SurvivalAnalysis
+>>> survival_analysis = SurvivalAnalysis(
+...     statistic=survival_statistic,
+... )
+
+... which we expect to fail with an :class:`~gpsea.analysis.AnalysisException`:
+
+>>> result = survival_analysis.compare_genotype_vs_survival(
+...     cohort=cohort,
+...     gt_clf=gt_clf,
+...     endpoint=endpoint,
+... )
+Traceback (most recent call last):
+  ...
+gpsea.analysis._base.AnalysisException: The survival values did not meet the expectation of the statistical test!
+
+The genotype classes and survival values can be retrieved from the exception:
+
+>>> from gpsea.analysis import AnalysisException
+>>> try:
+...     result = survival_analysis.compare_genotype_vs_survival(
+...         cohort=cohort,
+...         gt_clf=gt_clf,
+...         endpoint=endpoint,
+...     )
+... except AnalysisException as ae:
+...     genotypes = ae.data["genotype"]
+...     survivals = ae.data["survival"]
+
+and the values can come in handy in troubleshooting:
+
+>>> genotypes[:3]
+(0, 0, 0)
+>>> survivals[:3]
+(Survival(value=14610.0, is_censored=False), Survival(value=14610.0, is_censored=False), Survival(value=14610.0, is_censored=False))
