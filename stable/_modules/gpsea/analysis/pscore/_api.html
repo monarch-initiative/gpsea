@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.pscore._api &mdash; GPSEA 0.9.1 documentation</title>
+  <title>gpsea.analysis.pscore._api &mdash; GPSEA 0.9.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=9dc39874"></script>
+      <script src="../../../../_static/documentation_options.js?v=aa3b121e"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -235,13 +235,15 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">ax</span><span class="p">,</span>
         <span class="n">colors</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;darksalmon&quot;</span><span class="p">,</span> <span class="s2">&quot;honeydew&quot;</span><span class="p">),</span>
+        <span class="n">median_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw box plot with distributions of phenotype scores for the genotype groups.</span>
 
 <span class="sd">        :param gt_predicate: the genotype predicate used to produce the genotype groups.</span>
 <span class="sd">        :param ax: the Matplotlib :class:`~matplotlib.axes.Axes` to draw on.</span>
-<span class="sd">        :param colors: a tuple with colors to use for coloring the box patches of the box plot.</span>
+<span class="sd">        :param colors: a sequence with colors to use for coloring the box patches of the box plot.</span>
+<span class="sd">        :param median_color: a `str` with the color for the boxplot median line.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># skip the patients with unassigned genotype group</span>
         <span class="n">bla</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span>
@@ -269,8 +271,12 @@
             <span class="n">tick_labels</span><span class="o">=</span><span class="n">gt_cat_names</span><span class="p">,</span>
         <span class="p">)</span>
 
+        <span class="c1"># Set face colors of the boxes</span>
         <span class="k">for</span> <span class="n">patch</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">bplot</span><span class="p">[</span><span class="s2">&quot;boxes&quot;</span><span class="p">],</span> <span class="n">colors</span><span class="p">):</span>
-            <span class="n">patch</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="n">color</span><span class="p">)</span></div>
+            <span class="n">patch</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">median</span> <span class="ow">in</span> <span class="n">bplot</span><span class="p">[</span><span class="s1">&#39;medians&#39;</span><span class="p">]:</span>
+            <span class="n">median</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="n">median_color</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>

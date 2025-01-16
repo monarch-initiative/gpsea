@@ -121,9 +121,11 @@ In this example, the point mutation is a mutation that meets the following condi
 '((change length == 0 AND reference allele length == 1) AND MISSENSE_VARIANT on NM_001042681.2)'
 
 
-For the loss of function predicate, the following variant effects are considered loss of function:
+For the loss-of-function predicate, the following is a non-exhausting list
+of variant effects considered as a loss-of-function:
 
 >>> lof_effects = (
+...     VariantEffect.TRANSCRIPT_TRANSLOCATION,
 ...     VariantEffect.TRANSCRIPT_ABLATION,
 ...     VariantEffect.FRAMESHIFT_VARIANT,
 ...     VariantEffect.START_LOST,
@@ -131,7 +133,7 @@ For the loss of function predicate, the following variant effects are considered
 ... )
 >>> lof_mutation = anyof(variant_effect(eff, tx_id) for eff in lof_effects)
 >>> lof_mutation.description
-'(TRANSCRIPT_ABLATION on NM_001042681.2 OR FRAMESHIFT_VARIANT on NM_001042681.2 OR START_LOST on NM_001042681.2 OR STOP_GAINED on NM_001042681.2)'
+'(TRANSCRIPT_TRANSLOCATION on NM_001042681.2 OR TRANSCRIPT_ABLATION on NM_001042681.2 OR FRAMESHIFT_VARIANT on NM_001042681.2 OR START_LOST on NM_001042681.2 OR STOP_GAINED on NM_001042681.2)'
 
 
 The genotype predicate will bin the patient into two classes: a point mutation or the loss of function:
@@ -154,6 +156,26 @@ Phenotype score
 This component is responsible for computing a phenotype score for an individual.
 As far as GPSEA framework is concerned, the phenotype score must be a floating point number
 or a `NaN` value if the score cannot be computed for an individual.
+This is the essence of the :class:`~gpsea.analysis.pscore.PhenotypeScorer` class.
+
+GPSEA ships with several builtin phenotype scorers which can be used as  
+
++------------------------------------------------------------+---------------------------------------------+
+| Name                                                       | Description                                 |
++============================================================+=============================================+
+|                                                            | Compute the total number of occurrences     |
+| * :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer`  | of specific phenotypic features             |
+|                                                            | (used in this section)                      |
++------------------------------------------------------------+---------------------------------------------+
+|                                                            | Compute the "adapted De Vries Score"        |
+| * :class:`~gpsea.analysis.pscore.DeVriesPhenotypeScorer`   | for assessing severity                      |
+|                                                            | of intellectual disability                  |
++------------------------------------------------------------+---------------------------------------------+
+
+.. tip::
+
+   See :ref:`custom-phenotype-scorer` section to learn how to build a phenotype scorer from scratch.
+
 
 Here we use the :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer` for scoring
 the individuals based on the number of structural defects

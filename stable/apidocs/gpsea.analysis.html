@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis package &mdash; GPSEA 0.9.1 documentation</title>
+  <title>gpsea.analysis package &mdash; GPSEA 0.9.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=9dc39874"></script>
+      <script src="../_static/documentation_options.js?v=aa3b121e"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -137,6 +137,12 @@ a mapping with any data that has been computed prior encountering the issues.</p
 <dd><p>Bases: <a class="reference internal" href="#gpsea.analysis.AnalysisResult" title="gpsea.analysis._base.AnalysisResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisResult</span></code></a></p>
 <p><cite>MonoPhenotypeAnalysisResult</cite> reports the outcome of an analysis
 that tested a single genotype-phenotype association.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gpsea.analysis.MonoPhenotypeAnalysisResult.SAMPLE_ID">
+<span class="sig-name descname"><span class="pre">SAMPLE_ID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'patient_id'</span></em><a class="headerlink" href="#gpsea.analysis.MonoPhenotypeAnalysisResult.SAMPLE_ID" title="Link to this definition"></a></dt>
+<dd><p>Name of the data index.</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gpsea.analysis.MonoPhenotypeAnalysisResult.GT_COL">
 <span class="sig-name descname"><span class="pre">GT_COL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'genotype'</span></em><a class="headerlink" href="#gpsea.analysis.MonoPhenotypeAnalysisResult.GT_COL" title="Link to this definition"></a></dt>
@@ -412,6 +418,7 @@ compute a score or survival for an individual.</p>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.clf.html#gpsea.analysis.clf.monoallelic_classifier"><code class="docutils literal notranslate"><span class="pre">monoallelic_classifier()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.clf.html#gpsea.analysis.clf.biallelic_classifier"><code class="docutils literal notranslate"><span class="pre">biallelic_classifier()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.clf.html#gpsea.analysis.clf.allele_count"><code class="docutils literal notranslate"><span class="pre">allele_count()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.clf.html#gpsea.analysis.clf.random_classifier"><code class="docutils literal notranslate"><span class="pre">random_classifier()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.clf.html#gpsea.analysis.clf.PhenotypeClassifier"><code class="docutils literal notranslate"><span class="pre">PhenotypeClassifier</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.clf.html#gpsea.analysis.clf.PhenotypeCategorization"><code class="docutils literal notranslate"><span class="pre">PhenotypeCategorization</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpsea.analysis.clf.html#gpsea.analysis.clf.HpoClassifier"><code class="docutils literal notranslate"><span class="pre">HpoClassifier</span></code></a></li>

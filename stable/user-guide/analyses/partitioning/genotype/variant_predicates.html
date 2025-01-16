@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Variant Predicates &mdash; GPSEA 0.9.1 documentation</title>
+  <title>Variant Predicates &mdash; GPSEA 0.9.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=9dc39874"></script>
+      <script src="../../../../_static/documentation_options.js?v=aa3b121e"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -67,6 +67,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../survival.html">Survival analysis</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../../custom-components.html">Custom components</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../glossary.html">Glossary</a></li>
 </ul>
 </li>
@@ -127,20 +128,18 @@ of the <a class="reference internal" href="../../../../apidocs/gpsea.analysis.pr
 <tr class="row-even"><td><p>Protein data</p></td>
 <td><p>variant is located in a region encoding a protein domain, protein feature type</p></td>
 </tr>
-<tr class="row-odd"><td><p>Genome</p></td>
-<td><p>overlap with a genomic region of interest</p></td>
-</tr>
 </tbody>
 </table>
 <p>The scope of the builtin predicates is fairly narrow
 and likely insufficient for real-life analyses.
-However, the predicates can be chained into a compound predicate
+However, several predicates can be “chained” into a compound predicate using a boolean logic,
 to achive more expressivity for testing complex conditions,
 such as “variant is a missense or synonymous variant located in exon 6 of <cite>NM_013275.6</cite>”.</p>
 <section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
-<p>Here we show examples of several simple variant predicates and
-how to chain them for testing complex conditions.</p>
+<p>Here we show how to use the builtin predicates for simple tests
+and how to build a compound predicate from the builtin predicates,
+for testing complex conditions.</p>
 <section id="load-cohort">
 <h3>Load cohort<a class="headerlink" href="#load-cohort" title="Link to this heading"></a></h3>
 <p>Let’s start by loading a <a class="reference internal" href="../../../../apidocs/gpsea.model.html#gpsea.model.Cohort" title="gpsea.model.Cohort"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cohort</span></code></a>
@@ -200,9 +199,9 @@ We can retrieve the variant by querying the cohort by the variant key:</p>
 <p>See the <a class="reference internal" href="../../../../apidocs/gpsea.analysis.predicate.html#module-gpsea.analysis.predicate" title="gpsea.analysis.predicate"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gpsea.analysis.predicate</span></code></a> module
 for a complete list of the builtin predicates.</p>
 </section>
-<section id="predicate-chain">
-<h3>Predicate chain<a class="headerlink" href="#predicate-chain" title="Link to this heading"></a></h3>
-<p>Using the builtin predicates, we can build a logical chain to test complex conditions.
+<section id="compound-predicates">
+<h3>Compound predicates<a class="headerlink" href="#compound-predicates" title="Link to this heading"></a></h3>
+<p>A compound predicate for testing complex conditions can be built from two or more predicates.
 For instance, we can test if the variant meets any of several conditions:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">gpsea.analysis.predicate</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">vp</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">nonsense</span> <span class="o">=</span> <span class="n">vp</span><span class="o">.</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">STOP_GAINED</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">rere_mane_tx_id</span><span class="p">)</span>
@@ -217,7 +216,13 @@ For instance, we can test if the variant meets any of several conditions:</p>
 <span class="go">True</span>
 </pre></div>
 </div>
-<p>All variant predicates overload Python <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> (AND) and <code class="docutils literal notranslate"><span class="pre">|</span></code> (OR) operators, to allow chaining.</p>
+<p>All variant predicates overload Python <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> (AND) and <code class="docutils literal notranslate"><span class="pre">|</span></code> (OR) operators,
+to combine a predicate pair into a compound predicate.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Combining three or or more predicates can be achieved with <code class="xref py py-func docutils literal notranslate"><span class="pre">allof()</span></code>
+and <code class="xref py py-func docutils literal notranslate"><span class="pre">anyof()</span></code> functions.</p>
+</div>
 <p>Therefore, there is nothing that prevents us to combine the predicates into multi-level tests,
 e.g. to test if the variant is a <em>“chromosomal deletion” or a deletion which removes at least 50 bp</em>:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">VariantClass</span>
@@ -261,12 +266,16 @@ and results in an inverted predicate.</p>
 However, if a predicate seems to be missing,
 feel free to submit an issue in our
 <a class="reference external" href="https://github.com/monarch-initiative/gpsea/issues">GitHub tracker</a>,
-or to implement a custom predicate
-by extending the <a class="reference internal" href="../../../../apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.VariantPredicate" title="gpsea.analysis.predicate.VariantPredicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariantPredicate</span></code></a> class 😎.</p>
+or implement your own predicate by following the <a class="reference internal" href="../../../custom-components.html#custom-variant-predicate"><span class="std std-ref">Variant predicate</span></a>
+guide.</p>
+</section>
+<section id="next">
+<h2>Next<a class="headerlink" href="#next" title="Link to this heading"></a></h2>
 <p>The variant predicate offers a flexible API for testing if variants meet a condition.
-However, the genotype phenotype correlations are done on the individual level
-and the variant predicates are used as a component of the genotype predicate.
-The next sections show how to use variant predicates to assign individuals into groups.</p>
+However, the genotype phenotype correlations are studied on the level of individuals.
+As described in <a class="reference internal" href="index.html#genotype-classifiers"><span class="std std-ref">Genotype classifiers</span></a>, GPSEA uses the <a class="reference internal" href="../../../../apidocs/gpsea.analysis.clf.html#gpsea.analysis.clf.GenotypeClassifier" title="gpsea.analysis.clf.GenotypeClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenotypeClassifier</span></code></a> API
+to assign individuals into non-overlapping classes. Variant predicates are essential for creating such classifier.
+We explain the details in the following sections.</p>
 </section>
 </section>
 

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.preprocessing._config &mdash; GPSEA 0.9.1 documentation</title>
+  <title>gpsea.preprocessing._config &mdash; GPSEA 0.9.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=9dc39874"></script>
+      <script src="../../../_static/documentation_options.js?v=aa3b121e"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -497,7 +497,7 @@
 <span class="p">):</span>
     <span class="c1"># Setup cache for SVs</span>
     <span class="k">if</span> <span class="n">cache_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">sv_cache_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s2">&quot;sv_cache&quot;</span><span class="p">)</span>
+        <span class="n">_sv_cache_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s2">&quot;sv_cache&quot;</span><span class="p">)</span>
         <span class="c1"># TODO: implement the cache.</span>
         <span class="c1"># os.makedirs(sv_cache_dir, exist_ok=True)</span>
         <span class="c1"># var_cache = VariantAnnotationCache(sv_cache_dir)</span>
@@ -599,7 +599,7 @@
     <span class="c1"># Keep track of the progress by wrapping the list of phenopackets</span>
     <span class="c1"># with TQDM 😎</span>
     <span class="n">cohort_iter</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span>
-        <span class="n">phenopackets</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Individuals Processed&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;individuals&quot;</span>
+        <span class="n">phenopackets</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Individuals Processed&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot; individuals&quot;</span>
     <span class="p">)</span>
     <span class="n">notepad</span> <span class="o">=</span> <span class="n">create_notepad</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Phenopackets&quot;</span><span class="p">)</span>
     <span class="n">cohort</span> <span class="o">=</span> <span class="n">cohort_creator</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cohort_iter</span><span class="p">,</span> <span class="n">notepad</span><span class="p">)</span>

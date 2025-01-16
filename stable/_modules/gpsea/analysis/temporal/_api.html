@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.temporal._api &mdash; GPSEA 0.9.1 documentation</title>
+  <title>gpsea.analysis.temporal._api &mdash; GPSEA 0.9.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=9dc39874"></script>
+      <script src="../../../../_static/documentation_options.js?v=aa3b121e"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -262,7 +262,10 @@
 <span class="sd">        Execute the survival analysis on a given `cohort`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">((</span><span class="n">patient</span><span class="o">.</span><span class="n">patient_id</span> <span class="k">for</span> <span class="n">patient</span> <span class="ow">in</span> <span class="n">cohort</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;patient_id&quot;</span><span class="p">)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">patient_id</span> <span class="k">for</span> <span class="n">patient</span> <span class="ow">in</span> <span class="n">cohort</span><span class="p">),</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">SAMPLE_ID</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
             <span class="kc">None</span><span class="p">,</span>
             <span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">,</span>
@@ -288,8 +291,14 @@
         <span class="n">vals</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">survivals</span><span class="p">[</span><span class="n">gt_cat</span><span class="p">]</span> <span class="k">for</span> <span class="n">gt_cat</span> <span class="ow">in</span> <span class="n">gt_clf</span><span class="o">.</span><span class="n">get_categorizations</span><span class="p">())</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span><span class="o">.</span><span class="n">compute_pval</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">pval</span><span class="p">):</span>
+            <span class="n">partial</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">SAMPLE_ID</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">),</span>
+                <span class="s2">&quot;genotype&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">GT_COL</span><span class="p">]),</span>
+                <span class="s2">&quot;survival&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">MonoPhenotypeAnalysisResult</span><span class="o">.</span><span class="n">PH_COL</span><span class="p">]),</span>
+            <span class="p">}</span>
+            
             <span class="k">raise</span> <span class="n">AnalysisException</span><span class="p">(</span>
-                <span class="nb">dict</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">),</span>
+                <span class="n">partial</span><span class="p">,</span>
                 <span class="s2">&quot;The survival values did not meet the expectation of the statistical test!&quot;</span><span class="p">,</span>
             <span class="p">)</span>
 

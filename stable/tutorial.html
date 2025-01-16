@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tutorial &mdash; GPSEA 0.9.1 documentation</title>
+  <title>Tutorial &mdash; GPSEA 0.9.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=9dc39874"></script>
+      <script src="_static/documentation_options.js?v=aa3b121e"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -1358,10 +1358,14 @@ depending on presence of a single allele of a missense or truncating variant
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.clf</span><span class="w"> </span><span class="kn">import</span> <span class="n">monoallelic_classifier</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">is_missense</span> <span class="o">=</span> <span class="n">variant_effect</span><span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">MISSENSE_VARIANT</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">truncating_effects</span> <span class="o">=</span> <span class="p">(</span>
+<span class="gp">... </span>   <span class="n">VariantEffect</span><span class="o">.</span><span class="n">TRANSCRIPT_ABLATION</span><span class="p">,</span>
+<span class="gp">... </span>   <span class="n">VariantEffect</span><span class="o">.</span><span class="n">TRANSCRIPT_TRANSLOCATION</span><span class="p">,</span>
 <span class="gp">... </span>   <span class="n">VariantEffect</span><span class="o">.</span><span class="n">FRAMESHIFT_VARIANT</span><span class="p">,</span>
+<span class="gp">... </span>   <span class="n">VariantEffect</span><span class="o">.</span><span class="n">START_LOST</span><span class="p">,</span>
 <span class="gp">... </span>   <span class="n">VariantEffect</span><span class="o">.</span><span class="n">STOP_GAINED</span><span class="p">,</span>
 <span class="gp">... </span>   <span class="n">VariantEffect</span><span class="o">.</span><span class="n">SPLICE_DONOR_VARIANT</span><span class="p">,</span>
 <span class="gp">... </span>   <span class="n">VariantEffect</span><span class="o">.</span><span class="n">SPLICE_ACCEPTOR_VARIANT</span><span class="p">,</span>
+<span class="gp">... </span>   <span class="c1"># more effects could be listed here ...</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">is_truncating</span> <span class="o">=</span> <span class="n">anyof</span><span class="p">(</span><span class="n">variant_effect</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">tx_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">truncating_effects</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span> <span class="o">=</span> <span class="n">monoallelic_classifier</span><span class="p">(</span>

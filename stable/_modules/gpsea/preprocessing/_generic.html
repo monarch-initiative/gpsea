@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.preprocessing._generic &mdash; GPSEA 0.9.1 documentation</title>
+  <title>gpsea.preprocessing._generic &mdash; GPSEA 0.9.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=9dc39874"></script>
+      <script src="../../../_static/documentation_options.js?v=aa3b121e"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -124,12 +124,14 @@
     
     <span class="k">def</span><span class="w"> </span><span class="nf">_map_to_variant_effects</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
-        <span class="n">variant_class</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">variant_class</span><span class="p">:</span> <span class="n">VariantClass</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">VariantEffect</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">variant_class</span> <span class="o">==</span> <span class="n">VariantClass</span><span class="o">.</span><span class="n">DEL</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">TRANSCRIPT_ABLATION</span><span class="p">,)</span>
         <span class="k">elif</span> <span class="n">variant_class</span> <span class="o">==</span> <span class="n">VariantClass</span><span class="o">.</span><span class="n">DUP</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">TRANSCRIPT_AMPLIFICATION</span><span class="p">,)</span>
+        <span class="k">elif</span> <span class="n">variant_class</span> <span class="o">==</span> <span class="n">VariantClass</span><span class="o">.</span><span class="n">TRANSLOCATION</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">VariantEffect</span><span class="o">.</span><span class="n">TRANSCRIPT_TRANSLOCATION</span><span class="p">,)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># This mapping is most likely incomplete.</span>
             <span class="c1"># Please open a ticket if support </span>
