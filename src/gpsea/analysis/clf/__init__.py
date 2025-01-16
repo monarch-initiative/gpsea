@@ -9,6 +9,7 @@ from ._gt_classifiers import (
     monoallelic_classifier,
     biallelic_classifier,
     allele_count,
+    random_classifier,
 )
 from ._util import (
     prepare_classifiers_for_terms_of_interest,
@@ -28,6 +29,7 @@ __all__ = [
     "monoallelic_classifier",
     "biallelic_classifier",
     "allele_count",
+    "random_classifier",
     "PhenotypeClassifier",
     "PhenotypeCategorization",
     "P",
