@@ -168,7 +168,10 @@ class SurvivalAnalysis:
         Execute the survival analysis on a given `cohort`.
         """
 
-        idx = pd.Index((patient.patient_id for patient in cohort), name="patient_id")
+        idx = pd.Index(
+            (patient.patient_id for patient in cohort),
+            name=MonoPhenotypeAnalysisResult.SAMPLE_ID,
+        )
         data = pd.DataFrame(
             None,
             index=idx,
@@ -194,8 +197,14 @@ class SurvivalAnalysis:
         vals = tuple(survivals[gt_cat] for gt_cat in gt_clf.get_categorizations())
         result = self._statistic.compute_pval(vals)
         if math.isnan(result.pval):
+            partial = {
+                MonoPhenotypeAnalysisResult.SAMPLE_ID: tuple(data.index),
+                "genotype": tuple(data[MonoPhenotypeAnalysisResult.GT_COL]),
+                "survival": tuple(data[MonoPhenotypeAnalysisResult.PH_COL]),
+            }
+            
             raise AnalysisException(
-                dict(data=data),
+                partial,
                 "The survival values did not meet the expectation of the statistical test!",
             )
 
