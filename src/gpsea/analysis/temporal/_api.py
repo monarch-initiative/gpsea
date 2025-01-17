@@ -7,6 +7,7 @@ from collections import defaultdict
 import pandas as pd
 import scipy.stats
 
+from gpsea.config import PALETTE_DATA
 from gpsea.model import Patient
 
 from ._base import Survival
@@ -94,6 +95,7 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
     def plot_kaplan_meier_curves(
         self,
         ax,
+        colors: typing.Sequence[str] = PALETTE_DATA,
     ):
         """
         Plot genotype group survivals on the provided axes.
@@ -103,7 +105,10 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
 
         :param ax: a Matplotlib `Axes` to draw on.
         """
-        for pat_cat in self._gt_clf.get_categories():
+        col_idxs = self._choose_palette_idxs(
+            n_categories=self._gt_clf.n_categorizations(), n_colors=len(colors)
+        )
+        for pat_cat, color_idx in zip(self._gt_clf.get_categories(), col_idxs):
             survivals = self._data.loc[
                 self._data[MonoPhenotypeAnalysisResult.GT_COL] == pat_cat.cat_id,
                 MonoPhenotypeAnalysisResult.PH_COL,
@@ -112,7 +117,8 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
             if len(non_na) > 0:
                 censored_data = prepare_censored_data(survivals=non_na)
                 data = scipy.stats.ecdf(censored_data)
-                data.sf.plot(ax, label=pat_cat.name)
+                color = colors[color_idx]
+                data.sf.plot(ax, label=pat_cat.name, color=color)
 
         ax.legend()
 
@@ -202,7 +208,7 @@ class SurvivalAnalysis:
                 "genotype": tuple(data[MonoPhenotypeAnalysisResult.GT_COL]),
                 "survival": tuple(data[MonoPhenotypeAnalysisResult.PH_COL]),
             }
-            
+
             raise AnalysisException(
                 partial,
                 "The survival values did not meet the expectation of the statistical test!",

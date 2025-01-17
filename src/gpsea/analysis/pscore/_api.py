@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 
 from gpsea.model import Patient
+from gpsea.config import PALETTE_DATA, PALETTE_SPECIAL
 from ..clf import GenotypeClassifier
 from .stats import PhenotypeScoreStatistic
 
@@ -179,14 +180,14 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
     def plot_boxplots(
         self,
         ax,
-        colors=("#990f0f", "#e57373"),
-        median_color: str = "#00aaff",
+        colors: typing.Sequence[str] = PALETTE_DATA,
+        median_color: str = PALETTE_SPECIAL,
     ):
         """
         Draw box plot with distributions of phenotype scores for the genotype groups.
 
         :param ax: the Matplotlib :class:`~matplotlib.axes.Axes` to draw on.
-        :param colors: a sequence with colors for the box plot patches.
+        :param colors: a sequence with color palette for the box plot patches.
         :param median_color: a `str` with the color for the boxplot median line.
         """
         data = self._make_data_df()
@@ -200,8 +201,11 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
         )
 
         # Set face colors of the boxes
-        for patch, color in zip(bplot["boxes"], colors):
-            patch.set_facecolor(color)
+        col_idxs = self._choose_palette_idxs(
+            n_categories=self._gt_clf.n_categorizations(), n_colors=len(colors)
+        )
+        for patch, col_idx in zip(bplot["boxes"], col_idxs):
+            patch.set_facecolor(colors[col_idx])
 
         for median in bplot["medians"]:
             median.set_color(median_color)
@@ -209,14 +213,13 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
     def plot_violins(
         self,
         ax,
-        colors=("#990f0f", "#e57373"),
+        colors: typing.Sequence[str] = PALETTE_DATA,
     ):
         """
         Draw a violin plot with distributions of phenotype scores for the genotype groups.
 
         :param ax: the Matplotlib :class:`~matplotlib.axes.Axes` to draw on.
-        :param colors: a sequence with colors for the violin patches.
-        :param mean_color: a `str` violin mean line color.
+        :param colors: a sequence with color palette for the violin patches.
         """
         data = self._make_data_df()
 
@@ -251,9 +254,12 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
             ticklabels=gt_cat_names,
         )
 
-        for pc, color in zip(parts["bodies"], colors):
+        col_idxs = self._choose_palette_idxs(
+            n_categories=self._gt_clf.n_categorizations(), n_colors=len(colors)
+        )
+        for pc, color_idx in zip(parts["bodies"], col_idxs):
             pc.set(
-                facecolor=color,
+                facecolor=colors[color_idx],
                 edgecolor=None,
                 alpha=1,
             )

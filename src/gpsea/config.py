@@ -14,17 +14,34 @@ DEFAULT_CACHE_PATH = pathlib.Path(".gpsea_cache")
 Default path to GPSEA cache directory.
 """
 
+PALETTE_DATA = (
+    "#990F0F",  # dark "red"
+    "#A72929",
+    "#B64343",
+    "#C45D5D",
+    "#D27676",
+    "#E19090",
+    "#EFAAAA",  # light "red",
+)
+"""
+Default data color palette.
+"""
+
+PALETTE_SPECIAL = "#00aaff"  # light "blue"
+"""
+A "special" (emphasis) color.
+"""
 
 def get_cache_dir_path(
     cache: typing.Optional[typing.Union[str, pathlib.Path]] = None,
 ) -> pathlib.Path:
     """
     Get path to the default cache directory.
-    
+
     First try to use `cache` argument.
     If `cache` is `None`, then use the `GPSEA_CACHE` environment variable, if set.
     Last, fall back to default cache path (`.gpsea_cache` in the current working directory).
-    
+
     Note: the cache directory is *not* created if it does not exist.
 
     :path cache: a `str` or a :class:`~pathlib.Path` to fallback cache
@@ -37,7 +54,7 @@ def get_cache_dir_path(
         else:
             # Nothing provided as environment variable, let's use the default.
             cache = DEFAULT_CACHE_PATH
-    
+
     # Ensure `cache_path` is path
     if isinstance(cache, pathlib.Path):
         cache_path = cache
