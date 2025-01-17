@@ -1,6 +1,8 @@
 import abc
+import math
 import typing
 
+import numpy as np
 import pandas as pd
 
 from gpsea.model import Patient
@@ -128,6 +130,16 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
         super().__init__(gt_clf, phenotype, statistic, data, statistic_result)
         assert isinstance(phenotype, PhenotypeScorer)
 
+        # Check that the provided genotype predicate defines the same categories
+        # as those found in `data.`
+        actual = set(
+            int(val)
+            for val in data[MonoPhenotypeAnalysisResult.GT_COL].unique()
+            if val is not None and not math.isnan(val)
+        )
+        expected = set(c.cat_id for c in self._gt_clf.get_categories())
+        assert actual == expected, "Mismatch in the genotype classes"
+
     def phenotype_scorer(self) -> PhenotypeScorer:
         """
         Get the scorer that computed the phenotype score.
@@ -137,31 +149,21 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
         # being a subclass of `Partitioning`.
         return self._phenotype  # type: ignore
 
-    def plot_boxplots(
+    def _make_data_df(
         self,
-        ax,
-        colors=("darksalmon", "honeydew"),
-        median_color: str = "black",
-    ):
-        """
-        Draw box plot with distributions of phenotype scores for the genotype groups.
-
-        :param gt_predicate: the genotype predicate used to produce the genotype groups.
-        :param ax: the Matplotlib :class:`~matplotlib.axes.Axes` to draw on.
-        :param colors: a sequence with colors to use for coloring the box patches of the box plot.
-        :param median_color: a `str` with the color for the boxplot median line.
-        """
+    ) -> pd.DataFrame:
         # skip the patients with unassigned genotype group
-        bla = self._data.notna()
-        not_na_gts = bla.all(axis="columns")
-        data = self._data.loc[not_na_gts]
+        not_na = self._data.notna()
+        not_na_gts = not_na.all(axis="columns")
+        return self._data.loc[not_na_gts]
 
-        # Check that the provided genotype predicate defines the same categories
-        # as those found in `data.`
-        actual = set(data[MonoPhenotypeAnalysisResult.GT_COL].unique())
-        expected = set(c.cat_id for c in self._gt_clf.get_categories())
-        assert actual == expected, "Mismatch in the genotype classes"
-
+    def _make_x_and_tick_labels(
+        self,
+        data: pd.DataFrame,
+    ) -> typing.Tuple[
+        typing.Sequence[typing.Sequence[float]],
+        typing.Sequence[str],
+    ]:
         x = [
             data.loc[
                 data[MonoPhenotypeAnalysisResult.GT_COL] == c.category.cat_id,
@@ -171,6 +173,26 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
         ]
 
         gt_cat_names = [c.category.name for c in self._gt_clf.get_categorizations()]
+
+        return x, gt_cat_names
+
+    def plot_boxplots(
+        self,
+        ax,
+        colors=("#990f0f", "#e57373"),
+        median_color: str = "#00aaff",
+    ):
+        """
+        Draw box plot with distributions of phenotype scores for the genotype groups.
+
+        :param ax: the Matplotlib :class:`~matplotlib.axes.Axes` to draw on.
+        :param colors: a sequence with colors for the box plot patches.
+        :param median_color: a `str` with the color for the boxplot median line.
+        """
+        data = self._make_data_df()
+
+        x, gt_cat_names = self._make_x_and_tick_labels(data)
+
         bplot = ax.boxplot(
             x=x,
             patch_artist=True,
@@ -181,8 +203,69 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
         for patch, color in zip(bplot["boxes"], colors):
             patch.set_facecolor(color)
 
-        for median in bplot['medians']:
+        for median in bplot["medians"]:
             median.set_color(median_color)
+
+    def plot_violins(
+        self,
+        ax,
+        colors=("#990f0f", "#e57373"),
+    ):
+        """
+        Draw a violin plot with distributions of phenotype scores for the genotype groups.
+
+        :param ax: the Matplotlib :class:`~matplotlib.axes.Axes` to draw on.
+        :param colors: a sequence with colors for the violin patches.
+        :param mean_color: a `str` violin mean line color.
+        """
+        data = self._make_data_df()
+
+        x, gt_cat_names = self._make_x_and_tick_labels(data)
+
+        parts = ax.violinplot(
+            dataset=x,
+            showmeans=False,
+            showextrema=False,
+        )
+
+        # quartile1, medians, quartile3 = np.percentile(x, [25, 50, 75], axis=1)
+        quartile1 = [np.percentile(v, 25) for v in x]
+        medians = [np.median(v) for v in x]
+        quartile3 = [np.percentile(v, 75) for v in x]
+        x = [sorted(val) for val in x]
+        whiskers = np.array(
+            [
+                PhenotypeScoreAnalysisResult._adjacent_values(sorted_array, q1, q3)
+                for sorted_array, q1, q3 in zip(x, quartile1, quartile3)
+            ]
+        )
+        whiskers_min, whiskers_max = whiskers[:, 0], whiskers[:, 1]
+
+        inds = np.arange(1, len(medians) + 1)
+        ax.scatter(inds, medians, marker="o", color="white", s=30, zorder=3)
+        ax.vlines(inds, quartile1, quartile3, color="k", linestyle="-", lw=5)
+        ax.vlines(inds, whiskers_min, whiskers_max, color="k", linestyle="-", lw=1)
+
+        ax.xaxis.set(
+            ticks=np.arange(1, len(gt_cat_names) + 1),
+            ticklabels=gt_cat_names,
+        )
+
+        for pc, color in zip(parts["bodies"], colors):
+            pc.set(
+                facecolor=color,
+                edgecolor=None,
+                alpha=1,
+            )
+
+    @staticmethod
+    def _adjacent_values(vals, q1, q3):
+        upper_adjacent_value = q3 + (q3 - q1) * 1.5
+        upper_adjacent_value = np.clip(upper_adjacent_value, q3, vals[-1])
+
+        lower_adjacent_value = q1 - (q3 - q1) * 1.5
+        lower_adjacent_value = np.clip(lower_adjacent_value, vals[0], q1)
+        return lower_adjacent_value, upper_adjacent_value
 
     def __eq__(self, value: object) -> bool:
         return isinstance(value, PhenotypeScoreAnalysisResult) and super(
@@ -254,7 +337,9 @@ class PhenotypeScoreAnalysis:
         for individual in cohort:
             gt_cat = gt_clf.test(individual)
             if gt_cat is None:
-                data.loc[individual.patient_id, MonoPhenotypeAnalysisResult.GT_COL] = None
+                data.loc[individual.patient_id, MonoPhenotypeAnalysisResult.GT_COL] = (
+                    None
+                )
             else:
                 data.loc[individual.patient_id, MonoPhenotypeAnalysisResult.GT_COL] = (
                     gt_cat.category.cat_id

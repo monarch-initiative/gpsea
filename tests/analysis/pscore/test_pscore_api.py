@@ -25,12 +25,23 @@ class TestPhenotypeScoreAnalysisResult:
     ) -> PhenotypeScoreAnalysisResult:
         data = pd.DataFrame(
             data={
-                "patient_id": ["A", "B", "C"],
-                "genotype": [0, 1, None],
+                "patient_id": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N"],
+                "genotype": [0, 1, None, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0],
                 "phenotype": [
                     10.0,
                     float("nan"),
                     -4.0,
+                    15.,
+                    float("nan"),
+                    11.,
+                    2,
+                    7,
+                    -3,
+                    16.,
+                    14.,
+                    9.,
+                    4.,
+                    6.,
                 ],
             }
         ).set_index("patient_id")
@@ -62,3 +73,31 @@ class TestPhenotypeScoreAnalysisResult:
         assert records.shape == (1, 2)
         assert records.loc["A", "genotype"] == 0
         assert records.loc["A", "phenotype"] == pytest.approx(10.0)
+
+    @pytest.mark.skip("Run manually")
+    def test_plot_boxplots(
+        self,
+        result: PhenotypeScoreAnalysisResult,
+    ):
+        import matplotlib.pyplot as plt
+        
+        fig, ax = plt.subplots(figsize=(10, 6))
+
+        result.plot_boxplots(
+            ax=ax
+        )
+        fig.savefig("boxplot.svg")
+
+    @pytest.mark.skip("Run manually")
+    def test_plot_violins(
+        self,
+        result: PhenotypeScoreAnalysisResult,
+    ):
+        import matplotlib.pyplot as plt
+        
+        fig, ax = plt.subplots(figsize=(10, 6))
+
+        result.plot_violins(
+            ax=ax
+        )
+        fig.savefig("violinplot.svg")
