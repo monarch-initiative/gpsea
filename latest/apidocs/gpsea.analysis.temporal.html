@@ -185,13 +185,17 @@ Similarly, a <cite>survival</cite> is <cite>None</cite> if computing the surviva
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.analysis.temporal.SurvivalAnalysisResult.plot_kaplan_meier_curves">
-<span class="sig-name descname"><span class="pre">plot_kaplan_meier_curves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/temporal/_api.html#SurvivalAnalysisResult.plot_kaplan_meier_curves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.temporal.SurvivalAnalysisResult.plot_kaplan_meier_curves" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">plot_kaplan_meier_curves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('#990F0F',</span> <span class="pre">'#A72929',</span> <span class="pre">'#B64343',</span> <span class="pre">'#C45D5D',</span> <span class="pre">'#D27676',</span> <span class="pre">'#E19090',</span> <span class="pre">'#EFAAAA')</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">plot_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/temporal/_api.html#SurvivalAnalysisResult.plot_kaplan_meier_curves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.temporal.SurvivalAnalysisResult.plot_kaplan_meier_curves" title="Link to this definition"></a></dt>
 <dd><p>Plot genotype group survivals on the provided axes.</p>
 <p>The axes includes legend. However, if no survival is available
 for a genotype group, the group name will be missing from the legend.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ax</strong> – a Matplotlib <cite>Axes</cite> to draw on.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> – a Matplotlib <cite>Axes</cite> to draw on.</p></li>
+<li><p><strong>plot_kwargs</strong> – keyword arguments passed directly to <code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.step()</span></code>.
+Unless overridden, <code class="docutils literal notranslate"><span class="pre">where='post'</span></code>.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

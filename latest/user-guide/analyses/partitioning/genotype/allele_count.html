@@ -150,7 +150,7 @@ based on presence of zero or one <em>EGFR</em> mutation allele:</p>
 <span class="gp">... </span>    <span class="n">target</span><span class="o">=</span><span class="n">affects_egfr</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span><span class="o">.</span><span class="n">class_labels</span>
-<span class="go">(&#39;0&#39;, &#39;1&#39;)</span>
+<span class="go">(&#39;0 alleles&#39;, &#39;1 allele&#39;)</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">allele_count</span></code> needs two inputs.
@@ -183,12 +183,12 @@ e.g. to compare the patient survivals in a <cite>survival analysis &lt;survival&
 <span class="gp">... </span>    <span class="n">target</span><span class="o">=</span><span class="n">affects_lmna</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span><span class="o">.</span><span class="n">class_labels</span>
-<span class="go">(&#39;1&#39;, &#39;2&#39;)</span>
+<span class="go">(&#39;1 allele&#39;, &#39;2 alleles&#39;)</span>
 </pre></div>
 </div>
 <p>The classifier assigns the individuals into one of two classes:
 those with one <em>LMNA</em> variant allele and those with two <em>LMNA</em> variant alleles.
-Any cohort member with other allele counts (e.g. <cite>0</cite> or <cite>3</cite>) is ignored.</p>
+Any cohort member with other allele counts (e.g. <cite>0 allele</cite> or <cite>3 alleles</cite>) is ignored.</p>
 </section>
 </section>
 </section>
