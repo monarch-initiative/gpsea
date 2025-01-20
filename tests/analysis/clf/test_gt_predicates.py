@@ -14,13 +14,12 @@ TX_ID = "tx:xyz"
 
 
 class TestAlleleCount:
-
     @pytest.mark.parametrize(
         "patient_name,name",
         [
-            ("adam", "1"),
-            ("eve", "1"),
-            ("cain", "1"),
+            ("adam", "1 allele"),
+            ("eve", "1 allele"),
+            ("cain", "1 allele"),
         ],
     )
     def test_ad_family__all_variants(
@@ -37,13 +36,13 @@ class TestAlleleCount:
         assert categorization is not None
 
         assert categorization.category.name == name
-    
+
     @pytest.mark.parametrize(
         "patient_name,name",
         [
-            ("adam", "0"),
-            ("eve", "1"),
-            ("cain", "1"),
+            ("adam", "0 alleles"),
+            ("eve", "1 allele"),
+            ("cain", "1 allele"),
         ],
     )
     def test_ad_family__missense_subset(
@@ -68,10 +67,10 @@ class TestAlleleCount:
     @pytest.mark.parametrize(
         "patient_name,name",
         [
-            ("walt", "2"),
-            ("skyler", "2"),
-            ("flynn", "2"),
-            ("holly", "2"),
+            ("walt", "2 alleles"),
+            ("skyler", "2 alleles"),
+            ("flynn", "2 alleles"),
+            ("holly", "2 alleles"),
         ],
     )
     def test_ar_family__all_variants(
@@ -88,14 +87,14 @@ class TestAlleleCount:
         assert categorization is not None
 
         assert categorization.category.name == name
-    
+
     @pytest.mark.parametrize(
         "patient_name,name",
         [
-            ("walt", "1"),
-            ("skyler", "1"),
-            ("flynn", "2"),
-            ("holly", "0"),
+            ("walt", "1 allele"),
+            ("skyler", "1 allele"),
+            ("flynn", "2 alleles"),
+            ("holly", "0 alleles"),
         ],
     )
     def test_ar_family__only_missense(
@@ -127,11 +126,10 @@ class TestAlleleCount:
     def test_summarize_groups(self):
         a = allele_count(counts=((0, 1), (2,)))
 
-        assert a.summarize_classes() == "Allele count: 0 OR 1, 2"
+        assert a.summarize_classes() == "Allele count: 0 alleles OR 1 allele, 2 alleles"
 
 
 class TestAllelePredicates:
-
     @pytest.mark.parametrize(
         "individual_name,expected_name",
         [
@@ -161,10 +159,10 @@ class TestAllelePredicates:
     ):
         is_missense = variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID)
         is_synonymous = variant_effect(VariantEffect.SYNONYMOUS_VARIANT, TX_ID)
-        
+
         gt_predicate = monoallelic_classifier(is_missense, is_synonymous)
-        
-        assert gt_predicate.summarize_classes() == 'Allele group: A, B'
+
+        assert gt_predicate.summarize_classes() == "Allele group: A, B"
 
     @pytest.mark.parametrize(
         "individual_name,expected_name",
@@ -196,21 +194,20 @@ class TestAllelePredicates:
     ):
         is_missense = variant_effect(VariantEffect.MISSENSE_VARIANT, TX_ID)
         is_synonymous = variant_effect(VariantEffect.SYNONYMOUS_VARIANT, TX_ID)
-        
+
         gt_predicate = biallelic_classifier(is_missense, is_synonymous)
-        
-        assert gt_predicate.summarize_classes() == 'Allele group: A/A, A/B, B/B'
+
+        assert gt_predicate.summarize_classes() == "Allele group: A/A, A/B, B/B"
 
 
 class TestSexPredicate:
-
     def test_sex_predicate(
         self,
     ):
-        joe = TestSexPredicate.make_patient('Joe', Sex.MALE)
-        jane = TestSexPredicate.make_patient('Jane', Sex.FEMALE)
-        miffy = TestSexPredicate.make_patient('Miffy', Sex.UNKNOWN_SEX)
-        
+        joe = TestSexPredicate.make_patient("Joe", Sex.MALE)
+        jane = TestSexPredicate.make_patient("Jane", Sex.FEMALE)
+        miffy = TestSexPredicate.make_patient("Miffy", Sex.UNKNOWN_SEX)
+
         gt_predicate = sex_classifier()
         female, male = gt_predicate.get_categorizations()
 
