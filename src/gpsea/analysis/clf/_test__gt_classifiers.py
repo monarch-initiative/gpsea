@@ -61,32 +61,32 @@ def test_build_count_to_cat(
         (
             ((0,), (1,), (2,)),
             {
-                0: "0",
-                1: "1",
-                2: "2",
+                0: "0 alleles",
+                1: "1 allele",
+                2: "2 alleles",
             },
         ),
         (
             ((0, 1), (2,)),
             {
-                0: "0 OR 1",
-                1: "0 OR 1",
-                2: "2",
+                0: "0 alleles OR 1 allele",
+                1: "0 alleles OR 1 allele",
+                2: "2 alleles",
             },
         ),
         (
             ((0,), (1, 2)),
             {
-                0: "0",
-                1: "1 OR 2",
-                2: "1 OR 2",
+                0: "0 alleles",
+                1: "1 allele OR 2 alleles",
+                2: "1 allele OR 2 alleles",
             },
         ),
         (
             ((1,), (2,)),
             {
-                1: "1",
-                2: "2",
+                1: "1 allele",
+                2: "2 alleles",
             },
         ),
     ],

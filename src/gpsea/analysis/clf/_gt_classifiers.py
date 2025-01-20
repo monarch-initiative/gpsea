@@ -338,7 +338,7 @@ def _build_ac_to_cat(
 
     ac2cat = {}
     for i, partition in enumerate(partitions):
-        name = " OR ".join(str(j) for j in partition)
+        name = " OR ".join(_pluralize(count=j, base="allele") for j in partition)
         description = " OR ".join(labels[j] for j in partition)
         cat = Categorization(
             PatientCategory(cat_id=i, name=name, description=description),
@@ -348,6 +348,14 @@ def _build_ac_to_cat(
 
     return ac2cat
 
+def _pluralize(
+    count: int,
+    base: str,
+) -> str:
+    if count == 1:
+        return f"{count} {base}"
+    else:
+        return f"{count} {base}s"
 
 def allele_count(
     counts: typing.Collection[typing.Union[int, typing.Collection[int]]],
@@ -372,20 +380,20 @@ def allele_count(
     >>> from gpsea.analysis.clf import allele_count
     >>> zero_vs_one = allele_count(counts=(0, 1))
     >>> zero_vs_one.summarize_classes()
-    'Allele count: 0, 1'
+    'Allele count: 0 alleles, 1 allele'
 
     These counts will create three classes for individuals with zero, one or two alleles:
 
     >>> zero_vs_one_vs_two = allele_count(counts=(0, 1, 2))
     >>> zero_vs_one_vs_two.summarize_classes()
-    'Allele count: 0, 1, 2'
+    'Allele count: 0 alleles, 1 allele, 2 alleles'
 
     Last, the counts below will create two groups, one for the individuals with zero target variant type alleles,
     and one for the individuals with one or two alleles:
 
     >>> zero_vs_one_vs_two = allele_count(counts=(0, {1, 2}))
     >>> zero_vs_one_vs_two.summarize_classes()
-    'Allele count: 0, 1 OR 2'
+    'Allele count: 0 alleles, 1 allele OR 2 alleles'
 
     Note that we wrap the last two allele counts in a set.
 

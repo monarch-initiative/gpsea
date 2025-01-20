@@ -25,12 +25,38 @@ class TestPhenotypeScoreAnalysisResult:
     ) -> PhenotypeScoreAnalysisResult:
         data = pd.DataFrame(
             data={
-                "patient_id": ["A", "B", "C"],
-                "genotype": [0, 1, None],
+                "patient_id": [
+                    "A",
+                    "B",
+                    "C",
+                    "D",
+                    "E",
+                    "F",
+                    "G",
+                    "H",
+                    "I",
+                    "J",
+                    "K",
+                    "L",
+                    "M",
+                    "N",
+                ],
+                "genotype": [0, 1, None, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0],
                 "phenotype": [
                     10.0,
                     float("nan"),
                     -4.0,
+                    15.0,
+                    float("nan"),
+                    11.0,
+                    2,
+                    7,
+                    -3,
+                    16.0,
+                    14.0,
+                    9.0,
+                    4.0,
+                    6.0,
                 ],
             }
         ).set_index("patient_id")
@@ -47,10 +73,25 @@ class TestPhenotypeScoreAnalysisResult:
         result: PhenotypeScoreAnalysisResult,
     ):
         assert tuple(result.gt_clf.class_labels) == (
-            "0",
-            "1",
+            "0 alleles",
+            "1 allele",
         )
-        assert result.data.index.to_list() == ["A", "B", "C"]
+        assert result.data.index.to_list() == [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F",
+            "G",
+            "H",
+            "I",
+            "J",
+            "K",
+            "L",
+            "M",
+            "N",
+        ]
         assert result.pval == pytest.approx(0.1234)
 
     def test_complete_records(
@@ -59,6 +100,34 @@ class TestPhenotypeScoreAnalysisResult:
     ):
         records = result.complete_records()
 
-        assert records.shape == (1, 2)
+        assert records.shape == (11, 2)
         assert records.loc["A", "genotype"] == 0
         assert records.loc["A", "phenotype"] == pytest.approx(10.0)
+
+    @pytest.mark.skip("Run manually")
+    def test_plot_boxplots(
+        self,
+        result: PhenotypeScoreAnalysisResult,
+    ):
+        import matplotlib.pyplot as plt
+
+        fig, ax = plt.subplots(figsize=(10, 6))
+
+        result.plot_boxplots(
+            ax=ax,
+        )
+        fig.savefig("boxplot.png")
+
+    @pytest.mark.skip("Run manually")
+    def test_plot_violins(
+        self,
+        result: PhenotypeScoreAnalysisResult,
+    ):
+        import matplotlib.pyplot as plt
+
+        fig, ax = plt.subplots(figsize=(10, 6))
+
+        result.plot_violins(
+            ax=ax,
+        )
+        fig.savefig("violinplot.png")
