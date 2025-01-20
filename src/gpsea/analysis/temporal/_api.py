@@ -96,6 +96,7 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
         self,
         ax,
         colors: typing.Sequence[str] = PALETTE_DATA,
+        **plot_kwargs,
     ):
         """
         Plot genotype group survivals on the provided axes.
@@ -104,10 +105,13 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
         for a genotype group, the group name will be missing from the legend.
 
         :param ax: a Matplotlib `Axes` to draw on.
+        :param plot_kwargs: keyword arguments passed directly to :func:`matplotlib.axes.Axes.step`.
+            Unless overridden, ``where='post'``.
         """
         col_idxs = self._choose_palette_idxs(
             n_categories=self._gt_clf.n_categorizations(), n_colors=len(colors)
         )
+
         for pat_cat, color_idx in zip(self._gt_clf.get_categories(), col_idxs):
             survivals = self._data.loc[
                 self._data[MonoPhenotypeAnalysisResult.GT_COL] == pat_cat.cat_id,
@@ -118,7 +122,12 @@ class SurvivalAnalysisResult(MonoPhenotypeAnalysisResult):
                 censored_data = prepare_censored_data(survivals=non_na)
                 data = scipy.stats.ecdf(censored_data)
                 color = colors[color_idx]
-                data.sf.plot(ax, label=pat_cat.name, color=color)
+                data.sf.plot(
+                    ax,
+                    label=pat_cat.name,
+                    color=color,
+                    **plot_kwargs,
+                )
 
         ax.legend()
 

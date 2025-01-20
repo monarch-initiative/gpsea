@@ -182,6 +182,7 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
         ax,
         colors: typing.Sequence[str] = PALETTE_DATA,
         median_color: str = PALETTE_SPECIAL,
+        **boxplot_kwargs,
     ):
         """
         Draw box plot with distributions of phenotype scores for the genotype groups.
@@ -189,15 +190,19 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
         :param ax: the Matplotlib :class:`~matplotlib.axes.Axes` to draw on.
         :param colors: a sequence with color palette for the box plot patches.
         :param median_color: a `str` with the color for the boxplot median line.
+        :param boxplot_kwargs: arguments to pass into :func:`matplotlib.axes.Axes.boxplot` function.
         """
         data = self._make_data_df()
 
         x, gt_cat_names = self._make_x_and_tick_labels(data)
+        patch_artist = boxplot_kwargs.pop("patch_artist", True)
+        tick_labels = boxplot_kwargs.pop("tick_labels", gt_cat_names)
 
         bplot = ax.boxplot(
             x=x,
-            patch_artist=True,
-            tick_labels=gt_cat_names,
+            patch_artist=patch_artist,
+            tick_labels=tick_labels,
+            **boxplot_kwargs,
         )
 
         # Set face colors of the boxes
@@ -214,21 +219,27 @@ class PhenotypeScoreAnalysisResult(MonoPhenotypeAnalysisResult):
         self,
         ax,
         colors: typing.Sequence[str] = PALETTE_DATA,
+        **violinplot_kwargs,
     ):
         """
         Draw a violin plot with distributions of phenotype scores for the genotype groups.
 
         :param ax: the Matplotlib :class:`~matplotlib.axes.Axes` to draw on.
         :param colors: a sequence with color palette for the violin patches.
+        :param violinplot_kwargs: arguments to pass into :func:`matplotlib.axes.Axes.violinplot` function.
         """
         data = self._make_data_df()
 
         x, gt_cat_names = self._make_x_and_tick_labels(data)
 
+        showmeans = violinplot_kwargs.pop("showmeans", False)
+        showextrema = violinplot_kwargs.pop("showextrema", False)
+
         parts = ax.violinplot(
             dataset=x,
-            showmeans=False,
-            showextrema=False,
+            showmeans=showmeans,
+            showextrema=showextrema,
+            **violinplot_kwargs,
         )
 
         # quartile1, medians, quartile3 = np.percentile(x, [25, 50, 75], axis=1)
