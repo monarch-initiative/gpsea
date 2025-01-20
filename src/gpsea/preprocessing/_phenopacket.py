@@ -913,10 +913,16 @@ def parse_onset_element(
     case = time_element.WhichOneof("element")
     if case == "age":
         age = time_element.age
-        return Age.from_iso8601_period(value=age.iso8601duration)
+        try:
+            return Age.from_iso8601_period(value=age.iso8601duration)
+        except ValueError as ve:
+            notepad.add_error(message=ve.args[0])
     elif case == "gestational_age":
         age = time_element.gestational_age
-        return Age.gestational(weeks=age.weeks, days=age.days)
+        try:
+            return Age.gestational(weeks=age.weeks, days=age.days)
+        except ValueError as ve:
+            notepad.add_error(message=ve.args[0])
     elif case == "ontology_class":
         if term_onset_parser is None:
             return None
@@ -927,7 +933,7 @@ def parse_onset_element(
             )    
     else:
         notepad.add_warning(f"`time_element` is in currently unsupported format `{case}`")
-        return None
+    return None
 
 
 def parse_age_element(
@@ -941,13 +947,19 @@ def parse_age_element(
     case = time_element.WhichOneof("element")
     if case == "gestational_age":
         age = time_element.gestational_age
-        return Age.gestational(weeks=age.weeks, days=age.days)
+        try:
+            return Age.gestational(weeks=age.weeks, days=age.days)
+        except ValueError as ve:
+            notepad.add_error(message=ve.args[0])
     elif case == "age":
         age = time_element.age
-        return Age.from_iso8601_period(value=age.iso8601duration)
+        try:
+            return Age.from_iso8601_period(value=age.iso8601duration)
+        except ValueError as ve:
+            notepad.add_error(message=ve.args[0])
     else:
         notepad.add_warning(
             f"{case} of the {field} field cannot be parsed into age",
             "Consider formatting the age as ISO8601 duration (e.g., \"P31Y2M\" for 31 years and 2 months)"
         )
-        return None
+    return None
