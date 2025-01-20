@@ -161,8 +161,10 @@ class Age:
         Create `Age` from ISO8601 duration.
 
         A `value` with **weeks** or days is parsed into a gestational age, while a `value` with years, months or days
-        is parsed into a postnatal age. An error is raised if a value for weeks and months (or years) is included
-        at the same time.
+        is parsed into a postnatal age.
+        
+        An error is raised if a value for weeks and months (or years) is included
+        at the same time or if the `value` is not a valid ISO8601 string.
 
         
         Examples
