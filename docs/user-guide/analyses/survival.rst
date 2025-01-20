@@ -151,7 +151,7 @@ We can plot Kaplan-Meier curves:
 ... )
 >>> _ = ax.set(
 ...     xlabel=endpoint.name + " [years]",
-...     ylabel="Empirical survival",
+...     ylabel="Event-free proportion",
 ... )
 >>> _ = ax.grid(axis="y")
 
