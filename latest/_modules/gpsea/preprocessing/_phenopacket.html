@@ -1012,10 +1012,16 @@
     <span class="n">case</span> <span class="o">=</span> <span class="n">time_element</span><span class="o">.</span><span class="n">WhichOneof</span><span class="p">(</span><span class="s2">&quot;element&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">case</span> <span class="o">==</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span>
         <span class="n">age</span> <span class="o">=</span> <span class="n">time_element</span><span class="o">.</span><span class="n">age</span>
-        <span class="k">return</span> <span class="n">Age</span><span class="o">.</span><span class="n">from_iso8601_period</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">iso8601duration</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Age</span><span class="o">.</span><span class="n">from_iso8601_period</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">iso8601duration</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">ve</span><span class="p">:</span>
+            <span class="n">notepad</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">ve</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="k">elif</span> <span class="n">case</span> <span class="o">==</span> <span class="s2">&quot;gestational_age&quot;</span><span class="p">:</span>
         <span class="n">age</span> <span class="o">=</span> <span class="n">time_element</span><span class="o">.</span><span class="n">gestational_age</span>
-        <span class="k">return</span> <span class="n">Age</span><span class="o">.</span><span class="n">gestational</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">weeks</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">days</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Age</span><span class="o">.</span><span class="n">gestational</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">weeks</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">days</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">ve</span><span class="p">:</span>
+            <span class="n">notepad</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">ve</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="k">elif</span> <span class="n">case</span> <span class="o">==</span> <span class="s2">&quot;ontology_class&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">term_onset_parser</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -1026,7 +1032,7 @@
             <span class="p">)</span>    
     <span class="k">else</span><span class="p">:</span>
         <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`time_element` is in currently unsupported format `</span><span class="si">{</span><span class="n">case</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="kc">None</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">parse_age_element</span><span class="p">(</span>
@@ -1040,16 +1046,22 @@
     <span class="n">case</span> <span class="o">=</span> <span class="n">time_element</span><span class="o">.</span><span class="n">WhichOneof</span><span class="p">(</span><span class="s2">&quot;element&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">case</span> <span class="o">==</span> <span class="s2">&quot;gestational_age&quot;</span><span class="p">:</span>
         <span class="n">age</span> <span class="o">=</span> <span class="n">time_element</span><span class="o">.</span><span class="n">gestational_age</span>
-        <span class="k">return</span> <span class="n">Age</span><span class="o">.</span><span class="n">gestational</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">weeks</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">days</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Age</span><span class="o">.</span><span class="n">gestational</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">weeks</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">days</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">ve</span><span class="p">:</span>
+            <span class="n">notepad</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">ve</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="k">elif</span> <span class="n">case</span> <span class="o">==</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span>
         <span class="n">age</span> <span class="o">=</span> <span class="n">time_element</span><span class="o">.</span><span class="n">age</span>
-        <span class="k">return</span> <span class="n">Age</span><span class="o">.</span><span class="n">from_iso8601_period</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">iso8601duration</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Age</span><span class="o">.</span><span class="n">from_iso8601_period</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">age</span><span class="o">.</span><span class="n">iso8601duration</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">ve</span><span class="p">:</span>
+            <span class="n">notepad</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">ve</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">notepad</span><span class="o">.</span><span class="n">add_warning</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">case</span><span class="si">}</span><span class="s2"> of the </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> field cannot be parsed into age&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Consider formatting the age as ISO8601 duration (e.g., </span><span class="se">\&quot;</span><span class="s2">P31Y2M</span><span class="se">\&quot;</span><span class="s2"> for 31 years and 2 months)&quot;</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="kc">None</span>
 </pre></div>
 
            </div>

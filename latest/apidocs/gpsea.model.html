@@ -736,8 +736,9 @@ since birth.</p>
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_iso8601_period</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.model.Age" title="gpsea.model._temporal.Age"><span class="pre">Age</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/_temporal.html#Age.from_iso8601_period"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.Age.from_iso8601_period" title="Link to this definition"></a></dt>
 <dd><p>Create <cite>Age</cite> from ISO8601 duration.</p>
 <p>A <cite>value</cite> with <strong>weeks</strong> or days is parsed into a gestational age, while a <cite>value</cite> with years, months or days
-is parsed into a postnatal age. An error is raised if a value for weeks and months (or years) is included
-at the same time.</p>
+is parsed into a postnatal age.</p>
+<p>An error is raised if a value for weeks and months (or years) is included
+at the same time or if the <cite>value</cite> is not a valid ISO8601 string.</p>
 <p class="rubric">Examples</p>
 <p>Parse gestational age:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Age</span>
