@@ -148,7 +148,7 @@ This code will produce the following table on the basis of a cohort of individua
 with variants in the *TBX5* gene:
 
 >>> from gpsea.view import ProteinVariantViewer
->>> cpd_viewer = ProteinVariantViewer(tx_id=tx_id, protein_metadata=protein_meta)
+>>> cpd_viewer = ProteinVariantViewer(protein_metadata=protein_meta)
 >>> report = cpd_viewer.process(cohort)
 >>> report  # doctest: +SKIP
 
