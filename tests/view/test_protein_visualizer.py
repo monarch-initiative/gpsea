@@ -36,10 +36,9 @@ class TestProteinVisualizer:
         self,
         suox_cohort: Cohort,
         suox_protein_metadata: ProteinMetadata,
-        suox_mane_tx_id: str,
     ):
         protein_viewable = ProteinVariantViewer(
-            protein_metadata=suox_protein_metadata, tx_id=suox_mane_tx_id
+            protein_metadata=suox_protein_metadata,
         )
         report = protein_viewable.process(suox_cohort)
         assert isinstance(report, GpseaReport)

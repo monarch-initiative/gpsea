@@ -522,12 +522,10 @@ class ProteinVariantViewer(BaseViewer):
     def __init__(
         self,
         protein_metadata: ProteinMetadata,
-        tx_id: str,
     ):
         super().__init__()
         self._cohort_template = self._environment.get_template("protein.html")
         self._protein_meta = protein_metadata
-        self._tx_id = tx_id
 
     def process(self, cohort: Cohort) -> GpseaReport:
         """
@@ -561,7 +559,7 @@ class ProteinVariantViewer(BaseViewer):
         # not over *unique* `VariantInfo`s
         for var in cohort.all_variants():
             target_annot = next(
-                (x for x in var.tx_annotations if x.transcript_id == self._tx_id), None
+                (x for x in var.tx_annotations if x.protein_id == self._protein_meta.protein_id), None
             )
             if target_annot is None:
                 # structural variants do not have a transcript id, and we skip them

@@ -1,21 +1,14 @@
-import math
 import os
 
 import hpotk
-import pandas as pd
 import pytest
 
-from gpsea.analysis import StatisticResult
 from gpsea.analysis.pcats import HpoTermAnalysisResult
-from gpsea.analysis.pcats.stats import FisherExactTest
-from gpsea.analysis.clf import GenotypeClassifier, HpoClassifier
-from gpsea.analysis.mtc_filter import PhenotypeMtcResult
 from gpsea.model import Cohort
 from gpsea.view import (
     CohortViewer,
     CohortVariantViewer,
     MtcStatsViewer,
-    summarize_hpo_analysis,
 )
 
 
