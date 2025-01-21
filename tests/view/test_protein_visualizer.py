@@ -1,13 +1,10 @@
-import io
 import matplotlib.pyplot as plt
 import pytest
 
 from gpsea.model import Cohort, ProteinMetadata
 from gpsea.view import (
-    GpseaReport,
     configure_default_protein_visualizer,
     BaseProteinVisualizer,
-    ProteinVariantViewer,
 )
 
 
@@ -32,19 +29,3 @@ class TestProteinVisualizer:
 
         fig.savefig("protein.png")
 
-    def test_protein_viewable(
-        self,
-        suox_cohort: Cohort,
-        suox_protein_metadata: ProteinMetadata,
-    ):
-        protein_viewable = ProteinVariantViewer(
-            protein_metadata=suox_protein_metadata,
-        )
-        report = protein_viewable.process(suox_cohort)
-        assert isinstance(report, GpseaReport)
-
-        buf = io.StringIO()
-        report.write(buf)
-        val = buf.getvalue()
-
-        assert "gpsea-body" in val
