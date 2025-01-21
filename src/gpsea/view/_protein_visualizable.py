@@ -39,6 +39,8 @@ class ProteinVisualizable:
         variant_regions_on_protein: typing.List[Region] = list()
         self._variant_effect = list()
         for tx_ann in transcript_annotations:
+            if tx_ann is None:
+                continue
             variant_effects = tx_ann.variant_effects
             if len(variant_effects) == 0:
                 continue
@@ -82,24 +84,19 @@ class ProteinVisualizable:
     def _get_tx_anns(
         variants: typing.Iterable[Variant],
         protein_id: str,
-    ) -> typing.Sequence[TranscriptAnnotation]:
+    ) -> typing.Sequence[typing.Optional[TranscriptAnnotation]]:
         """
         By default, the API returns transcript annotations for many transcripts.
         We would like to store the annotations only for our protein of interest (protein_id)
         """
         tx_anns = []
-        for i, v in enumerate(variants):
+        for v in variants:
             tx_ann = None
             for ann in v.tx_annotations:
                 if ann.protein_id is not None and ann.protein_id == protein_id:
                     tx_ann = ann
                     break
-            if tx_ann is None:
-                raise ValueError(
-                    f"The transcript annotation for {protein_id} was not found!"
-                )
-            else:
-                tx_anns.append(tx_ann)
+            tx_anns.append(tx_ann)
 
         return tx_anns
 

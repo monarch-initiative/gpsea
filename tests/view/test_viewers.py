@@ -1,22 +1,18 @@
-import math
+import io
 import os
 
 import hpotk
-import pandas as pd
 import pytest
 
-from gpsea.analysis import StatisticResult
 from gpsea.analysis.pcats import HpoTermAnalysisResult
-from gpsea.analysis.pcats.stats import FisherExactTest
-from gpsea.analysis.clf import GenotypeClassifier, HpoClassifier
-from gpsea.analysis.mtc_filter import PhenotypeMtcResult
-from gpsea.model import Cohort
+from gpsea.model import Cohort, ProteinMetadata
 from gpsea.view import (
     CohortViewer,
     CohortVariantViewer,
+    GpseaReport,
     MtcStatsViewer,
-    summarize_hpo_analysis,
 )
+from gpsea.view._viewers import ProteinVariantViewer
 
 
 @pytest.mark.skip("Just for manual testing and debugging")
@@ -86,3 +82,29 @@ class TestMtcStatsViewer:
         report = stats_viewer.process(result=hpo_term_analysis_result)
         with open("mtc_stats.html", "w") as fh:
             report.write(fh)
+
+
+class TestProteinVariantViewer:
+
+    @pytest.fixture(scope="class")
+    def protein_variant_viewer(
+        self,
+        suox_protein_metadata: ProteinMetadata,
+    ) -> ProteinVariantViewer:
+        return ProteinVariantViewer(
+            protein_metadata=suox_protein_metadata,
+        )
+
+    def test_process(
+        self,
+        suox_cohort: Cohort,
+        protein_variant_viewer: ProteinVariantViewer,
+    ):
+        report = protein_variant_viewer.process(suox_cohort)
+        assert isinstance(report, GpseaReport)
+
+        buf = io.StringIO()
+        report.write(buf)
+        val = buf.getvalue()
+
+        assert "gpsea-body" in val
