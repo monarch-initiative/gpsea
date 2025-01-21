@@ -107,7 +107,8 @@ class BaseProteinVisualizer(metaclass=abc.ABCMeta):
         """
         Draw the locations of the cohort variants on the provided axes.
 
-        ### Keyword arguments
+        Keyword arguments
+        -----------------
 
         The function can take multiple keyword arguments (``kwargs``):
 
@@ -147,7 +148,7 @@ class CohortArtist:
         """
         Draw the locations of the cohort variants on the provided axes.
 
-        See the :method:`~gpsea.view.BaseProteinVisualizer.draw_protein` for more info about the arguments.
+        See the :meth:`~gpsea.view.BaseProteinVisualizer.draw_protein` for more info about the arguments.
         """
         protein_meta = self._protein_metadata_service.annotate(protein_id)
         self._protein_visualizer.draw_protein(
