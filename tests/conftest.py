@@ -151,6 +151,11 @@ def suox_mane_tx_id() -> str:
 
 
 @pytest.fixture(scope="session")
+def suox_mane_protein_id() -> str:
+    return "NP_001027558.1"
+
+
+@pytest.fixture(scope="session")
 def suox_gt_clf(
     suox_mane_tx_id: str,
 ) -> GenotypeClassifier:
@@ -211,9 +216,11 @@ def suox_mane_tx_coordinates(
 
 
 @pytest.fixture(scope="session")
-def fpath_suox_protein_metadata(fpath_test_data_dir: str) -> str:
-    suox_mane_tx_protein_id = "NP_001027558.1"
-    return os.path.join(fpath_test_data_dir, f"SUOX-{suox_mane_tx_protein_id}.json")
+def fpath_suox_protein_metadata(
+    fpath_test_data_dir: str,
+    suox_mane_protein_id: str,
+) -> str:
+    return os.path.join(fpath_test_data_dir, f"SUOX-{suox_mane_protein_id}.json")
 
 
 @pytest.fixture(scope="session")
