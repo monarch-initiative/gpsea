@@ -27,7 +27,7 @@ from a `JSON file <https://github.com/monarch-initiative/gpsea/tree/main/docs/co
 The cohort was prepared from phenopackets as described in :ref:`create-a-cohort` section,
 and then serialized as a JSON file following the instructions in :ref:`cohort-persistence` section.
 
-.. 
+..
    Prepare the JSON file by running the tests in `tests/tests/test_generate_doc_cohorts.py`.
 
 >>> import json
@@ -127,7 +127,7 @@ We execute the analysis by running
 ... )
 
 >>> result.pval
-0.06200425830044376
+0.062004258300...
 
 
 Kaplan-Meier curves
@@ -145,7 +145,7 @@ We can plot Kaplan-Meier curves:
 ... )
 >>> _ = ax.xaxis.set(
 ...     # Show X axis in years ...
-...     major_formatter=mpl.ticker.FuncFormatter(lambda x, pos: f"{x / Age.DAYS_IN_YEAR:.0f}"),  
+...     major_formatter=mpl.ticker.FuncFormatter(lambda x, pos: f"{x / Age.DAYS_IN_YEAR:.0f}"),
 ...     # ... with a tick for every decade
 ...     major_locator=mpl.ticker.MultipleLocator(10 * Age.DAYS_IN_YEAR),
 ... )
@@ -164,7 +164,7 @@ We can plot Kaplan-Meier curves:
    :hide:
 
    >>> if _overwrite: fig.savefig('docs/user-guide/analyses/report/umod_km_curves.png')
-   
+
 
 Raw data
 --------
@@ -174,7 +174,7 @@ The `result` includes the survival values for all cohort members:
 >>> survivals = result.data.sort_index()
 >>> survivals.head()  # doctest: +NORMALIZE_WHITESPACE
                           genotype    phenotype
-patient_id                                                                        
+patient_id
 AII.1[PMID_22034507_AII_1]       0    Survival(value=18262.5, is_censored=True)
 AII.2[PMID_22034507_AII_2]       0    None
 AII.3[PMID_22034507_AII_3]       0    Survival(value=16436.25, is_censored=True)

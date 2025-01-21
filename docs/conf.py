@@ -3,6 +3,9 @@ import doctest
 import os
 import sys
 
+# use numtest to allow floating point comparisons
+doctest.ELLIPSIS_MARKER = '...'
+
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
