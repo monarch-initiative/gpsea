@@ -1,4 +1,5 @@
 import typing
+import warnings
 
 from gpsea.model import (
     Cohort,
@@ -14,19 +15,27 @@ from gpsea.model.genome._genome import Region
 
 
 class ProteinVisualizable:
+
     def __init__(
         self,
-        tx_coordinates: TranscriptCoordinates,
+        tx_coordinates: typing.Optional[TranscriptCoordinates],
         protein_meta: ProteinMetadata,
         cohort: Cohort,
-    ) -> None:
-        self._tx_coordinates = tx_coordinates
+    ):
+        # TODO[v1.0.0] - Remove from the public API!
+        warnings.warn(
+            "ProteinVisualizable was deprecated and will be remove in 1.0.0",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self._cohort = cohort
         self._protein_meta = protein_meta
 
         # store the annotations for the target transcript
         transcript_annotations = ProteinVisualizable._get_tx_anns(
-            cohort.all_variants(), self._tx_coordinates.identifier
+            cohort.all_variants(), protein_meta.protein_id,
         )
+        
         variant_regions_on_protein: typing.List[Region] = list()
         self._variant_effect = list()
         for tx_ann in transcript_annotations:
@@ -72,22 +81,22 @@ class ProteinVisualizable:
     @staticmethod
     def _get_tx_anns(
         variants: typing.Iterable[Variant],
-        tx_id: str,
+        protein_id: str,
     ) -> typing.Sequence[TranscriptAnnotation]:
         """
         By default, the API returns transcript annotations for many transcripts.
-        We would like to store the annotations only for our transcript of interest (tx_id)
+        We would like to store the annotations only for our protein of interest (protein_id)
         """
         tx_anns = []
         for i, v in enumerate(variants):
             tx_ann = None
             for ann in v.tx_annotations:
-                if ann.transcript_id == tx_id:
+                if ann.protein_id is not None and ann.protein_id == protein_id:
                     tx_ann = ann
                     break
             if tx_ann is None:
                 raise ValueError(
-                    f"The transcript annotation for {tx_id} was not found!"
+                    f"The transcript annotation for {protein_id} was not found!"
                 )
             else:
                 tx_anns.append(tx_ann)
@@ -95,12 +104,8 @@ class ProteinVisualizable:
         return tx_anns
 
     @property
-    def transcript_coordinates(self) -> TranscriptCoordinates:
-        return self._tx_coordinates
-
-    @property
-    def transcript_id(self) -> str:
-        return self._tx_coordinates.identifier
+    def cohort(self) -> Cohort:
+        return self._cohort
 
     @property
     def protein_id(self) -> str:

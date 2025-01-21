@@ -2,43 +2,31 @@ import io
 import matplotlib.pyplot as plt
 import pytest
 
-from gpsea.model import TranscriptCoordinates, ProteinMetadata, Cohort
+from gpsea.model import Cohort, ProteinMetadata
 from gpsea.view import (
     GpseaReport,
-    ProteinVisualizer,
-    ProteinVisualizable,
+    configure_default_protein_visualizer,
+    BaseProteinVisualizer,
     ProteinVariantViewer,
 )
 
 
 class TestProteinVisualizer:
-
     @pytest.fixture(scope="class")
-    def visualizer(self) -> ProteinVisualizer:
-        return ProteinVisualizer()
-
-    @pytest.fixture(scope="class")
-    def visualizable(
-        self,
-        suox_mane_tx_coordinates: TranscriptCoordinates,
-        suox_protein_metadata: ProteinMetadata,
-        suox_cohort: Cohort,
-    ) -> ProteinVisualizable:
-        return ProteinVisualizable(
-            tx_coordinates=suox_mane_tx_coordinates,
-            protein_meta=suox_protein_metadata,
-            cohort=suox_cohort,
-        )
+    def visualizer(self) -> BaseProteinVisualizer:
+        return configure_default_protein_visualizer()
 
     @pytest.mark.skip("Run manually on demand")
     def test_protein_visualizer(
         self,
-        visualizer: ProteinVisualizer,
-        visualizable: ProteinVisualizable,
+        visualizer: BaseProteinVisualizer,
+        suox_cohort: Cohort,
+        suox_protein_metadata: ProteinMetadata,
     ):
         fig, ax = plt.subplots(figsize=(20, 20))
-        visualizer.draw_fig(
-            pvis=visualizable,
+        visualizer.draw_protein(
+            cohort=suox_cohort,
+            protein_metadata=suox_protein_metadata,
             ax=ax,
         )
 

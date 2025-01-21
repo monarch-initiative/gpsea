@@ -133,7 +133,7 @@ class TestAllelePredicates:
     @pytest.mark.parametrize(
         "individual_name,expected_name",
         [
-            ("adam", "B"),  # 0/0 & 0/1
+            ("adam", "A^C"),  # 0/0 & 0/1
             ("eve", "A"),  # 0/1 & 0/0
             ("cain", "A"),  # 0/1 & 0/0
         ],
@@ -162,15 +162,15 @@ class TestAllelePredicates:
 
         gt_predicate = monoallelic_classifier(is_missense, is_synonymous)
 
-        assert gt_predicate.summarize_classes() == "Allele group: A, B"
+        assert gt_predicate.summarize_classes() == "Allele group: A, A^C"
 
     @pytest.mark.parametrize(
         "individual_name,expected_name",
         [
-            ("walt", "A/B"),  # 0/1 & 0/1
-            ("skyler", "A/B"),  # 0/1 & 0/1
+            ("walt", "A/A^C"),  # 0/1 & 0/1
+            ("skyler", "A/A^C"),  # 0/1 & 0/1
             ("flynn", "A/A"),  # 1/1 & 0/0
-            ("holly", "B/B"),  # 0/0 & 1/1
+            ("holly", "A^C/A^C"),  # 0/0 & 1/1
         ],
     )
     def test_biallelic_predicate(
@@ -197,7 +197,7 @@ class TestAllelePredicates:
 
         gt_predicate = biallelic_classifier(is_missense, is_synonymous)
 
-        assert gt_predicate.summarize_classes() == "Allele group: A/A, A/B, B/B"
+        assert gt_predicate.summarize_classes() == "Allele group: A/A, A/A^C, A^C/A^C"
 
 
 class TestSexPredicate:
