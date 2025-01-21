@@ -620,12 +620,10 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">protein_metadata</span><span class="p">:</span> <span class="n">ProteinMetadata</span><span class="p">,</span>
-        <span class="n">tx_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cohort_template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_environment</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;protein.html&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_protein_meta</span> <span class="o">=</span> <span class="n">protein_metadata</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span> <span class="o">=</span> <span class="n">tx_id</span>
 
 <div class="viewcode-block" id="ProteinVariantViewer.process">
 <a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.ProteinVariantViewer.process">[docs]</a>
@@ -662,7 +660,7 @@
         <span class="c1"># not over *unique* `VariantInfo`s</span>
         <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">cohort</span><span class="o">.</span><span class="n">all_variants</span><span class="p">():</span>
             <span class="n">target_annot</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">tx_annotations</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">transcript_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_id</span><span class="p">),</span> <span class="kc">None</span>
+                <span class="p">(</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">tx_annotations</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">protein_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_meta</span><span class="o">.</span><span class="n">protein_id</span><span class="p">),</span> <span class="kc">None</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">target_annot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># structural variants do not have a transcript id, and we skip them</span>
