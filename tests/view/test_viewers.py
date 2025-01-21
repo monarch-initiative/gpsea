@@ -72,52 +72,6 @@ def test_viewer(
 
 
 class TestMtcStatsViewer:
-    @pytest.fixture(scope="class")
-    def hpo_term_analysis_result(
-        self,
-        hpo: hpotk.MinimalOntology,
-        suox_gt_clf: GenotypeClassifier,
-    ) -> HpoTermAnalysisResult:
-        is_arachnodactyly = HpoClassifier(
-            hpo=hpo,
-            query=hpotk.TermId.from_curie("HP:0001166"),  # Arachnodactyly
-        )
-        is_seizure = HpoClassifier(
-            hpo=hpo,
-            query=hpotk.TermId.from_curie("HP:0001250"),  # Seizure
-        )
-        return HpoTermAnalysisResult(
-            gt_clf=suox_gt_clf,
-            statistic=FisherExactTest(),
-            mtc_correction="fdr_bh",
-            pheno_clfs=(
-                is_arachnodactyly,
-                is_seizure,
-            ),
-            n_usable=(40, 20),
-            all_counts=(
-                pd.DataFrame(
-                    data=[[10, 5], [10, 15]],
-                    index=pd.Index(is_arachnodactyly.get_categories()),
-                    columns=pd.Index(suox_gt_clf.get_categories()),
-                ),
-                pd.DataFrame(
-                    data=[[5, 0], [5, 10]],
-                    index=pd.Index(is_seizure.get_categories()),
-                    columns=pd.Index(suox_gt_clf.get_categories()),
-                ),
-            ),
-            statistic_results=(
-                StatisticResult(statistic=None, pval=math.nan),
-                StatisticResult(statistic=1.23, pval=0.01),
-            ),
-            corrected_pvals=(math.nan, 0.01),
-            mtc_filter_name="Random MTC filter",
-            mtc_filter_results=(
-                PhenotypeMtcResult.fail("RMF01", "Not too interesting"),
-                PhenotypeMtcResult.ok(),
-            ),
-        )
 
     @pytest.fixture
     def stats_viewer(self) -> MtcStatsViewer:
@@ -132,13 +86,3 @@ class TestMtcStatsViewer:
         report = stats_viewer.process(result=hpo_term_analysis_result)
         with open("mtc_stats.html", "w") as fh:
             report.write(fh)
-
-
-@pytest.mark.skip("Just for manual testing and debugging")
-def test_summarize(
-    hpo: hpotk.MinimalOntology,
-    hpo_result: HpoTermAnalysisResult,
-):
-    df = summarize_hpo_analysis(hpo=hpo, result=hpo_result)
-
-    print(df)
