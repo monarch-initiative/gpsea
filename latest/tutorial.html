@@ -702,30 +702,16 @@ the most common HPO terms, variants, diseases, and variant effects:</p>
 </div></section>
 <section id="plot-distribution-of-variants-with-respect-to-the-protein-sequence">
 <h4><a class="toc-backref" href="#id12" role="doc-backlink">Plot distribution of variants with respect to the protein sequence</a><a class="headerlink" href="#plot-distribution-of-variants-with-respect-to-the-protein-sequence" title="Link to this heading"></a></h4>
-<p>We can also show the distribution of variants with respect to the encoded protein.
-We first obtain <code class="docutils literal notranslate"><span class="pre">tx_coordinates</span></code> (<a class="reference internal" href="apidocs/gpsea.model.html#gpsea.model.TranscriptCoordinates" title="gpsea.model.TranscriptCoordinates"><code class="xref py py-class docutils literal notranslate"><span class="pre">TranscriptCoordinates</span></code></a>)
-with genomic coordinates of the transcript, including e.g. untranslated regions or exons:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure_default_tx_coordinate_service</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tx_service</span> <span class="o">=</span> <span class="n">configure_default_tx_coordinate_service</span><span class="p">(</span><span class="n">genome_build</span><span class="o">=</span><span class="s2">&quot;GRCh38.p13&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tx_coordinates</span> <span class="o">=</span> <span class="n">tx_service</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">tx_id</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>and we also get <code class="docutils literal notranslate"><span class="pre">protein_meta</span></code> (<a class="reference internal" href="apidocs/gpsea.model.html#gpsea.model.ProteinMetadata" title="gpsea.model.ProteinMetadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProteinMetadata</span></code></a>)
-with the domains and regions of the encoded protein:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure_default_protein_metadata_service</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pms</span> <span class="o">=</span> <span class="n">configure_default_protein_metadata_service</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">protein_meta</span> <span class="o">=</span> <span class="n">pms</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">px_id</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Now we can plot a diagram of the mutations on the protein:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.view</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProteinVisualizer</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<p>We can use <a class="reference internal" href="apidocs/gpsea.view.html#gpsea.view.CohortArtist" title="gpsea.view.CohortArtist"><code class="xref py py-class docutils literal notranslate"><span class="pre">CohortArtist</span></code></a> to plot the distribution of variants
+with respect to the encoded protein on
+a Matplotlib <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html">Axes</a>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.view</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure_default_cohort_artist</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort_artist</span> <span class="o">=</span> <span class="n">configure_default_cohort_artist</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">visualizer</span> <span class="o">=</span> <span class="n">ProteinVisualizer</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">visualizer</span><span class="o">.</span><span class="n">draw_protein_diagram</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">tx_coordinates</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">protein_meta</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">cohort</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort_artist</span><span class="o">.</span><span class="n">draw_protein</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">protein_id</span><span class="o">=</span><span class="n">px_id</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 </pre></div>
@@ -1634,157 +1620,113 @@ by exploring the phenotype MTC filtering report:</p>
 <table class="docutils align-default" id="id5">
 <caption><span class="caption-text"><em>TBX5</em> truncating vs. missense</span><a class="headerlink" href="#id5" title="Link to this table"></a></caption>
 <thead>
-<tr class="row-odd"><th class="head"><p>Allele group</p></th>
-<th class="head"><p>Missense</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Missense</p></th>
 <th class="head"><p>Truncating</p></th>
-<th class="head"><p>Truncating</p></th>
-<th class="head"></th>
-<th class="head"></th>
-</tr>
-<tr class="row-even"><th class="head"></th>
-<th class="head"><p>Count</p></th>
-<th class="head"><p>Percent</p></th>
-<th class="head"><p>Count</p></th>
-<th class="head"><p>Percent</p></th>
 <th class="head"><p>Corrected p values</p></th>
 <th class="head"><p>p values</p></th>
 </tr>
+<tr class="row-even"><th class="head"><p>Ventricular septal defect [HP:0001629]</p></th>
+<th class="head"><p>31/60 (52%)</p></th>
+<th class="head"><p>29/29 (100%)</p></th>
+<th class="head"><p>9.550859422122477e-06</p></th>
+<th class="head"><p>5.618152601248516e-07</p></th>
+</tr>
 </thead>
 <tbody>
-<tr class="row-odd"><td><p>Ventricular septal defect [HP:0001629]</p></td>
-<td><p>31/60</p></td>
-<td><p>52%</p></td>
-<td><p>29/29</p></td>
-<td><p>100%</p></td>
-<td><p>9.550859422122477e-06</p></td>
-<td><p>5.618152601248516e-07</p></td>
-</tr>
-<tr class="row-even"><td><p>Hypoplasia of the radius [HP:0002984]</p></td>
-<td><p>30/62</p></td>
-<td><p>48%</p></td>
-<td><p>10/27</p></td>
-<td><p>37%</p></td>
+<tr class="row-odd"><td><p>Hypoplasia of the radius [HP:0002984]</p></td>
+<td><p>30/62 (48%)</p></td>
+<td><p>10/27 (37%)</p></td>
 <td><p>1.0</p></td>
 <td><p>0.3614379675325876</p></td>
 </tr>
-<tr class="row-odd"><td><p>Atrial septal defect [HP:0001631]</p></td>
-<td><p>42/44</p></td>
-<td><p>95%</p></td>
-<td><p>38/38</p></td>
-<td><p>100%</p></td>
+<tr class="row-even"><td><p>Atrial septal defect [HP:0001631]</p></td>
+<td><p>42/44 (95%)</p></td>
+<td><p>38/38 (100%)</p></td>
 <td><p>1.0</p></td>
 <td><p>0.49653718759409815</p></td>
 </tr>
-<tr class="row-even"><td><p>Secundum atrial septal defect [HP:0001684]</p></td>
-<td><p>14/35</p></td>
-<td><p>40%</p></td>
-<td><p>13/40</p></td>
-<td><p>32%</p></td>
+<tr class="row-odd"><td><p>Secundum atrial septal defect [HP:0001684]</p></td>
+<td><p>14/35 (40%)</p></td>
+<td><p>13/40 (32%)</p></td>
 <td><p>1.0</p></td>
 <td><p>0.6304400561799244</p></td>
 </tr>
-<tr class="row-odd"><td><p>Abnormal cardiac septum morphology [HP:0001671]</p></td>
-<td><p>62/62</p></td>
-<td><p>100%</p></td>
-<td><p>50/50</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal hand morphology [HP:0005922]</p></td>
-<td><p>53/53</p></td>
-<td><p>100%</p></td>
-<td><p>41/41</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal atrial septum morphology [HP:0011994]</p></td>
-<td><p>43/43</p></td>
-<td><p>100%</p></td>
-<td><p>38/38</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal cardiac atrium morphology [HP:0005120]</p></td>
-<td><p>43/43</p></td>
-<td><p>100%</p></td>
-<td><p>38/38</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-odd"><td><p>Abnormal appendicular skeleton morphology [HP:0011844]</p></td>
-<td><p>64/64</p></td>
-<td><p>100%</p></td>
-<td><p>60/60</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-even"><td><p>Aplasia/hypoplasia of the extremities [HP:0009815]</p></td>
-<td><p>55/55</p></td>
-<td><p>100%</p></td>
-<td><p>44/44</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-odd"><td><p>Aplasia/hypoplasia involving the skeleton [HP:0009115]</p></td>
-<td><p>56/56</p></td>
-<td><p>100%</p></td>
-<td><p>45/45</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-even"><td><p>Aplasia/hypoplasia involving bones of the upper limbs [HP:0006496]</p></td>
-<td><p>55/55</p></td>
-<td><p>100%</p></td>
-<td><p>44/44</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-odd"><td><p>Aplasia/hypoplasia involving bones of the extremities [HP:0045060]</p></td>
-<td><p>55/55</p></td>
-<td><p>100%</p></td>
-<td><p>44/44</p></td>
-<td><p>100%</p></td>
-<td><p>1.0</p></td>
-<td><p>1.0</p></td>
-</tr>
-<tr class="row-even"><td><p>Abnormal long bone morphology [HP:0011314]</p></td>
-<td><p>44/44</p></td>
-<td><p>100%</p></td>
-<td><p>19/19</p></td>
-<td><p>100%</p></td>
+<tr class="row-even"><td><p>Abnormal thumb morphology [HP:0001172]</p></td>
+<td><p>30/30 (100%)</p></td>
+<td><p>56/56 (100%)</p></td>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
 <tr class="row-odd"><td><p>Abnormal finger morphology [HP:0001167]</p></td>
-<td><p>36/36</p></td>
-<td><p>100%</p></td>
-<td><p>56/56</p></td>
-<td><p>100%</p></td>
+<td><p>36/36 (100%)</p></td>
+<td><p>56/56 (100%)</p></td>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
 <tr class="row-even"><td><p>Abnormal digit morphology [HP:0011297]</p></td>
-<td><p>38/38</p></td>
-<td><p>100%</p></td>
-<td><p>59/59</p></td>
-<td><p>100%</p></td>
+<td><p>38/38 (100%)</p></td>
+<td><p>59/59 (100%)</p></td>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-odd"><td><p>Abnormal thumb morphology [HP:0001172]</p></td>
-<td><p>30/30</p></td>
-<td><p>100%</p></td>
-<td><p>56/56</p></td>
-<td><p>100%</p></td>
+<tr class="row-odd"><td><p>Abnormal atrial septum morphology [HP:0011994]</p></td>
+<td><p>43/43 (100%)</p></td>
+<td><p>38/38 (100%)</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal cardiac atrium morphology [HP:0005120]</p></td>
+<td><p>43/43 (100%)</p></td>
+<td><p>38/38 (100%)</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal long bone morphology [HP:0011314]</p></td>
+<td><p>44/44 (100%)</p></td>
+<td><p>19/19 (100%)</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal hand morphology [HP:0005922]</p></td>
+<td><p>53/53 (100%)</p></td>
+<td><p>41/41 (100%)</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Aplasia/hypoplasia of the extremities [HP:0009815]</p></td>
+<td><p>55/55 (100%)</p></td>
+<td><p>44/44 (100%)</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Aplasia/hypoplasia involving bones of the upper limbs [HP:0006496]</p></td>
+<td><p>55/55 (100%)</p></td>
+<td><p>44/44 (100%)</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Aplasia/hypoplasia involving bones of the extremities [HP:0045060]</p></td>
+<td><p>55/55 (100%)</p></td>
+<td><p>44/44 (100%)</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Aplasia/hypoplasia involving the skeleton [HP:0009115]</p></td>
+<td><p>56/56 (100%)</p></td>
+<td><p>45/45 (100%)</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Abnormal cardiac septum morphology [HP:0001671]</p></td>
+<td><p>62/62 (100%)</p></td>
+<td><p>50/50 (100%)</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Abnormal appendicular skeleton morphology [HP:0011844]</p></td>
+<td><p>64/64 (100%)</p></td>
+<td><p>60/60 (100%)</p></td>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>

@@ -166,32 +166,17 @@ the most common HPO terms, variants, diseases, and variant effects:
 Plot distribution of variants with respect to the protein sequence
 ------------------------------------------------------------------
 
-We can also show the distribution of variants with respect to the encoded protein.
-We first obtain ``tx_coordinates`` (:class:`~gpsea.model.TranscriptCoordinates`)
-with genomic coordinates of the transcript, including e.g. untranslated regions or exons:
+We can use :class:`~gpsea.view.CohortArtist` to plot the distribution of variants
+with respect to the encoded protein on
+a Matplotlib `Axes <https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html>`_:
 
->>> from gpsea.preprocessing import configure_default_tx_coordinate_service
->>> tx_service = configure_default_tx_coordinate_service(genome_build="GRCh38.p13")
->>> tx_coordinates = tx_service.fetch(tx_id)
-
-
-and we also get ``protein_meta`` (:class:`~gpsea.model.ProteinMetadata`)
-with the domains and regions of the encoded protein:
-
->>> from gpsea.preprocessing import configure_default_protein_metadata_service
->>> pms = configure_default_protein_metadata_service()
->>> protein_meta = pms.annotate(px_id)
-
-Now we can plot a diagram of the mutations on the protein:
-
->>> from gpsea.view import ProteinVisualizer
 >>> import matplotlib.pyplot as plt
+>>> from gpsea.view import configure_default_cohort_artist
+>>> cohort_artist = configure_default_cohort_artist()
 >>> fig, ax = plt.subplots(figsize=(15, 8))
->>> visualizer = ProteinVisualizer()
->>> visualizer.draw_protein_diagram(
-...     tx_coordinates,
-...     protein_meta,
-...     cohort,
+>>> cohort_artist.draw_protein(
+...     cohort=cohort,
+...     protein_id=px_id,
 ...     ax=ax,
 ... )
 

@@ -170,6 +170,8 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidocs/gpsea.view.html#gpsea.view.BaseProteinVisualizer">BaseProteinVisualizer (class in gpsea.view)</a>
+</li>
       <li><a href="apidocs/gpsea.view.html#gpsea.view.BaseViewer">BaseViewer (class in gpsea.view)</a>
 </li>
   </ul></td>
@@ -216,6 +218,10 @@
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Cohort">Cohort (class in gpsea.model)</a>
 </li>
+      <li><a href="apidocs/gpsea.view.html#gpsea.view.ProteinVisualizable.cohort">cohort (gpsea.view.ProteinVisualizable property)</a>
+</li>
+      <li><a href="apidocs/gpsea.view.html#gpsea.view.CohortArtist">CohortArtist (class in gpsea.view)</a>
+</li>
       <li><a href="apidocs/gpsea.preprocessing.html#gpsea.preprocessing.CohortCreator">CohortCreator (class in gpsea.preprocessing)</a>
 </li>
       <li><a href="apidocs/gpsea.view.html#gpsea.view.CohortVariantViewer">CohortVariantViewer (class in gpsea.view)</a>
@@ -258,9 +264,13 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidocs/gpsea.view.html#gpsea.view.configure_default_cohort_artist">configure_default_cohort_artist() (in module gpsea.view)</a>
+</li>
       <li><a href="apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_default_functional_annotator">configure_default_functional_annotator() (in module gpsea.preprocessing)</a>
 </li>
       <li><a href="apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_default_protein_metadata_service">configure_default_protein_metadata_service() (in module gpsea.preprocessing)</a>
+</li>
+      <li><a href="apidocs/gpsea.view.html#gpsea.view.configure_default_protein_visualizer">configure_default_protein_visualizer() (in module gpsea.view)</a>
 </li>
       <li><a href="apidocs/gpsea.preprocessing.html#gpsea.preprocessing.configure_default_tx_coordinate_service">configure_default_tx_coordinate_service() (in module gpsea.preprocessing)</a>
 </li>
@@ -424,6 +434,14 @@
 </li>
       <li><a href="apidocs/gpsea.view.html#gpsea.view.ProteinVisualizer.draw_fig">draw_fig() (gpsea.view.ProteinVisualizer method)</a>
 </li>
+      <li><a href="apidocs/gpsea.view.html#gpsea.view.BaseProteinVisualizer.draw_protein">draw_protein() (gpsea.view.BaseProteinVisualizer method)</a>
+
+      <ul>
+        <li><a href="apidocs/gpsea.view.html#gpsea.view.CohortArtist.draw_protein">(gpsea.view.CohortArtist method)</a>
+</li>
+        <li><a href="apidocs/gpsea.view.html#gpsea.view.ProteinVisualizer.draw_protein">(gpsea.view.ProteinVisualizer method)</a>
+</li>
+      </ul></li>
       <li><a href="apidocs/gpsea.view.html#gpsea.view.ProteinVisualizer.draw_protein_diagram">draw_protein_diagram() (gpsea.view.ProteinVisualizer method)</a>
 </li>
       <li><a href="apidocs/gpsea.view.html#gpsea.view.VariantTranscriptVisualizer.draw_variants">draw_variants() (gpsea.view.VariantTranscriptVisualizer method)</a>
@@ -1696,28 +1714,24 @@
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.Cohort.total_patient_count">total_patient_count (gpsea.model.Cohort property)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/gpsea.analysis.html#gpsea.analysis.MultiPhenotypeAnalysisResult.total_tests">total_tests (gpsea.analysis.MultiPhenotypeAnalysisResult property)</a>
 
       <ul>
         <li><a href="apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.MultiPhenotypeAnalysisResult.total_tests">(gpsea.analysis.pcats.MultiPhenotypeAnalysisResult property)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/gpsea.analysis.predicate.html#gpsea.analysis.predicate.transcript">transcript() (in module gpsea.analysis.predicate)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.VariantEffect.TRANSCRIPT_ABLATION">TRANSCRIPT_ABLATION (gpsea.model.VariantEffect attribute)</a>
 </li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.VariantEffect.TRANSCRIPT_AMPLIFICATION">TRANSCRIPT_AMPLIFICATION (gpsea.model.VariantEffect attribute)</a>
 </li>
-      <li><a href="apidocs/gpsea.view.html#gpsea.view.ProteinVisualizable.transcript_coordinates">transcript_coordinates (gpsea.view.ProteinVisualizable property)</a>
-</li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.TranscriptAnnotation.transcript_id">transcript_id (gpsea.model.TranscriptAnnotation property)</a>
 
       <ul>
         <li><a href="apidocs/gpsea.model.html#gpsea.model.TranscriptInfoAware.transcript_id">(gpsea.model.TranscriptInfoAware property)</a>
-</li>
-        <li><a href="apidocs/gpsea.view.html#gpsea.view.ProteinVisualizable.transcript_id">(gpsea.view.ProteinVisualizable property)</a>
 </li>
       </ul></li>
       <li><a href="apidocs/gpsea.model.html#gpsea.model.VariantEffect.TRANSCRIPT_TRANSLOCATION">TRANSCRIPT_TRANSLOCATION (gpsea.model.VariantEffect attribute)</a>

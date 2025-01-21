@@ -78,11 +78,11 @@ Then we choose the transcript and protein identifiers, and we fetch the correspo
 
 >>> from gpsea.preprocessing import configure_default_tx_coordinate_service, configure_default_protein_metadata_service
 >>> tx_id = "NM_181486.4"
->>> pt_id = "NP_852259.1"
+>>> px_id = "NP_852259.1"
 >>> tx_service = configure_default_tx_coordinate_service(genome_build="GRCh38.p13")
 >>> tx_coordinates = tx_service.fetch(tx_id)
 >>> pm_service = configure_default_protein_metadata_service()
->>> protein_meta = pm_service.annotate(pt_id)
+>>> protein_meta = pm_service.annotate(px_id)
 
 
 Last, we load HPO `v2024-07-01` to use in the exploratory analysis:
@@ -164,20 +164,23 @@ with variants in the *TBX5* gene:
 Plot distribution of variants with respect to the protein sequence
 ------------------------------------------------------------------
 
-We use Matplotlib to plot the distribution of variants on a protein diagram:
+Cohort artist
+^^^^^^^^^^^^^
+
+The simplest way to plot the variant distribution is to use the :class:`~gpsea.view.CohortArtist` API:
 
 >>> import matplotlib.pyplot as plt
->>> from gpsea.view import ProteinVisualizer
+>>> from gpsea.view import configure_default_cohort_artist
+>>> cohort_artist = configure_default_cohort_artist()
 >>> fig, ax = plt.subplots(figsize=(15, 8))
->>> visualizer = ProteinVisualizer()
->>> visualizer.draw_protein_diagram(
-...     tx_coordinates,
-...     protein_meta,
-...     cohort,
+>>> cohort_artist.draw_protein(
+...     cohort=cohort,
+...     protein_id=px_id,
 ...     ax=ax,
 ... )
 
-.. image:: img/TBX5_protein_diagram.png
+
+.. image:: img/TBX5_protein_diagram.from_artist.png
    :alt: TBX5 protein diagram
    :align: center
    :width: 600px
@@ -187,5 +190,40 @@ We use Matplotlib to plot the distribution of variants on a protein diagram:
 
     >>> if _overwrite:
     ...     fig.tight_layout()
-    ...     fig.savefig('docs/user-guide/img/TBX5_protein_diagram.png')
+    ...     fig.savefig('docs/user-guide/img/TBX5_protein_diagram.from_artist.png')
 
+The :func:`~gpsea.view.configure_default_cohort_artist` function gets the default artist
+which we use to plot the diagram with the variant distribution across the protein sequence
+on Matplotlib axes.
+
+
+Protein visualizer
+^^^^^^^^^^^^^^^^^^
+
+Sometimes, however, things do not work out-of-the-box, e.g. because protein metadata
+is not available from Uniprot (the default), and we may need to use the lower-level components.
+
+The :class:`~gpsea.view.ProteinVisualizer` takes cohort and the protein metadata
+to plot the distribution of variants on a protein diagram:
+
+>>> from gpsea.view import ProteinVisualizer
+>>> fig, ax = plt.subplots(figsize=(15, 8))
+>>> visualizer = ProteinVisualizer()
+>>> visualizer.draw_protein(
+...     cohort=cohort,
+...     protein_metadata=protein_meta,
+...     ax=ax,
+... )
+
+
+.. image:: img/TBX5_protein_diagram.from_protein_visualizer.png
+   :alt: TBX5 protein diagram
+   :align: center
+   :width: 600px
+
+.. doctest:: exploratory
+    :hide:
+
+    >>> if _overwrite:
+    ...     fig.tight_layout()
+    ...     fig.savefig('docs/user-guide/img/TBX5_protein_diagram.from_protein_visualizer.png')

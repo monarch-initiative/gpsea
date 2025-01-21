@@ -76,9 +76,10 @@
            <div itemprop="articleBody">
              
   <h1>Source code for gpsea.view._protein_visualizer</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">heapq</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">heapq</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cycle</span>
@@ -89,17 +90,21 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cohort</span><span class="p">,</span> <span class="n">ProteinMetadata</span><span class="p">,</span> <span class="n">TranscriptCoordinates</span><span class="p">,</span> <span class="n">VariantEffect</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">._base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseProteinVisualizer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._protein_visualizable</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProteinVisualizable</span>
 
 
 <div class="viewcode-block" id="ProteinVisualizer">
 <a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.ProteinVisualizer">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">ProteinVisualizer</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProteinVisualizer</span><span class="p">(</span><span class="n">BaseProteinVisualizer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Draw a schema of a protein with variants of the cohort.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">random_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">42</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">random_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">42</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="c1"># colors</span>
         <span class="n">mycolors</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">mcolors</span><span class="o">.</span><span class="n">CSS4_COLORS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="s2">&quot;grey&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">m</span> <span class="ow">and</span> <span class="s2">&quot;white&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">m</span><span class="p">]</span>
         <span class="n">rng</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
@@ -133,6 +138,100 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">legend2_max_x</span> <span class="o">=</span> <span class="mf">0.3</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">legend2_max_y</span> <span class="o">=</span> <span class="mf">0.75</span>
 
+<div class="viewcode-block" id="ProteinVisualizer.draw_protein">
+<a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.ProteinVisualizer.draw_protein">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">draw_protein</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
+        <span class="n">protein_metadata</span><span class="p">:</span> <span class="n">ProteinMetadata</span><span class="p">,</span>
+        <span class="n">ax</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">labeling_method</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;labeling_method&quot;</span><span class="p">,</span> <span class="s2">&quot;abbreviate&quot;</span><span class="p">)</span>
+        <span class="n">starts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ends</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">protein_metadata</span><span class="o">.</span><span class="n">protein_features</span><span class="p">:</span>
+            <span class="n">starts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+            <span class="n">ends</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
+            <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        
+        <span class="c1"># STATE</span>
+        <span class="n">feature_handler</span> <span class="o">=</span> <span class="n">DrawableProteinFeatureHandler</span><span class="p">(</span>
+            <span class="n">starts</span><span class="p">,</span>
+            <span class="n">ends</span><span class="p">,</span>
+            <span class="n">names</span><span class="p">,</span>
+            <span class="n">labeling_method</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_available_colors</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">max_overlapping_features</span> <span class="o">=</span> <span class="n">sweep_line</span><span class="p">(</span>
+            <span class="p">[(</span><span class="n">f</span><span class="o">.</span><span class="n">min_pos_abs</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">max_pos_abs</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">feature_handler</span><span class="o">.</span><span class="n">features</span><span class="p">]</span>  <span class="c1"># define intervals</span>
+        <span class="p">)</span>
+
+        <span class="n">variant_handler</span> <span class="o">=</span> <span class="n">DrawableProteinVariantHandler</span><span class="p">(</span>
+            <span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span>
+            <span class="n">protein_meta</span><span class="o">=</span><span class="n">protein_metadata</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">x_ticks</span> <span class="o">=</span> <span class="n">generate_ticks</span><span class="p">(</span><span class="n">apprx_n_ticks</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="n">protein_metadata</span><span class="o">.</span><span class="n">protein_length</span><span class="p">)</span>
+        <span class="n">y_ticks</span> <span class="o">=</span> <span class="n">generate_ticks</span><span class="p">(</span><span class="n">apprx_n_ticks</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="n">variant_handler</span><span class="o">.</span><span class="n">max_marker_count</span><span class="p">)</span>
+
+        <span class="c1"># normalize into [0, 1], leaving some space on the sides</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">feature_handler</span><span class="o">.</span><span class="n">features</span><span class="p">:</span>
+            <span class="n">cur_limits</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">min_pos_abs</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">max_pos_abs</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">min_pos_plotting</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">max_pos_plotting</span> <span class="o">=</span> <span class="n">translate_to_ax_coordinates</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cur_limits</span><span class="p">),</span> <span class="n">min_absolute</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_absolute</span><span class="o">=</span><span class="n">protein_metadata</span><span class="o">.</span><span class="n">protein_length</span><span class="p">,</span>
+                <span class="n">min_relative</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">protein_track_x_min</span><span class="p">,</span> <span class="n">max_relative</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">protein_track_x_max</span>
+            <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">variant_handler</span><span class="o">.</span><span class="n">variants</span><span class="p">:</span>
+            <span class="n">pos_abs</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">pos_abs</span>
+            <span class="n">v</span><span class="o">.</span><span class="n">pos_plotting</span> <span class="o">=</span> <span class="n">translate_to_ax_coordinates</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">pos_abs</span><span class="p">]),</span> <span class="n">min_absolute</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_absolute</span><span class="o">=</span><span class="n">protein_metadata</span><span class="o">.</span><span class="n">protein_length</span><span class="p">,</span>
+                <span class="n">min_relative</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">protein_track_x_min</span><span class="p">,</span>
+                <span class="n">max_relative</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">protein_track_x_max</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">x_ticks_relative</span> <span class="o">=</span> <span class="n">translate_to_ax_coordinates</span><span class="p">(</span><span class="n">x_ticks</span><span class="p">,</span> <span class="n">min_absolute</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                                       <span class="n">max_absolute</span><span class="o">=</span><span class="n">protein_metadata</span><span class="o">.</span><span class="n">protein_length</span><span class="p">,</span>
+                                                       <span class="n">min_relative</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">protein_track_x_min</span><span class="p">,</span>
+                                                       <span class="n">max_relative</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">protein_track_x_max</span><span class="p">)</span>
+
+        <span class="c1"># PLOTTING</span>
+        <span class="n">draw_axes</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span>
+                  <span class="n">x_ticks</span><span class="p">,</span> <span class="n">x_ticks_relative</span><span class="p">,</span> <span class="n">y_ticks</span><span class="p">,</span>
+                  <span class="n">variant_handler</span><span class="o">.</span><span class="n">max_marker_count</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">protein_metadata</span><span class="o">.</span><span class="n">protein_length</span><span class="p">,</span> <span class="n">max_overlapping_features</span><span class="p">,</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">protein_track_x_min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_track_x_max</span><span class="p">,</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">protein_track_y_max</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_track_height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_track_buffer</span><span class="p">,</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">font_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_padding</span><span class="p">,</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">axis_color</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_track_color</span>
+                  <span class="p">)</span>
+
+        <span class="n">variant_handler</span><span class="o">.</span><span class="n">draw_variants</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_track_y_max</span><span class="p">,</span> <span class="n">stem_color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">variant_stem_color</span><span class="p">)</span>
+
+        <span class="n">feature_handler</span><span class="o">.</span><span class="n">draw_features</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span>
+                                      <span class="bp">self</span><span class="o">.</span><span class="n">protein_features_y_max</span><span class="p">,</span>
+                                      <span class="bp">self</span><span class="o">.</span><span class="n">protein_feature_height</span><span class="p">,</span>
+                                      <span class="bp">self</span><span class="o">.</span><span class="n">protein_feature_outline_color</span><span class="p">)</span>
+
+        <span class="n">legend1_width</span> <span class="o">=</span> <span class="n">draw_legends</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">feature_handler</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">color_box_x_dim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">color_box_y_dim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">color_circle_radius</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">row_spacing</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">legend1_min_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">legend1_max_y</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">legend2_min_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">legend2_max_y</span><span class="p">,</span>
+                                     <span class="n">variant_handler</span><span class="o">.</span><span class="n">variant_effect_colors</span><span class="p">(),</span>
+                                     <span class="n">labeling_method</span><span class="p">,</span> <span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
+            <span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">legend1_min_x</span> <span class="o">+</span> <span class="n">legend1_width</span> <span class="o">+</span> <span class="mf">0.02</span><span class="p">)),</span>
+            <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">),</span>
+            <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;equal&#39;</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">protein_metadata</span><span class="o">.</span><span class="n">label</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+                  <span class="sa">f</span><span class="s1">&#39;protein: </span><span class="si">{</span><span class="n">protein_metadata</span><span class="o">.</span><span class="n">protein_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="ProteinVisualizer.draw_protein_diagram">
 <a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.ProteinVisualizer.draw_protein_diagram">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">draw_protein_diagram</span><span class="p">(</span>
@@ -143,9 +242,28 @@
         <span class="n">ax</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">labeling_method</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;abbreviate&#39;</span><span class="p">,</span> <span class="s1">&#39;enumerate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;abbreviate&#39;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">]:</span>
-        <span class="n">pvis</span> <span class="o">=</span> <span class="n">ProteinVisualizable</span><span class="p">(</span><span class="n">tx_coordinates</span><span class="p">,</span> <span class="n">protein_metadata</span><span class="p">,</span> <span class="n">cohort</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">draw_fig</span><span class="p">(</span><span class="n">pvis</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">labeling_method</span><span class="p">)</span></div>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;draw_protein_diagram was deprecated and will be removed in `1.0.0`. Use `draw_protein` instead&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">should_return_ax</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">should_return_ax</span> <span class="o">=</span> <span class="kc">False</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw_protein</span><span class="p">(</span>
+            <span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span>
+            <span class="n">protein_metadata</span><span class="o">=</span><span class="n">protein_metadata</span><span class="p">,</span>
+            <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+            <span class="n">labeling_method</span><span class="o">=</span><span class="n">labeling_method</span><span class="p">,</span>
+        <span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">should_return_ax</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ax</span></div>
+
+        
 
 <div class="viewcode-block" id="ProteinVisualizer.draw_fig">
 <a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.ProteinVisualizer.draw_fig">[docs]</a>
@@ -171,77 +289,23 @@
 <span class="sd">            `None` if an :class:`plt.Axes` was provided via `ax` argument</span>
 <span class="sd">            or an `Axes` created by the visualizer if `ax` was `None`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;draw_fig was deprecated and will be removed in `1.0.0`. Use `draw_protein` instead&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">should_return_ax</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">_</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">should_return_ax</span> <span class="o">=</span> <span class="kc">False</span>
 
-        <span class="c1"># STATE</span>
-        <span class="n">feature_handler</span> <span class="o">=</span> <span class="n">DrawableProteinFeatureHandler</span><span class="p">(</span><span class="n">pvis</span><span class="p">,</span> <span class="n">labeling_method</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_available_colors</span><span class="p">)</span>
-        <span class="n">max_overlapping_features</span> <span class="o">=</span> <span class="n">sweep_line</span><span class="p">(</span>
-            <span class="p">[(</span><span class="n">f</span><span class="o">.</span><span class="n">min_pos_abs</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">max_pos_abs</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">feature_handler</span><span class="o">.</span><span class="n">features</span><span class="p">]</span>  <span class="c1"># define intervals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw_protein</span><span class="p">(</span>
+            <span class="n">cohort</span><span class="o">=</span><span class="n">pvis</span><span class="o">.</span><span class="n">cohort</span><span class="p">,</span>
+            <span class="n">protein_metadata</span><span class="o">=</span><span class="n">pvis</span><span class="o">.</span><span class="n">protein_metadata</span><span class="p">,</span>
+            <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+            <span class="n">labeling_method</span><span class="o">=</span><span class="n">labeling_method</span><span class="p">,</span>
         <span class="p">)</span>
-
-        <span class="n">variant_handler</span> <span class="o">=</span> <span class="n">DrawableProteinVariantHandler</span><span class="p">(</span><span class="n">pvis</span><span class="p">)</span>
-
-        <span class="n">x_ticks</span> <span class="o">=</span> <span class="n">generate_ticks</span><span class="p">(</span><span class="n">apprx_n_ticks</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="n">pvis</span><span class="o">.</span><span class="n">protein_length</span><span class="p">)</span>
-        <span class="n">y_ticks</span> <span class="o">=</span> <span class="n">generate_ticks</span><span class="p">(</span><span class="n">apprx_n_ticks</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="n">variant_handler</span><span class="o">.</span><span class="n">max_marker_count</span><span class="p">)</span>
-
-        <span class="c1"># normalize into [0, 1], leaving some space on the sides</span>
-        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">feature_handler</span><span class="o">.</span><span class="n">features</span><span class="p">:</span>
-            <span class="n">cur_limits</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">min_pos_abs</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">max_pos_abs</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">min_pos_plotting</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">max_pos_plotting</span> <span class="o">=</span> <span class="n">translate_to_ax_coordinates</span><span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cur_limits</span><span class="p">),</span> <span class="n">min_absolute</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_absolute</span><span class="o">=</span><span class="n">pvis</span><span class="o">.</span><span class="n">protein_length</span><span class="p">,</span>
-                <span class="n">min_relative</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">protein_track_x_min</span><span class="p">,</span> <span class="n">max_relative</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">protein_track_x_max</span>
-            <span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">variant_handler</span><span class="o">.</span><span class="n">variants</span><span class="p">:</span>
-            <span class="n">pos_abs</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">pos_abs</span>
-            <span class="n">v</span><span class="o">.</span><span class="n">pos_plotting</span> <span class="o">=</span> <span class="n">translate_to_ax_coordinates</span><span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">pos_abs</span><span class="p">]),</span> <span class="n">min_absolute</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_absolute</span><span class="o">=</span><span class="n">pvis</span><span class="o">.</span><span class="n">protein_length</span><span class="p">,</span>
-                <span class="n">min_relative</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">protein_track_x_min</span><span class="p">,</span>
-                <span class="n">max_relative</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">protein_track_x_max</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-        <span class="n">x_ticks_relative</span> <span class="o">=</span> <span class="n">translate_to_ax_coordinates</span><span class="p">(</span><span class="n">x_ticks</span><span class="p">,</span> <span class="n">min_absolute</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                                                       <span class="n">max_absolute</span><span class="o">=</span><span class="n">pvis</span><span class="o">.</span><span class="n">protein_length</span><span class="p">,</span>
-                                                       <span class="n">min_relative</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">protein_track_x_min</span><span class="p">,</span>
-                                                       <span class="n">max_relative</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">protein_track_x_max</span><span class="p">)</span>
-
-        <span class="c1"># PLOTTING</span>
-        <span class="n">draw_axes</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span>
-                  <span class="n">x_ticks</span><span class="p">,</span> <span class="n">x_ticks_relative</span><span class="p">,</span> <span class="n">y_ticks</span><span class="p">,</span>
-                  <span class="n">variant_handler</span><span class="o">.</span><span class="n">max_marker_count</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">pvis</span><span class="o">.</span><span class="n">protein_length</span><span class="p">,</span> <span class="n">max_overlapping_features</span><span class="p">,</span>
-                  <span class="bp">self</span><span class="o">.</span><span class="n">protein_track_x_min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_track_x_max</span><span class="p">,</span>
-                  <span class="bp">self</span><span class="o">.</span><span class="n">protein_track_y_max</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_track_height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_track_buffer</span><span class="p">,</span>
-                  <span class="bp">self</span><span class="o">.</span><span class="n">font_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_padding</span><span class="p">,</span>
-                  <span class="bp">self</span><span class="o">.</span><span class="n">axis_color</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_track_color</span>
-                  <span class="p">)</span>
-
-        <span class="n">variant_handler</span><span class="o">.</span><span class="n">draw_variants</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein_track_y_max</span><span class="p">,</span> <span class="n">stem_color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">variant_stem_color</span><span class="p">)</span>
-
-        <span class="n">feature_handler</span><span class="o">.</span><span class="n">draw_features</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span>
-                                      <span class="bp">self</span><span class="o">.</span><span class="n">protein_features_y_max</span><span class="p">,</span>
-                                      <span class="bp">self</span><span class="o">.</span><span class="n">protein_feature_height</span><span class="p">,</span>
-                                      <span class="bp">self</span><span class="o">.</span><span class="n">protein_feature_outline_color</span><span class="p">)</span>
-
-        <span class="n">legend1_width</span> <span class="o">=</span> <span class="n">draw_legends</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">feature_handler</span><span class="p">,</span> <span class="n">pvis</span><span class="p">,</span>
-                                     <span class="bp">self</span><span class="o">.</span><span class="n">color_box_x_dim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">color_box_y_dim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">color_circle_radius</span><span class="p">,</span>
-                                     <span class="bp">self</span><span class="o">.</span><span class="n">row_spacing</span><span class="p">,</span>
-                                     <span class="bp">self</span><span class="o">.</span><span class="n">legend1_min_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">legend1_max_y</span><span class="p">,</span>
-                                     <span class="bp">self</span><span class="o">.</span><span class="n">legend2_min_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">legend2_max_y</span><span class="p">,</span>
-                                     <span class="n">variant_handler</span><span class="o">.</span><span class="n">variant_effect_colors</span><span class="p">(),</span>
-                                     <span class="n">labeling_method</span><span class="p">,</span> <span class="p">)</span>
-
-        <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
-            <span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">legend1_min_x</span> <span class="o">+</span> <span class="n">legend1_width</span> <span class="o">+</span> <span class="mf">0.02</span><span class="p">)),</span>
-            <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">),</span>
-            <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;equal&#39;</span><span class="p">,</span>
-            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">pvis</span><span class="o">.</span><span class="n">protein_metadata</span><span class="o">.</span><span class="n">label</span><span class="si">}</span><span class="se">\n</span><span class="s1">transcript: </span><span class="si">{</span><span class="n">pvis</span><span class="o">.</span><span class="n">transcript_id</span><span class="si">}</span><span class="s1">, &#39;</span>
-                  <span class="sa">f</span><span class="s1">&#39;protein: </span><span class="si">{</span><span class="n">pvis</span><span class="o">.</span><span class="n">protein_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">should_return_ax</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">ax</span></div>
@@ -288,8 +352,17 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">DrawableProteinFeatureHandler</span><span class="p">:</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pvis</span><span class="p">:</span> <span class="n">ProteinVisualizable</span><span class="p">,</span> <span class="n">labeling_method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">colors</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pvis</span> <span class="o">=</span> <span class="n">pvis</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">starts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">ends</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">feature_names</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">labeling_method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">colors</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_starts</span> <span class="o">=</span> <span class="n">starts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ends</span> <span class="o">=</span> <span class="n">ends</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span> <span class="o">=</span> <span class="n">feature_names</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">labeling_method</span> <span class="o">=</span> <span class="n">labeling_method</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_available_colors</span> <span class="o">=</span> <span class="n">colors</span>
 
@@ -299,7 +372,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># aggregate similar feature names into one category</span>
-        <span class="n">unique_feature_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pvis</span><span class="o">.</span><span class="n">protein_feature_names</span><span class="p">))</span>
+        <span class="n">unique_feature_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span><span class="p">))</span>
         <span class="n">cleaned_unique_feature_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="n">mapping_all2cleaned</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">feature_name</span> <span class="ow">in</span> <span class="n">unique_feature_names</span><span class="p">:</span>
@@ -324,20 +397,19 @@
 
         <span class="k">return</span> <span class="n">cleaned_unique_feature_names</span><span class="p">,</span> <span class="n">mapping_all2cleaned</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">colors</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_features</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">features</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pvis</span><span class="o">.</span><span class="n">protein_feature_ends</span><span class="p">)):</span>
-            <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DrawableProteinFeature</span><span class="p">(</span>
-                <span class="n">min_pos_abs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pvis</span><span class="o">.</span><span class="n">protein_feature_starts</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-                <span class="n">max_pos_abs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pvis</span><span class="o">.</span><span class="n">protein_feature_ends</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-                <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pvis</span><span class="o">.</span><span class="n">protein_feature_names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-                <span class="n">label</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping_all2cleaned</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pvis</span><span class="o">.</span><span class="n">protein_feature_names</span><span class="p">[</span><span class="n">i</span><span class="p">]]],</span>
-                <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping_all2cleaned</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pvis</span><span class="o">.</span><span class="n">protein_feature_names</span><span class="p">[</span><span class="n">i</span><span class="p">]]],</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_features</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">DrawableProteinFeature</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">DrawableProteinFeature</span><span class="p">(</span>
+                <span class="n">min_pos_abs</span><span class="o">=</span><span class="n">start</span><span class="p">,</span>
+                <span class="n">max_pos_abs</span><span class="o">=</span><span class="n">end</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping_all2cleaned</span><span class="p">[</span><span class="n">name</span><span class="p">]],</span>
+                <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping_all2cleaned</span><span class="p">[</span><span class="n">name</span><span class="p">]],</span>
                 <span class="n">min_pos_plotting</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">max_pos_plotting</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span>  <span class="c1"># will be set later in draw_fig(), when plot limits known</span>
                 <span class="n">track</span><span class="o">=</span><span class="mi">0</span>
-            <span class="p">))</span>
-
-        <span class="k">return</span> <span class="n">features</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_starts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ends</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span><span class="p">)</span>
+        <span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">draw_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">,</span> <span class="n">features_y_max</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">feature_height</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">feature_outline_color</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">:</span>
@@ -374,8 +446,17 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">DrawableProteinVariantHandler</span><span class="p">:</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pvis</span><span class="p">:</span> <span class="n">ProteinVisualizable</span><span class="p">,</span> <span class="n">aggregation_method</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;standard&#39;</span><span class="p">,</span> <span class="s1">&#39;disease&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;standard&#39;</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pvis</span> <span class="o">=</span> <span class="n">pvis</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
+        <span class="n">protein_meta</span><span class="p">:</span> <span class="n">ProteinMetadata</span><span class="p">,</span>
+        <span class="n">aggregation_method</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;standard&#39;</span><span class="p">,</span> <span class="s1">&#39;disease&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;standard&#39;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pvis</span> <span class="o">=</span> <span class="n">ProteinVisualizable</span><span class="p">(</span>
+            <span class="n">tx_coordinates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">protein_meta</span><span class="o">=</span><span class="n">protein_meta</span><span class="p">,</span>
+            <span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span>
+        <span class="p">)</span>  
         <span class="k">if</span> <span class="n">aggregation_method</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;standard&#39;</span><span class="p">,</span> <span class="s1">&#39;disease&#39;</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">aggregation_method</span> <span class="o">=</span> <span class="n">aggregation_method</span>
         <span class="k">else</span><span class="p">:</span>
@@ -423,7 +504,7 @@
             <span class="n">VariantEffect</span><span class="o">.</span><span class="n">INTERGENIC_VARIANT</span><span class="p">:</span> <span class="s2">&quot;#ff00ff&quot;</span><span class="p">,</span>
             <span class="n">VariantEffect</span><span class="o">.</span><span class="n">SEQUENCE_VARIANT</span><span class="p">:</span> <span class="s2">&quot;#33ff00&quot;</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_marker_count</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pvis</span><span class="o">.</span><span class="n">marker_counts</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_marker_count</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pvis</span><span class="o">.</span><span class="n">marker_counts</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregation_method</span> <span class="o">==</span> <span class="s1">&#39;standard&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">variants</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_variant_markers</span><span class="p">()</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregation_method</span> <span class="o">==</span> <span class="s1">&#39;disease&#39;</span><span class="p">:</span>
@@ -431,14 +512,14 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_variant_markers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">variants</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">vl</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pvis</span><span class="o">.</span><span class="n">variant_locations_counted_absolute</span><span class="p">):</span>
-            <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pvis</span><span class="o">.</span><span class="n">variant_locations</span> <span class="o">==</span> <span class="n">vl</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">effect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pvis</span><span class="o">.</span><span class="n">variant_effects</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">vl</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pvis</span><span class="o">.</span><span class="n">variant_locations_counted_absolute</span><span class="p">):</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pvis</span><span class="o">.</span><span class="n">variant_locations</span> <span class="o">==</span> <span class="n">vl</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">effect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pvis</span><span class="o">.</span><span class="n">variant_effects</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="n">v</span> <span class="o">=</span> <span class="n">DrawableProteinVariant</span><span class="p">(</span><span class="n">effect</span><span class="o">=</span><span class="n">effect</span><span class="p">,</span>
                                        <span class="n">pos_abs</span><span class="o">=</span><span class="n">vl</span><span class="p">,</span>
                                        <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">variant_effect2color</span><span class="p">[</span><span class="n">effect</span><span class="p">],</span>
                                        <span class="n">pos_plotting</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span>
-                                       <span class="n">count</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pvis</span><span class="o">.</span><span class="n">marker_counts</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+                                       <span class="n">count</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pvis</span><span class="o">.</span><span class="n">marker_counts</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
             <span class="n">variants</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">variants</span>
@@ -638,28 +719,33 @@
     <span class="k">return</span> <span class="n">shifted_to_0_1</span> <span class="o">*</span> <span class="n">relative_scale</span> <span class="o">+</span> <span class="n">min_relative</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">assign_colors</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">available_colors</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">assign_colors</span><span class="p">(</span>
+    <span class="n">names</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">available_colors</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="n">num_colors</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">_colors</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
             <span class="k">continue</span>
         <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
         <span class="n">color</span> <span class="o">=</span> <span class="n">available_colors</span><span class="p">[</span><span class="n">num_colors</span><span class="p">]</span>
-        <span class="n">_colors</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">color</span>
+        <span class="n">colors</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">color</span>
         <span class="n">num_colors</span> <span class="o">+=</span> <span class="mi">1</span>
 
-    <span class="k">return</span> <span class="n">_colors</span>
+    <span class="k">return</span> <span class="n">colors</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">draw_legends</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">,</span> <span class="n">feature_handler</span><span class="p">,</span> <span class="n">pvis</span><span class="p">,</span>
-                 <span class="n">color_box_x_dim</span><span class="p">,</span> <span class="n">color_box_y_dim</span><span class="p">,</span> <span class="n">color_circle_radius</span><span class="p">,</span> <span class="n">row_spacing</span><span class="p">,</span>
-                 <span class="n">legend1_min_x</span><span class="p">,</span> <span class="n">legend1_max_y</span><span class="p">,</span>
-                 <span class="n">legend2_min_x</span><span class="p">,</span> <span class="n">legend2_max_y</span><span class="p">,</span>
-                 <span class="n">variant_effect_colors</span><span class="p">,</span>
-                 <span class="n">labeling_method</span><span class="p">,</span>
-                 <span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">draw_legends</span><span class="p">(</span>
+    <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">,</span>
+    <span class="n">feature_handler</span><span class="p">,</span>
+    <span class="n">color_box_x_dim</span><span class="p">,</span> <span class="n">color_box_y_dim</span><span class="p">,</span> <span class="n">color_circle_radius</span><span class="p">,</span> <span class="n">row_spacing</span><span class="p">,</span>
+    <span class="n">legend1_min_x</span><span class="p">,</span> <span class="n">legend1_max_y</span><span class="p">,</span>
+    <span class="n">legend2_min_x</span><span class="p">,</span> <span class="n">legend2_max_y</span><span class="p">,</span>
+    <span class="n">variant_effect_colors</span><span class="p">,</span>
+    <span class="n">labeling_method</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="c1"># draw legend 1 for protein features</span>
     <span class="n">n_unique_features</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">feature_handler</span><span class="o">.</span><span class="n">cleaned_unique_feature_names</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">labeling_method</span> <span class="o">==</span> <span class="s1">&#39;abbreviate&#39;</span><span class="p">:</span>
@@ -714,7 +800,11 @@
     <span class="k">return</span> <span class="n">legend1_width</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">sweep_line</span><span class="p">(</span><span class="n">intervals</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sweep_line</span><span class="p">(</span>
+    <span class="n">intervals</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span>
+        <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
+    <span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a list of intervals, find the maximum number of overlapping intervals.</span>
 
