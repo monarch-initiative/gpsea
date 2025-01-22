@@ -39,10 +39,10 @@ This is a non-parametric test that compares the medians of the two classes to de
 >>> r = stats.mannwhitneyu(x=class1, y=class2, alternative = 'two-sided')
 >>> p_value = r.pvalue
 >>> float(p_value)
-6.348081479150902e-06
+6.348081479150...e-06
 
 
-p value of `6.348081479150901e-06` suggests a significant difference between the classes.
+p value of `6.348081479150e-06` suggests a significant difference between the classes.
 
 
 ****************
@@ -73,7 +73,7 @@ from a `JSON file <https://github.com/monarch-initiative/gpsea/tree/main/docs/co
 The cohort was prepared from phenopackets as described in :ref:`create-a-cohort` section,
 and then serialized as a JSON file following the instructions in :ref:`cohort-persistence` section.
 
-.. 
+..
    Prepare the JSON file by running the tests in `tests/tests/test_generate_doc_cohorts.py`.
 
 >>> import json
@@ -99,8 +99,8 @@ Genotype predicate
 ------------------
 
 *Jordan et al.* compare phenotype of individuals harboring point mutations
-with the individuals carrying loss of function mutations. 
-Let's create a predicate for testing if the variant 
+with the individuals carrying loss of function mutations.
+Let's create a predicate for testing if the variant
 is a point mutation or a loss of function mutation.
 
 In this example, the point mutation is a mutation that meets the following conditions:
@@ -158,7 +158,7 @@ As far as GPSEA framework is concerned, the phenotype score must be a floating p
 or a `NaN` value if the score cannot be computed for an individual.
 This is the essence of the :class:`~gpsea.analysis.pscore.PhenotypeScorer` class.
 
-GPSEA ships with several builtin phenotype scorers which can be used as  
+GPSEA ships with several builtin phenotype scorers which can be used as
 
 +------------------------------------------------------------+---------------------------------------------+
 | Name                                                       | Description                                 |
@@ -189,7 +189,7 @@ from the following 5 categories:
 
 For example, an individual with a congenital heart defect would be assigned a score of `1`,
 an individual with congenital heart defect and a renal anomaly would be assigned a score of `2`,
-and so on. If an individual had two heart defects (e.g., atrial septal defect and ventricular septal defect), 
+and so on. If an individual had two heart defects (e.g., atrial septal defect and ventricular septal defect),
 a score of 1 (not 2) would be assigned for the heart defect category.
 
 The :class:`~gpsea.analysis.pscore.CountingPhenotypeScorer` automatizes this scoring method
@@ -245,7 +245,7 @@ We will put the final analysis together into :class:`~gpsea.analysis.pscore.Phen
 
 >>> from gpsea.analysis.pscore import PhenotypeScoreAnalysis
 >>> score_analysis = PhenotypeScoreAnalysis(
-...     score_statistic=score_statistic,   
+...     score_statistic=score_statistic,
 ... )
 
 
@@ -265,8 +265,8 @@ In case of the *RERE* cohort, the analysis shows a significant difference
 between the number of structural defects in individuals
 with point vs. loss-of-function mutations.
 
->>> result.pval
-0.012074957610483744
+>>> result.pval # doctest: +ELLIPSIS
+0.0120749576...
 
 
 To explore further, we can access a data frame with genotype categories and phenotype counts:
