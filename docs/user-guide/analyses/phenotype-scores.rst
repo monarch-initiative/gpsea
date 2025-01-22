@@ -38,8 +38,8 @@ This is a non-parametric test that compares the medians of the two classes to de
 >>> class2 = [4, 5, 3, 4, 3, 3, 3, 4, 4, 5, 5, 2, 3, 0, 3, 5, 2, 3]
 >>> r = stats.mannwhitneyu(x=class1, y=class2, alternative = 'two-sided')
 >>> p_value = r.pvalue
->>> float(p_value) # doctest: +ELLIPSIS
-6.348081479150...e-06
+>>> float(p_value)
+6.348081479150e...-06
 
 
 p value of `6.348081479150e-06` suggests a significant difference between the classes.
