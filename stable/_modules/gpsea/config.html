@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.config &mdash; GPSEA 0.9.2 documentation</title>
+  <title>gpsea.config &mdash; GPSEA 0.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=aa3b121e"></script>
+      <script src="../../_static/documentation_options.js?v=0e439607"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -92,6 +92,23 @@
 <span class="sd">Default path to GPSEA cache directory.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="n">PALETTE_DATA</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;#990F0F&quot;</span><span class="p">,</span>  <span class="c1"># dark &quot;red&quot;</span>
+    <span class="s2">&quot;#A72929&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#B64343&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#C45D5D&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#D27676&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#E19090&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#EFAAAA&quot;</span><span class="p">,</span>  <span class="c1"># light &quot;red&quot;,</span>
+<span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Default data color palette.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">PALETTE_SPECIAL</span> <span class="o">=</span> <span class="s2">&quot;#00aaff&quot;</span>  <span class="c1"># light &quot;blue&quot;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A &quot;special&quot; (emphasis) color.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="get_cache_dir_path">
 <a class="viewcode-back" href="../../apidocs/gpsea.config.html#gpsea.config.get_cache_dir_path">[docs]</a>
@@ -100,11 +117,11 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get path to the default cache directory.</span>
-<span class="sd">    </span>
+
 <span class="sd">    First try to use `cache` argument.</span>
 <span class="sd">    If `cache` is `None`, then use the `GPSEA_CACHE` environment variable, if set.</span>
 <span class="sd">    Last, fall back to default cache path (`.gpsea_cache` in the current working directory).</span>
-<span class="sd">    </span>
+
 <span class="sd">    Note: the cache directory is *not* created if it does not exist.</span>
 
 <span class="sd">    :path cache: a `str` or a :class:`~pathlib.Path` to fallback cache</span>
@@ -117,7 +134,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Nothing provided as environment variable, let&#39;s use the default.</span>
             <span class="n">cache</span> <span class="o">=</span> <span class="n">DEFAULT_CACHE_PATH</span>
-    
+
     <span class="c1"># Ensure `cache_path` is path</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
         <span class="n">cache_path</span> <span class="o">=</span> <span class="n">cache</span>

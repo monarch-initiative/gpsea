@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.pscore package &mdash; GPSEA 0.9.2 documentation</title>
+  <title>gpsea.analysis.pscore package &mdash; GPSEA 0.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=aa3b121e"></script>
+      <script src="../_static/documentation_options.js?v=0e439607"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -209,15 +209,30 @@ if the phenotype score is impossible to compute.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.analysis.pscore.PhenotypeScoreAnalysisResult.plot_boxplots">
-<span class="sig-name descname"><span class="pre">plot_boxplots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('darksalmon',</span> <span class="pre">'honeydew')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">median_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'black'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_api.html#PhenotypeScoreAnalysisResult.plot_boxplots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.PhenotypeScoreAnalysisResult.plot_boxplots" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">plot_boxplots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('#990F0F',</span> <span class="pre">'#A72929',</span> <span class="pre">'#B64343',</span> <span class="pre">'#C45D5D',</span> <span class="pre">'#D27676',</span> <span class="pre">'#E19090',</span> <span class="pre">'#EFAAAA')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">median_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'#00aaff'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">boxplot_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_api.html#PhenotypeScoreAnalysisResult.plot_boxplots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.PhenotypeScoreAnalysisResult.plot_boxplots" title="Link to this definition"></a></dt>
 <dd><p>Draw box plot with distributions of phenotype scores for the genotype groups.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>gt_predicate</strong> – the genotype predicate used to produce the genotype groups.</p></li>
 <li><p><strong>ax</strong> – the Matplotlib <code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code> to draw on.</p></li>
-<li><p><strong>colors</strong> – a sequence with colors to use for coloring the box patches of the box plot.</p></li>
+<li><p><strong>colors</strong> – a sequence with color palette for the box plot patches.</p></li>
 <li><p><strong>median_color</strong> – a <cite>str</cite> with the color for the boxplot median line.</p></li>
+<li><p><strong>boxplot_kwargs</strong> – arguments to pass into <code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.boxplot()</span></code> function.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.analysis.pscore.PhenotypeScoreAnalysisResult.plot_violins">
+<span class="sig-name descname"><span class="pre">plot_violins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('#990F0F',</span> <span class="pre">'#A72929',</span> <span class="pre">'#B64343',</span> <span class="pre">'#C45D5D',</span> <span class="pre">'#D27676',</span> <span class="pre">'#E19090',</span> <span class="pre">'#EFAAAA')</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">violinplot_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/analysis/pscore/_api.html#PhenotypeScoreAnalysisResult.plot_violins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.analysis.pscore.PhenotypeScoreAnalysisResult.plot_violins" title="Link to this definition"></a></dt>
+<dd><p>Draw a violin plot with distributions of phenotype scores for the genotype groups.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> – the Matplotlib <code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code> to draw on.</p></li>
+<li><p><strong>colors</strong> – a sequence with color palette for the violin patches.</p></li>
+<li><p><strong>violinplot_kwargs</strong> – arguments to pass into <code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.violinplot()</span></code> function.</p></li>
 </ul>
 </dd>
 </dl>

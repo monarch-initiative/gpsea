@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Group by allele count &mdash; GPSEA 0.9.2 documentation</title>
+  <title>Group by allele count &mdash; GPSEA 0.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=aa3b121e"></script>
+      <script src="../../../../_static/documentation_options.js?v=0e439607"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -150,7 +150,7 @@ based on presence of zero or one <em>EGFR</em> mutation allele:</p>
 <span class="gp">... </span>    <span class="n">target</span><span class="o">=</span><span class="n">affects_egfr</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span><span class="o">.</span><span class="n">class_labels</span>
-<span class="go">(&#39;0&#39;, &#39;1&#39;)</span>
+<span class="go">(&#39;0 alleles&#39;, &#39;1 allele&#39;)</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">allele_count</span></code> needs two inputs.
@@ -183,12 +183,12 @@ e.g. to compare the patient survivals in a <cite>survival analysis &lt;survival&
 <span class="gp">... </span>    <span class="n">target</span><span class="o">=</span><span class="n">affects_lmna</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gt_clf</span><span class="o">.</span><span class="n">class_labels</span>
-<span class="go">(&#39;1&#39;, &#39;2&#39;)</span>
+<span class="go">(&#39;1 allele&#39;, &#39;2 alleles&#39;)</span>
 </pre></div>
 </div>
 <p>The classifier assigns the individuals into one of two classes:
 those with one <em>LMNA</em> variant allele and those with two <em>LMNA</em> variant alleles.
-Any cohort member with other allele counts (e.g. <cite>0</cite> or <cite>3</cite>) is ignored.</p>
+Any cohort member with other allele counts (e.g. <cite>0 allele</cite> or <cite>3 alleles</cite>) is ignored.</p>
 </section>
 </section>
 </section>

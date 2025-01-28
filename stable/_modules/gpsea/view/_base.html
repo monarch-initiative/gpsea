@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.view._base &mdash; GPSEA 0.9.2 documentation</title>
+  <title>gpsea.view._base &mdash; GPSEA 0.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=aa3b121e"></script>
+      <script src="../../../_static/documentation_options.js?v=0e439607"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -80,6 +80,8 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cohort</span><span class="p">,</span> <span class="n">ProteinMetadata</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProteinMetadataService</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_text_io_handle_for_writing</span>
 
 
@@ -112,7 +114,6 @@
 <div class="viewcode-block" id="BaseViewer">
 <a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.BaseViewer">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseViewer</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
-
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_environment</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="n">PackageLoader</span><span class="p">(</span><span class="s2">&quot;gpsea.view&quot;</span><span class="p">,</span> <span class="s2">&quot;templates&quot;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_environment</span><span class="o">.</span><span class="n">filters</span><span class="p">[</span><span class="s2">&quot;pluralize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pluralize</span>
@@ -140,21 +141,22 @@
         <span class="k">pass</span></div>
 </div>
 
-    
+
 
 <span class="k">class</span><span class="w"> </span><span class="nc">HtmlGpseaReport</span><span class="p">(</span><span class="n">GpseaReport</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A report where the content is formatted as a HTML `str`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># NOT PART OF THE PUBLIC API</span>
-    
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">html</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_html</span> <span class="o">=</span> <span class="n">html</span>
-    
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">html</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -174,6 +176,96 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_repr_html_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_html</span>
+
+
+<div class="viewcode-block" id="BaseProteinVisualizer">
+<a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.BaseProteinVisualizer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseProteinVisualizer</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The visualizer for plotting cohort variants on a protein diagram.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BaseProteinVisualizer.draw_protein">
+<a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.BaseProteinVisualizer.draw_protein">[docs]</a>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">draw_protein</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
+        <span class="n">protein_metadata</span><span class="p">:</span> <span class="n">ProteinMetadata</span><span class="p">,</span>
+        <span class="n">ax</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draw the locations of the cohort variants on the provided axes.</span>
+
+<span class="sd">        Keyword arguments</span>
+<span class="sd">        -----------------</span>
+
+<span class="sd">        The function can take multiple keyword arguments (``kwargs``):</span>
+
+<span class="sd">        * `labeling_method`: the strategy for generating labels.</span>
+<span class="sd">          Valid values of labeling_method are ``{&#39;abbreviate&#39;, &#39;enumerate&#39;}``</span>
+
+<span class="sd">        :param cohort: the cohort to plot.</span>
+<span class="sd">        :param protein_metadata: information for the protein of interest.</span>
+<span class="sd">        :param ax: a Matplotlib :class:`~matplotlib.pyplot.Axes` to plot on</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="CohortArtist">
+<a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.CohortArtist">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CohortArtist</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `CohortArtist` draws all types of figures to visualize</span>
+<span class="sd">    the salient aspects of the :class:`~gpsea.model.Cohort` of interest.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">protein_visualizer</span><span class="p">:</span> <span class="n">BaseProteinVisualizer</span><span class="p">,</span>
+        <span class="n">protein_metadata_service</span><span class="p">:</span> <span class="n">ProteinMetadataService</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">protein_visualizer</span><span class="p">,</span> <span class="n">BaseProteinVisualizer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_protein_visualizer</span> <span class="o">=</span> <span class="n">protein_visualizer</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">protein_metadata_service</span><span class="p">,</span> <span class="n">ProteinMetadataService</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_protein_metadata_service</span> <span class="o">=</span> <span class="n">protein_metadata_service</span>
+
+<div class="viewcode-block" id="CohortArtist.draw_protein">
+<a class="viewcode-back" href="../../../apidocs/gpsea.view.html#gpsea.view.CohortArtist.draw_protein">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">draw_protein</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cohort</span><span class="p">:</span> <span class="n">Cohort</span><span class="p">,</span>
+        <span class="n">protein_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">ax</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draw the locations of the cohort variants on the provided axes.</span>
+
+<span class="sd">        See the :meth:`~gpsea.view.BaseProteinVisualizer.draw_protein` for more info about the arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">protein_meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protein_metadata_service</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">protein_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_protein_visualizer</span><span class="o">.</span><span class="n">draw_protein</span><span class="p">(</span>
+            <span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span>
+            <span class="n">protein_metadata</span><span class="o">=</span><span class="n">protein_meta</span><span class="p">,</span>
+            <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+
+    <span class="c1"># TODO: implement once we know how to draw transcripts!</span>
+    <span class="c1"># def draw_transcript(</span>
+    <span class="c1">#     self,</span>
+    <span class="c1">#     cohort: Cohort,</span>
+    <span class="c1">#     tx_id: str,</span>
+    <span class="c1">#     ax,</span>
+    <span class="c1">#     **kwargs,</span>
+    <span class="c1"># ):</span>
+    <span class="c1">#     pass</span>
 </pre></div>
 
            </div>

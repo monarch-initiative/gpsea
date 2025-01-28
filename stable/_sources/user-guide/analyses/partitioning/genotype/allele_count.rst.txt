@@ -61,7 +61,7 @@ based on presence of zero or one *EGFR* mutation allele:
 ...     target=affects_egfr,
 ... )
 >>> gt_clf.class_labels
-('0', '1')
+('0 alleles', '1 allele')
 
 The ``allele_count`` needs two inputs.
 The ``counts`` takes a tuple of the target allele counts,
@@ -102,9 +102,9 @@ and we will compare the individuals with one allele with those with two alleles:
 ...     target=affects_lmna,
 ... )
 >>> gt_clf.class_labels
-('1', '2')
+('1 allele', '2 alleles')
 
 
 The classifier assigns the individuals into one of two classes:
 those with one *LMNA* variant allele and those with two *LMNA* variant alleles.
-Any cohort member with other allele counts (e.g. `0` or `3`) is ignored.
+Any cohort member with other allele counts (e.g. `0 allele` or `3 alleles`) is ignored.

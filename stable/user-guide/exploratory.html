@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cohort exploratory analysis &mdash; GPSEA 0.9.2 documentation</title>
+  <title>Cohort exploratory analysis &mdash; GPSEA 0.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=aa3b121e"></script>
+      <script src="../_static/documentation_options.js?v=0e439607"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -156,11 +156,11 @@ in JSON format.</p>
 (see <a class="reference internal" href="input-data.html#choose-tx-and-protein"><span class="std std-ref">Choose the transcript and protein of interest</span></a> for more info):</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure_default_tx_coordinate_service</span><span class="p">,</span> <span class="n">configure_default_protein_metadata_service</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tx_id</span> <span class="o">=</span> <span class="s2">&quot;NM_181486.4&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pt_id</span> <span class="o">=</span> <span class="s2">&quot;NP_852259.1&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">px_id</span> <span class="o">=</span> <span class="s2">&quot;NP_852259.1&quot;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tx_service</span> <span class="o">=</span> <span class="n">configure_default_tx_coordinate_service</span><span class="p">(</span><span class="n">genome_build</span><span class="o">=</span><span class="s2">&quot;GRCh38.p13&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tx_coordinates</span> <span class="o">=</span> <span class="n">tx_service</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">tx_id</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pm_service</span> <span class="o">=</span> <span class="n">configure_default_protein_metadata_service</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">protein_meta</span> <span class="o">=</span> <span class="n">pm_service</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">pt_id</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">protein_meta</span> <span class="o">=</span> <span class="n">pm_service</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">px_id</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Last, we load HPO <cite>v2024-07-01</cite> to use in the exploratory analysis:</p>
@@ -660,7 +660,7 @@ located in one or more protein domains and a certain phenotype.</p>
 <p>This code will produce the following table on the basis of a cohort of individuals
 with variants in the <em>TBX5</em> gene:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.view</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProteinVariantViewer</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cpd_viewer</span> <span class="o">=</span> <span class="n">ProteinVariantViewer</span><span class="p">(</span><span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">,</span> <span class="n">protein_metadata</span><span class="o">=</span><span class="n">protein_meta</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cpd_viewer</span> <span class="o">=</span> <span class="n">ProteinVariantViewer</span><span class="p">(</span><span class="n">protein_metadata</span><span class="o">=</span><span class="n">protein_meta</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">report</span> <span class="o">=</span> <span class="n">cpd_viewer</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">report</span>  
 </pre></div>
@@ -863,21 +863,45 @@ with variants in the <em>TBX5</em> gene:</p>
 </div></section>
 <section id="plot-distribution-of-variants-with-respect-to-the-protein-sequence">
 <h3>Plot distribution of variants with respect to the protein sequence<a class="headerlink" href="#plot-distribution-of-variants-with-respect-to-the-protein-sequence" title="Link to this heading"></a></h3>
-<p>We use Matplotlib to plot the distribution of variants on a protein diagram:</p>
+<section id="cohort-artist">
+<h4>Cohort artist<a class="headerlink" href="#cohort-artist" title="Link to this heading"></a></h4>
+<p>The simplest way to plot the variant distribution is to use the <a class="reference internal" href="../apidocs/gpsea.view.html#gpsea.view.CohortArtist" title="gpsea.view.CohortArtist"><code class="xref py py-class docutils literal notranslate"><span class="pre">CohortArtist</span></code></a> API:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.view</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProteinVisualizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.view</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure_default_cohort_artist</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort_artist</span> <span class="o">=</span> <span class="n">configure_default_cohort_artist</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">visualizer</span> <span class="o">=</span> <span class="n">ProteinVisualizer</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">visualizer</span><span class="o">.</span><span class="n">draw_protein_diagram</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">tx_coordinates</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">protein_meta</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">cohort</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort_artist</span><span class="o">.</span><span class="n">draw_protein</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">protein_id</span><span class="o">=</span><span class="n">px_id</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 </pre></div>
 </div>
-<a class="reference internal image-reference" href="../_images/TBX5_protein_diagram.png"><img alt="TBX5 protein diagram" class="align-center" src="../_images/TBX5_protein_diagram.png" style="width: 600px;" />
+<a class="reference internal image-reference" href="../_images/TBX5_protein_diagram.from_artist.png"><img alt="TBX5 protein diagram" class="align-center" src="../_images/TBX5_protein_diagram.from_artist.png" style="width: 600px;" />
 </a>
+<p>The <a class="reference internal" href="../apidocs/gpsea.view.html#gpsea.view.configure_default_cohort_artist" title="gpsea.view.configure_default_cohort_artist"><code class="xref py py-func docutils literal notranslate"><span class="pre">configure_default_cohort_artist()</span></code></a> function gets the default artist
+which we use to plot the diagram with the variant distribution across the protein sequence
+on Matplotlib axes.</p>
+</section>
+<section id="protein-visualizer">
+<h4>Protein visualizer<a class="headerlink" href="#protein-visualizer" title="Link to this heading"></a></h4>
+<p>Sometimes, however, things do not work out-of-the-box, e.g. because protein metadata
+is not available from Uniprot (the default), and we may need to use the lower-level components.</p>
+<p>The <a class="reference internal" href="../apidocs/gpsea.view.html#gpsea.view.ProteinVisualizer" title="gpsea.view.ProteinVisualizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProteinVisualizer</span></code></a> takes cohort and the protein metadata
+to plot the distribution of variants on a protein diagram:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.view</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProteinVisualizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">visualizer</span> <span class="o">=</span> <span class="n">ProteinVisualizer</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">visualizer</span><span class="o">.</span><span class="n">draw_protein</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">protein_metadata</span><span class="o">=</span><span class="n">protein_meta</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/TBX5_protein_diagram.from_protein_visualizer.png"><img alt="TBX5 protein diagram" class="align-center" src="../_images/TBX5_protein_diagram.from_protein_visualizer.png" style="width: 600px;" />
+</a>
+</section>
 </section>
 </section>
 </section>

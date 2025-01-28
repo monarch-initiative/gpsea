@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.view._phenotype_analysis &mdash; GPSEA 0.9.2 documentation</title>
+  <title>gpsea.view._phenotype_analysis &mdash; GPSEA 0.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=aa3b121e"></script>
+      <script src="../../../_static/documentation_options.js?v=0e439607"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -100,10 +100,11 @@
 
     <span class="c1"># Row index: a list of tested HPO terms</span>
     <span class="n">pheno_idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">phenotypes</span><span class="p">)</span>
-    <span class="c1"># Column index: multiindex of counts and percentages for all genotype predicate groups</span>
-    <span class="n">gt_idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">(</span>
-        <span class="n">iterables</span><span class="o">=</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">gt_clf</span><span class="o">.</span><span class="n">get_categories</span><span class="p">(),</span> <span class="p">(</span><span class="s2">&quot;Count&quot;</span><span class="p">,</span> <span class="s2">&quot;Percent&quot;</span><span class="p">)),</span>
-        <span class="n">names</span><span class="o">=</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">gt_clf</span><span class="o">.</span><span class="n">variable_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="c1"># Column index: a summary of the counts and percentages for all genotype predicate groups</span>
+    <span class="n">cat_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">gt_clf</span><span class="o">.</span><span class="n">get_categories</span><span class="p">())</span>
+    <span class="n">gt_idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">cat_names</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">gt_clf</span><span class="o">.</span><span class="n">variable_name</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># We&#39;ll fill this frame with data</span>
@@ -116,16 +117,15 @@
         <span class="k">for</span> <span class="n">gt_cat</span> <span class="ow">in</span> <span class="n">count</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
             <span class="n">cnt</span> <span class="o">=</span> <span class="n">count</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ph_clf</span><span class="o">.</span><span class="n">present_phenotype_category</span><span class="p">,</span> <span class="n">gt_cat</span><span class="p">]</span>
             <span class="n">total</span> <span class="o">=</span> <span class="n">gt_totals</span><span class="p">[</span><span class="n">gt_cat</span><span class="p">]</span>
-            <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ph_clf</span><span class="o">.</span><span class="n">phenotype</span><span class="p">,</span> <span class="p">(</span><span class="n">gt_cat</span><span class="p">,</span> <span class="s2">&quot;Count&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cnt</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">total</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="n">pct</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">total</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="nb">round</span><span class="p">(</span><span class="n">cnt</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">/</span> <span class="n">total</span><span class="p">)</span>
-            <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ph_clf</span><span class="o">.</span><span class="n">phenotype</span><span class="p">,</span> <span class="p">(</span><span class="n">gt_cat</span><span class="p">,</span> <span class="s2">&quot;Percent&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pct</span><span class="si">}</span><span class="s2">%&quot;</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ph_clf</span><span class="o">.</span><span class="n">phenotype</span><span class="p">,</span> <span class="n">gt_cat</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cnt</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">total</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">pct</span><span class="si">}</span><span class="s2">%)&quot;</span>
 
     <span class="c1"># Add columns with p values and corrected p values (if present)</span>
     <span class="n">p_val_col_name</span> <span class="o">=</span> <span class="s2">&quot;p values&quot;</span>
     <span class="n">corrected_p_val_col_name</span> <span class="o">=</span> <span class="s2">&quot;Corrected p values&quot;</span>
     <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">corrected_pvals</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">df</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">corrected_p_val_col_name</span><span class="p">),</span> <span class="n">result</span><span class="o">.</span><span class="n">corrected_pvals</span><span class="p">)</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">p_val_col_name</span><span class="p">),</span> <span class="n">result</span><span class="o">.</span><span class="n">pvals</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">corrected_p_val_col_name</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">corrected_pvals</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">p_val_col_name</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">pvals</span><span class="p">)</span>
 
     <span class="c1"># Format the index values: `HP:0001250` -&gt; `Seizure [HP:0001250]` if the index members are HPO terms</span>
     <span class="c1"># or just use the term ID CURIE otherwise (e.g. `OMIM:123000`).</span>
@@ -134,13 +134,18 @@
     <span class="c1"># Last, sort by corrected p value or just p value</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">labeled_idx</span><span class="p">)</span>
     <span class="c1"># and only report the tested HPO terms</span>
-    <span class="n">with_p_value</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">p_val_col_name</span><span class="p">)]</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span>
+    <span class="n">with_p_value</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">p_val_col_name</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span>
+
+    <span class="n">sort_columns</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">corrected_pvals</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span>
-            <span class="n">by</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">corrected_p_val_col_name</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">p_val_col_name</span><span class="p">)]</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">with_p_value</span><span class="p">]</span>
+        <span class="n">sort_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">corrected_p_val_col_name</span><span class="p">)</span>
+        <span class="n">sort_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p_val_col_name</span><span class="p">)</span>
+        <span class="n">sort_columns</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">cat_names</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">p_val_col_name</span><span class="p">))</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">with_p_value</span><span class="p">]</span></div>
+        <span class="n">sort_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p_val_col_name</span><span class="p">)</span>
+        <span class="n">sort_columns</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">cat_names</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="n">sort_columns</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">with_p_value</span><span class="p">]</span></div>
 
 
 

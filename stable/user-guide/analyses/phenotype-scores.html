@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Compare phenotype scores &mdash; GPSEA 0.9.2 documentation</title>
+  <title>Compare phenotype scores &mdash; GPSEA 0.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=aa3b121e"></script>
+      <script src="../../_static/documentation_options.js?v=0e439607"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -121,10 +121,10 @@ This is a non-parametric test that compares the medians of the two classes to de
 <span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">mannwhitneyu</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">class1</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">class2</span><span class="p">,</span> <span class="n">alternative</span> <span class="o">=</span> <span class="s1">&#39;two-sided&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">p_value</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">pvalue</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">float</span><span class="p">(</span><span class="n">p_value</span><span class="p">)</span>
-<span class="go">6.348081479150902e-06</span>
+<span class="go">6.348081479150...e-06</span>
 </pre></div>
 </div>
-<p>p value of <cite>6.348081479150901e-06</cite> suggests a significant difference between the classes.</p>
+<p>p value of <cite>6.348081479150e-06</cite> suggests a significant difference between the classes.</p>
 </section>
 <section id="example-analysis">
 <h2>Example analysis<a class="headerlink" href="#example-analysis" title="Link to this heading"></a></h2>
@@ -332,8 +332,8 @@ for using with phenotype scores.</p>
 <p>In case of the <em>RERE</em> cohort, the analysis shows a significant difference
 between the number of structural defects in individuals
 with point vs. loss-of-function mutations.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">pval</span>
-<span class="go">0.012074957610483744</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">pval</span> 
+<span class="go">0.0120749576...</span>
 </pre></div>
 </div>
 <p>To explore further, we can access a data frame with genotype categories and phenotype counts:</p>
