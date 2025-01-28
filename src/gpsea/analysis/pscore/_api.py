@@ -354,17 +354,20 @@ class PhenotypeScoreAnalysis:
         for individual in cohort:
             gt_cat = gt_clf.test(individual)
             if gt_cat is None:
-                data.loc[individual.patient_id, MonoPhenotypeAnalysisResult.GT_COL] = (
-                    None
-                )
+                data.loc[
+                    individual.patient_id,
+                    MonoPhenotypeAnalysisResult.GT_COL
+                ] = None
             else:
-                data.loc[individual.patient_id, MonoPhenotypeAnalysisResult.GT_COL] = (
-                    gt_cat.category.cat_id
-                )
+                data.loc[
+                    individual.patient_id, 
+                    MonoPhenotypeAnalysisResult.GT_COL
+                ] = gt_cat.category.cat_id
 
-            data.loc[individual.patient_id, MonoPhenotypeAnalysisResult.PH_COL] = (
-                pheno_scorer.score(individual)
-            )
+            data.loc[
+                individual.patient_id,
+                MonoPhenotypeAnalysisResult.PH_COL
+            ] = pheno_scorer.score(individual)
 
         # Sort by PatientCategory.cat_id and unpack.
         # For now, we only allow to have up to 2 groups.
