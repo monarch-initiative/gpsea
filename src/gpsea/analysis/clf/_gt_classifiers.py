@@ -249,7 +249,7 @@ def monoallelic_classifier(
     a_predicate: VariantPredicate,
     b_predicate: typing.Optional[VariantPredicate] = None,
     a_label: str = "A",
-    b_label: str = "B",
+    b_label: typing.Optional[str] = None,
 ) -> GenotypeClassifier:
     """
     Monoallelic classifier bins patient into one of two groups, `A` and `B`,
@@ -260,17 +260,20 @@ def monoallelic_classifier(
 
     :param a_predicate: predicate to test if the variants
         meet the criteria of the first group (named `A` by default).
-    :param b_predicate: predicate to test if the variants
-        meet the criteria of the second group or `None`
-        if the inverse of `a_predicate` should be used (named `B` by default).
+    :param b_predicate: predicate to test if the variants meet
+        the criteria of the second group or `None` if the complement
+        of the `a_predicate` should be used (named ``A^C`` by default).
     :param a_label: display name of the `a_predicate` (default ``"A"``).
-    :param b_label: display name of the `b_predicate` (default ``"B"``).
+    :param b_label: display name of the `b_predicate`.
+      If `b_label` is not provided, then set to ``"{a_label}^C"`` (e.g. ``A^C`` if ``a_label=A``).
     """
     assert isinstance(a_label, str)
-    assert isinstance(b_label, str)
-
-    if b_predicate is None:
-        b_predicate = ~a_predicate
+    a_predicate, b_predicate, b_label = _validate_b_predicate(
+        a_predicate=a_predicate,
+        b_predicate=b_predicate,
+        a_label=a_label,
+        b_label=b_label,
+    )    
 
     return PolyCountingGenotypeClassifier.monoallelic(
         a_predicate=a_predicate,
@@ -284,7 +287,7 @@ def biallelic_classifier(
     a_predicate: VariantPredicate,
     b_predicate: typing.Optional[VariantPredicate] = None,
     a_label: str = "A",
-    b_label: str = "B",
+    b_label: typing.Optional[str] = None,
     partitions: typing.Collection[typing.Union[int, typing.Collection[int]]] = (
         0,
         1,
@@ -302,21 +305,24 @@ def biallelic_classifier(
     :param a_predicate: predicate to test if the variants meet
         the criteria of the first group (named `A` by default).
     :param b_predicate: predicate to test if the variants meet
-        the criteria of the second group or `None` if an inverse
-        of `a_predicate` should be used (named `B` by default).
+        the criteria of the second group or `None` if the complement
+        of the `a_predicate` should be used (named ``A^C`` by default).
     :param a_label: display name of the `a_predicate` (default ``"A"``).
-    :param b_label: display name of the `b_predicate` (default ``"B"``).
+    :param b_label: display name of the `b_predicate`.
+      If `b_label` is not provided, then set to ``"{a_label}^C"`` (e.g. ``A^C`` if ``a_label=A``).
     :param partitions: a sequence with partition identifiers (default ``(0, 1, 2)``).
     """
     # Q/C
     assert isinstance(a_label, str)
-    assert isinstance(b_label, str)
-
+    a_predicate, b_predicate, b_label = _validate_b_predicate(
+        a_predicate=a_predicate,
+        b_predicate=b_predicate,
+        a_label=a_label,
+        b_label=b_label,
+    )
+    
     partitions = _fixate_partitions(partitions)
     _qc_partitions(partitions)
-
-    if b_predicate is None:
-        b_predicate = ~a_predicate
 
     return PolyCountingGenotypeClassifier.biallelic(
         a_predicate=a_predicate,
@@ -325,6 +331,28 @@ def biallelic_classifier(
         b_label=b_label,
         partitions=partitions,
     )
+
+def _validate_b_predicate(
+    a_predicate: VariantPredicate,
+    b_predicate: typing.Optional[VariantPredicate],
+    a_label: str,
+    b_label: typing.Optional[str],
+) -> typing.Tuple[
+    VariantPredicate, VariantPredicate, str,
+]:
+    if b_predicate is None:
+        b_predicate = ~a_predicate
+        if b_label is None:
+            # Using a regular uppercase `C` instead of Unicode complement (`∁`)
+            # to reduce the 😕 factor.
+            b_label = f"{a_label}^C" # complement of A
+        else:
+            assert isinstance(b_label, str)    
+    else:
+        if b_label is None:
+            b_label = f"{a_label}^C" # complement of A
+        
+    return a_predicate, b_predicate, b_label
 
 
 def _build_ac_to_cat(
@@ -338,7 +366,7 @@ def _build_ac_to_cat(
 
     ac2cat = {}
     for i, partition in enumerate(partitions):
-        name = " OR ".join(str(j) for j in partition)
+        name = " OR ".join(_pluralize(count=j, base="allele") for j in partition)
         description = " OR ".join(labels[j] for j in partition)
         cat = Categorization(
             PatientCategory(cat_id=i, name=name, description=description),
@@ -348,6 +376,14 @@ def _build_ac_to_cat(
 
     return ac2cat
 
+def _pluralize(
+    count: int,
+    base: str,
+) -> str:
+    if count == 1:
+        return f"{count} {base}"
+    else:
+        return f"{count} {base}s"
 
 def allele_count(
     counts: typing.Collection[typing.Union[int, typing.Collection[int]]],
@@ -372,20 +408,20 @@ def allele_count(
     >>> from gpsea.analysis.clf import allele_count
     >>> zero_vs_one = allele_count(counts=(0, 1))
     >>> zero_vs_one.summarize_classes()
-    'Allele count: 0, 1'
+    'Allele count: 0 alleles, 1 allele'
 
     These counts will create three classes for individuals with zero, one or two alleles:
 
     >>> zero_vs_one_vs_two = allele_count(counts=(0, 1, 2))
     >>> zero_vs_one_vs_two.summarize_classes()
-    'Allele count: 0, 1, 2'
+    'Allele count: 0 alleles, 1 allele, 2 alleles'
 
     Last, the counts below will create two groups, one for the individuals with zero target variant type alleles,
     and one for the individuals with one or two alleles:
 
     >>> zero_vs_one_vs_two = allele_count(counts=(0, {1, 2}))
     >>> zero_vs_one_vs_two.summarize_classes()
-    'Allele count: 0, 1 OR 2'
+    'Allele count: 0 alleles, 1 allele OR 2 alleles'
 
     Note that we wrap the last two allele counts in a set.
 

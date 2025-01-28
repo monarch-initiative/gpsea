@@ -20,10 +20,11 @@ def summarize_hpo_analysis(
 
     # Row index: a list of tested HPO terms
     pheno_idx = pd.Index(result.phenotypes)
-    # Column index: multiindex of counts and percentages for all genotype predicate groups
-    gt_idx = pd.MultiIndex.from_product(
-        iterables=(result.gt_clf.get_categories(), ("Count", "Percent")),
-        names=(result.gt_clf.variable_name, None),
+    # Column index: a summary of the counts and percentages for all genotype predicate groups
+    cat_names = list(cat.name for cat in result.gt_clf.get_categories())
+    gt_idx = pd.Index(
+        data=cat_names,
+        name=result.gt_clf.variable_name,
     )
 
     # We'll fill this frame with data
@@ -36,16 +37,15 @@ def summarize_hpo_analysis(
         for gt_cat in count.columns:
             cnt = count.loc[ph_clf.present_phenotype_category, gt_cat]
             total = gt_totals[gt_cat]
-            df.loc[ph_clf.phenotype, (gt_cat, "Count")] = f"{cnt}/{total}"
             pct = 0 if total == 0 else round(cnt * 100 / total)
-            df.loc[ph_clf.phenotype, (gt_cat, "Percent")] = f"{pct}%"
+            df.loc[ph_clf.phenotype, gt_cat.name] = f"{cnt}/{total} ({pct}%)"
 
     # Add columns with p values and corrected p values (if present)
     p_val_col_name = "p values"
     corrected_p_val_col_name = "Corrected p values"
     if result.corrected_pvals is not None:
-        df.insert(df.shape[1], ("", corrected_p_val_col_name), result.corrected_pvals)
-    df.insert(df.shape[1], ("", p_val_col_name), result.pvals)
+        df.insert(df.shape[1], corrected_p_val_col_name, result.corrected_pvals)
+    df.insert(df.shape[1], p_val_col_name, result.pvals)
 
     # Format the index values: `HP:0001250` -> `Seizure [HP:0001250]` if the index members are HPO terms
     # or just use the term ID CURIE otherwise (e.g. `OMIM:123000`).
@@ -54,13 +54,18 @@ def summarize_hpo_analysis(
     # Last, sort by corrected p value or just p value
     df = df.set_index(labeled_idx)
     # and only report the tested HPO terms
-    with_p_value = df[("", p_val_col_name)].notna()
+    with_p_value = df[p_val_col_name].notna()
+
+    sort_columns = []
     if result.corrected_pvals is not None:
-        return df.sort_values(
-            by=[("", corrected_p_val_col_name), ("", p_val_col_name)]
-        ).loc[with_p_value]
+        sort_columns.append(corrected_p_val_col_name)
+        sort_columns.append(p_val_col_name)
+        sort_columns.extend(cat_names)
     else:
-        return df.sort_values(by=("", p_val_col_name)).loc[with_p_value]
+        sort_columns.append(p_val_col_name)
+        sort_columns.extend(cat_names)
+
+    return df.sort_values(by=sort_columns).loc[with_p_value]
 
 
 def format_term_id(

@@ -1,6 +1,7 @@
-import random
 import heapq
+import random
 import typing
+import warnings
 
 from dataclasses import dataclass
 from itertools import cycle
@@ -11,15 +12,19 @@ import numpy as np
 
 from gpsea.model import Cohort, ProteinMetadata, TranscriptCoordinates, VariantEffect
 
+from ._base import BaseProteinVisualizer
 from ._protein_visualizable import ProteinVisualizable
 
 
-class ProteinVisualizer:
+class ProteinVisualizer(BaseProteinVisualizer):
     """
     Draw a schema of a protein with variants of the cohort.
     """
 
-    def __init__(self, random_seed: int = 42) -> None:
+    def __init__(
+        self,
+        random_seed: int = 42,
+    ):
         # colors
         mycolors = [m for m in mcolors.CSS4_COLORS.keys() if "grey" not in m and "white" not in m]
         rng = random.Random(random_seed)
@@ -53,6 +58,97 @@ class ProteinVisualizer:
         self.legend2_max_x = 0.3
         self.legend2_max_y = 0.75
 
+    def draw_protein(
+        self,
+        cohort: Cohort,
+        protein_metadata: ProteinMetadata,
+        ax,
+        **kwargs,
+    ):
+        labeling_method = kwargs.pop("labeling_method", "abbreviate")
+        starts = []
+        ends = []
+        names = []
+        for feature in protein_metadata.protein_features:
+            starts.append(feature.info.start)
+            ends.append(feature.info.end)
+            names.append(feature.info.name)
+        
+        # STATE
+        feature_handler = DrawableProteinFeatureHandler(
+            starts,
+            ends,
+            names,
+            labeling_method,
+            self._available_colors,
+        )
+        max_overlapping_features = sweep_line(
+            [(f.min_pos_abs, f.max_pos_abs) for f in feature_handler.features]  # define intervals
+        )
+
+        variant_handler = DrawableProteinVariantHandler(
+            cohort=cohort,
+            protein_meta=protein_metadata,
+        )
+
+        x_ticks = generate_ticks(apprx_n_ticks=6, min=1, max=protein_metadata.protein_length)
+        y_ticks = generate_ticks(apprx_n_ticks=5, min=0, max=variant_handler.max_marker_count)
+
+        # normalize into [0, 1], leaving some space on the sides
+        for f in feature_handler.features:
+            cur_limits = f.min_pos_abs, f.max_pos_abs
+            f.min_pos_plotting, f.max_pos_plotting = translate_to_ax_coordinates(
+                np.array(cur_limits), min_absolute=1, max_absolute=protein_metadata.protein_length,
+                min_relative=self.protein_track_x_min, max_relative=self.protein_track_x_max
+            )
+
+        for v in variant_handler.variants:
+            pos_abs = v.pos_abs
+            v.pos_plotting = translate_to_ax_coordinates(
+                np.array([pos_abs]), min_absolute=1, max_absolute=protein_metadata.protein_length,
+                min_relative=self.protein_track_x_min,
+                max_relative=self.protein_track_x_max, clip=True)
+
+        x_ticks_relative = translate_to_ax_coordinates(x_ticks, min_absolute=1,
+                                                       max_absolute=protein_metadata.protein_length,
+                                                       min_relative=self.protein_track_x_min,
+                                                       max_relative=self.protein_track_x_max)
+
+        # PLOTTING
+        draw_axes(ax,
+                  x_ticks, x_ticks_relative, y_ticks,
+                  variant_handler.max_marker_count, 1, protein_metadata.protein_length, max_overlapping_features,
+                  self.protein_track_x_min, self.protein_track_x_max,
+                  self.protein_track_y_max, self.protein_track_height, self.protein_track_buffer,
+                  self.font_size, self.text_padding,
+                  self.axis_color, self.protein_track_color
+                  )
+
+        variant_handler.draw_variants(ax, self.protein_track_y_max, stem_color=self.variant_stem_color)
+
+        feature_handler.draw_features(ax,
+                                      self.protein_features_y_max,
+                                      self.protein_feature_height,
+                                      self.protein_feature_outline_color)
+
+        legend1_width = draw_legends(ax, feature_handler,
+                                     self.color_box_x_dim, self.color_box_y_dim, self.color_circle_radius,
+                                     self.row_spacing,
+                                     self.legend1_min_x, self.legend1_max_y,
+                                     self.legend2_min_x, self.legend2_max_y,
+                                     variant_handler.variant_effect_colors(),
+                                     labeling_method, )
+
+        ax.set(
+            xlim=(0, max(1.0, self.legend1_min_x + legend1_width + 0.02)),
+            ylim=(0.3, 0.75),
+            aspect='equal',
+            title=f'{protein_metadata.label}\n'
+                  f'protein: {protein_metadata.protein_id}',
+        )
+
+        ax.axis('off')
+
     def draw_protein_diagram(
         self,
         tx_coordinates: TranscriptCoordinates,
@@ -61,8 +157,27 @@ class ProteinVisualizer:
         ax: typing.Optional[plt.Axes] = None,
         labeling_method: typing.Literal['abbreviate', 'enumerate'] = 'abbreviate'
     ) -> typing.Optional[plt.Axes]:
-        pvis = ProteinVisualizable(tx_coordinates, protein_metadata, cohort)
-        return self.draw_fig(pvis, ax, labeling_method)
+        warnings.warn(
+            "draw_protein_diagram was deprecated and will be removed in `1.0.0`. Use `draw_protein` instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        if ax is None:
+            should_return_ax = True
+            _, ax = plt.subplots(figsize=(20, 20))
+        else:
+            should_return_ax = False
+        
+        self.draw_protein(
+            cohort=cohort,
+            protein_metadata=protein_metadata,
+            ax=ax,
+            labeling_method=labeling_method,
+        )
+
+        if should_return_ax:
+            return ax
+        
 
     def draw_fig(
         self,
@@ -86,77 +201,23 @@ class ProteinVisualizer:
             `None` if an :class:`plt.Axes` was provided via `ax` argument
             or an `Axes` created by the visualizer if `ax` was `None`.
         """
+        warnings.warn(
+            "draw_fig was deprecated and will be removed in `1.0.0`. Use `draw_protein` instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         if ax is None:
             should_return_ax = True
             _, ax = plt.subplots(figsize=(20, 20))
         else:
             should_return_ax = False
 
-        # STATE
-        feature_handler = DrawableProteinFeatureHandler(pvis, labeling_method, self._available_colors)
-        max_overlapping_features = sweep_line(
-            [(f.min_pos_abs, f.max_pos_abs) for f in feature_handler.features]  # define intervals
+        self.draw_protein(
+            cohort=pvis.cohort,
+            protein_metadata=pvis.protein_metadata,
+            ax=ax,
+            labeling_method=labeling_method,
         )
-
-        variant_handler = DrawableProteinVariantHandler(pvis)
-
-        x_ticks = generate_ticks(apprx_n_ticks=6, min=1, max=pvis.protein_length)
-        y_ticks = generate_ticks(apprx_n_ticks=5, min=0, max=variant_handler.max_marker_count)
-
-        # normalize into [0, 1], leaving some space on the sides
-        for f in feature_handler.features:
-            cur_limits = f.min_pos_abs, f.max_pos_abs
-            f.min_pos_plotting, f.max_pos_plotting = translate_to_ax_coordinates(
-                np.array(cur_limits), min_absolute=1, max_absolute=pvis.protein_length,
-                min_relative=self.protein_track_x_min, max_relative=self.protein_track_x_max
-            )
-
-        for v in variant_handler.variants:
-            pos_abs = v.pos_abs
-            v.pos_plotting = translate_to_ax_coordinates(
-                np.array([pos_abs]), min_absolute=1, max_absolute=pvis.protein_length,
-                min_relative=self.protein_track_x_min,
-                max_relative=self.protein_track_x_max, clip=True)
-
-        x_ticks_relative = translate_to_ax_coordinates(x_ticks, min_absolute=1,
-                                                       max_absolute=pvis.protein_length,
-                                                       min_relative=self.protein_track_x_min,
-                                                       max_relative=self.protein_track_x_max)
-
-        # PLOTTING
-        draw_axes(ax,
-                  x_ticks, x_ticks_relative, y_ticks,
-                  variant_handler.max_marker_count, 1, pvis.protein_length, max_overlapping_features,
-                  self.protein_track_x_min, self.protein_track_x_max,
-                  self.protein_track_y_max, self.protein_track_height, self.protein_track_buffer,
-                  self.font_size, self.text_padding,
-                  self.axis_color, self.protein_track_color
-                  )
-
-        variant_handler.draw_variants(ax, self.protein_track_y_max, stem_color=self.variant_stem_color)
-
-        feature_handler.draw_features(ax,
-                                      self.protein_features_y_max,
-                                      self.protein_feature_height,
-                                      self.protein_feature_outline_color)
-
-        legend1_width = draw_legends(ax, feature_handler, pvis,
-                                     self.color_box_x_dim, self.color_box_y_dim, self.color_circle_radius,
-                                     self.row_spacing,
-                                     self.legend1_min_x, self.legend1_max_y,
-                                     self.legend2_min_x, self.legend2_max_y,
-                                     variant_handler.variant_effect_colors(),
-                                     labeling_method, )
-
-        ax.set(
-            xlim=(0, max(1.0, self.legend1_min_x + legend1_width + 0.02)),
-            ylim=(0.3, 0.75),
-            aspect='equal',
-            title=f'{pvis.protein_metadata.label}\ntranscript: {pvis.transcript_id}, '
-                  f'protein: {pvis.protein_id}',
-        )
-
-        ax.axis('off')
 
         if should_return_ax:
             return ax
@@ -201,8 +262,17 @@ class DrawableProteinFeature:
 
 
 class DrawableProteinFeatureHandler:
-    def __init__(self, pvis: ProteinVisualizable, labeling_method: str, colors: typing.Sequence[str]):
-        self.pvis = pvis
+    def __init__(
+        self,
+        starts: typing.Sequence[int],
+        ends: typing.Sequence[int],
+        feature_names: typing.Sequence[str],
+        labeling_method: str,
+        colors: typing.Sequence[str],
+    ):
+        self._starts = starts
+        self._ends = ends
+        self._feature_names = feature_names
         self.labeling_method = labeling_method
         self._available_colors = colors
 
@@ -212,7 +282,7 @@ class DrawableProteinFeatureHandler:
 
     def _generate_labels(self):
         # aggregate similar feature names into one category
-        unique_feature_names = list(set(self.pvis.protein_feature_names))
+        unique_feature_names = list(set(self._feature_names))
         cleaned_unique_feature_names = set()
         mapping_all2cleaned = dict()
         for feature_name in unique_feature_names:
@@ -237,20 +307,19 @@ class DrawableProteinFeatureHandler:
 
         return cleaned_unique_feature_names, mapping_all2cleaned, labels, colors
 
-    def _generate_features(self):
-        features = list()
-        for i in range(len(self.pvis.protein_feature_ends)):
-            features.append(DrawableProteinFeature(
-                min_pos_abs=self.pvis.protein_feature_starts[i],
-                max_pos_abs=self.pvis.protein_feature_ends[i],
-                name=self.pvis.protein_feature_names[i],
-                label=self.labels[self.mapping_all2cleaned[self.pvis.protein_feature_names[i]]],
-                color=self.colors[self.mapping_all2cleaned[self.pvis.protein_feature_names[i]]],
+    def _generate_features(self) -> typing.Sequence[DrawableProteinFeature]:
+        return [
+            DrawableProteinFeature(
+                min_pos_abs=start,
+                max_pos_abs=end,
+                name=name,
+                label=self.labels[self.mapping_all2cleaned[name]],
+                color=self.colors[self.mapping_all2cleaned[name]],
                 min_pos_plotting=-1.0, max_pos_plotting=-1.0,  # will be set later in draw_fig(), when plot limits known
                 track=0
-            ))
-
-        return features
+            )
+            for start, end, name in zip(self._starts, self._ends, self._feature_names)
+        ]
 
     def draw_features(self, ax: plt.Axes, features_y_max: float, feature_height: float, feature_outline_color: str):
         for f in self.features:
@@ -287,8 +356,17 @@ class DrawableProteinVariant:
 
 
 class DrawableProteinVariantHandler:
-    def __init__(self, pvis: ProteinVisualizable, aggregation_method: typing.Literal['standard', 'disease'] = 'standard'):
-        self.pvis = pvis
+    def __init__(
+        self,
+        cohort: Cohort,
+        protein_meta: ProteinMetadata,
+        aggregation_method: typing.Literal['standard', 'disease'] = 'standard',
+    ):
+        self._pvis = ProteinVisualizable(
+            tx_coordinates=None,
+            protein_meta=protein_meta,
+            cohort=cohort,
+        )  
         if aggregation_method in ['standard', 'disease']:
             self.aggregation_method = aggregation_method
         else:
@@ -336,7 +414,7 @@ class DrawableProteinVariantHandler:
             VariantEffect.INTERGENIC_VARIANT: "#ff00ff",
             VariantEffect.SEQUENCE_VARIANT: "#33ff00",
         }
-        self.max_marker_count = np.max(self.pvis.marker_counts)
+        self.max_marker_count = np.max(self._pvis.marker_counts)
         if self.aggregation_method == 'standard':
             self.variants = self._generate_variant_markers()
         elif self.aggregation_method == 'disease':
@@ -344,14 +422,14 @@ class DrawableProteinVariantHandler:
 
     def _generate_variant_markers(self):
         variants = list()
-        for j, vl in enumerate(self.pvis.variant_locations_counted_absolute):
-            i = np.where(self.pvis.variant_locations == vl)[0][0]
-            effect = self.pvis.variant_effects[i]
+        for j, vl in enumerate(self._pvis.variant_locations_counted_absolute):
+            i = np.where(self._pvis.variant_locations == vl)[0][0]
+            effect = self._pvis.variant_effects[i]
             v = DrawableProteinVariant(effect=effect,
                                        pos_abs=vl,
                                        color=self.variant_effect2color[effect],
                                        pos_plotting=-1.0,
-                                       count=self.pvis.marker_counts[j])
+                                       count=self._pvis.marker_counts[j])
             variants.append(v)
 
         return variants
@@ -551,28 +629,33 @@ def translate_to_ax_coordinates(
     return shifted_to_0_1 * relative_scale + min_relative
 
 
-def assign_colors(names: typing.Iterable[str], available_colors: typing.Sequence[str]):
+def assign_colors(
+    names: typing.Iterable[str],
+    available_colors: typing.Sequence[str],
+) -> typing.Mapping[int, str]:
     num_colors = 0
-    _colors = dict()
+    colors = dict()
     seen = set()
     for n in names:
         if n in seen:
             continue
         seen.add(n)
         color = available_colors[num_colors]
-        _colors[n] = color
+        colors[n] = color
         num_colors += 1
 
-    return _colors
+    return colors
 
 
-def draw_legends(ax: plt.Axes, feature_handler, pvis,
-                 color_box_x_dim, color_box_y_dim, color_circle_radius, row_spacing,
-                 legend1_min_x, legend1_max_y,
-                 legend2_min_x, legend2_max_y,
-                 variant_effect_colors,
-                 labeling_method,
-                 ):
+def draw_legends(
+    ax: plt.Axes,
+    feature_handler,
+    color_box_x_dim, color_box_y_dim, color_circle_radius, row_spacing,
+    legend1_min_x, legend1_max_y,
+    legend2_min_x, legend2_max_y,
+    variant_effect_colors,
+    labeling_method,
+):
     # draw legend 1 for protein features
     n_unique_features = len(feature_handler.cleaned_unique_feature_names)
     if labeling_method == 'abbreviate':
@@ -627,7 +710,11 @@ def draw_legends(ax: plt.Axes, feature_handler, pvis,
     return legend1_width
 
 
-def sweep_line(intervals: typing.Iterable[typing.Tuple[int, int]]) -> int:
+def sweep_line(
+    intervals: typing.Iterable[
+        typing.Tuple[typing.Union[int, float], typing.Union[int, float]],
+    ],
+) -> int:
     """
     Given a list of intervals, find the maximum number of overlapping intervals.
 

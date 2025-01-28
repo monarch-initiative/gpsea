@@ -154,6 +154,26 @@ class AnalysisResult(metaclass=abc.ABCMeta):
         """
         return self._statistic
 
+    @staticmethod
+    def _choose_palette_idxs(
+        n_categories: int,
+        n_colors: int,
+    ) -> typing.Sequence[int]:
+        """
+        Choose the color indices for coloring `n_categories` using a palette with `n_colors`.
+        """
+        if n_colors < 2:
+            raise ValueError(
+                f"Expected a palette with at least 2 colors but got {n_colors}"
+            )
+        if n_colors < n_categories:
+            raise ValueError(
+                f"The predicate produces {n_categories} categories but the palette includes only {n_colors} colors!"
+            )
+
+        a = np.linspace(start=1, stop=n_colors, num=n_categories, dtype=int)
+        return tuple(a - 1)
+
     def __eq__(self, value: object) -> bool:
         return (
             isinstance(value, AnalysisResult)
@@ -399,7 +419,7 @@ class MonoPhenotypeAnalysisResult(AnalysisResult, metaclass=abc.ABCMeta):
     """
     Name of the data index.
     """
-    
+
     GT_COL = "genotype"
     """
     Name of column for storing genotype data.
