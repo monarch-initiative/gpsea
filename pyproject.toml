@@ -51,7 +51,7 @@ dynamic = ["version"]
 [project.optional-dependencies]
 test = [
     "pytest>=7.0.0,<8.0.0",
-    "pytest-cov"
+    "pytest-cov",
 ]
 docs = [
     "sphinx>=7.0.0",
