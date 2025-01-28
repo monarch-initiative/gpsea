@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cohort exploratory analysis &mdash; GPSEA 0.9.3.dev0 documentation</title>
+  <title>Cohort exploratory analysis &mdash; GPSEA 0.9.4.dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=bc6e4f25"></script>
+      <script src="../_static/documentation_options.js?v=d641ac61"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -660,7 +660,7 @@ located in one or more protein domains and a certain phenotype.</p>
 <p>This code will produce the following table on the basis of a cohort of individuals
 with variants in the <em>TBX5</em> gene:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.view</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProteinVariantViewer</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cpd_viewer</span> <span class="o">=</span> <span class="n">ProteinVariantViewer</span><span class="p">(</span><span class="n">protein_metadata</span><span class="o">=</span><span class="n">protein_meta</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cpd_viewer</span> <span class="o">=</span> <span class="n">ProteinVariantViewer</span><span class="p">(</span><span class="n">protein_metadata</span><span class="o">=</span><span class="n">protein_meta</span><span class="p">,</span> <span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">report</span> <span class="o">=</span> <span class="n">cpd_viewer</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">report</span>  
 </pre></div>
