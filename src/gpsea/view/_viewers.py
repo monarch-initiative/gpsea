@@ -522,7 +522,9 @@ class ProteinVariantViewer(BaseViewer):
     def __init__(
         self,
         protein_metadata: ProteinMetadata,
+        tx_id: str,
     ):
+        # TODO[v1.0.0] - remove `tx_id`.
         super().__init__()
         self._cohort_template = self._environment.get_template("protein.html")
         self._protein_meta = protein_metadata

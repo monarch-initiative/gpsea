@@ -90,9 +90,11 @@ class TestProteinVariantViewer:
     def protein_variant_viewer(
         self,
         suox_protein_metadata: ProteinMetadata,
+        suox_mane_tx_id: str,
     ) -> ProteinVariantViewer:
         return ProteinVariantViewer(
             protein_metadata=suox_protein_metadata,
+            tx_id=suox_mane_tx_id,
         )
 
     def test_process(
