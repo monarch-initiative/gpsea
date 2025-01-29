@@ -293,7 +293,7 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
               (e.g., 22% in missense and 3% in nonsense genotypes would be OK,
               but not 13% missense and 10% nonsense genotypes if the threshold is 0.2).
               The default threshold is `0.4` (40%).
-            annotation_frequency_threshold: a `float` in range :math:`(0, 1) with the minimum frequency of
+            annotation_frequency_threshold: a `float` in range :math:`(0, 1]` with the minimum frequency of
                 annotation in the cohort. For instance, if the cohort consists of 100 individuals, and
                 we have explicit observed observations for 20 and excluded for 10 individuals, then the
                 annotation frequency is `0.3`. The purpose of this threshold is to omit terms for which
@@ -355,7 +355,13 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
         general_hpo_terms: typing.Iterable[hpotk.TermId],
     ):
         self._hpo = hpo
+        assert isinstance(term_frequency_threshold, (int, float)) \
+            and 0. < term_frequency_threshold <= 1., \
+            "The term_frequency_threshold must be in the range (0, 1]"
         self._hpo_term_frequency_filter = term_frequency_threshold
+        assert isinstance(annotation_frequency_threshold, (int, float)) \
+            and 0. < annotation_frequency_threshold <= 1., \
+            "The annotation_frequency_threshold must be in the range (0, 1]"
         self._hpo_annotation_frequency_threshold = annotation_frequency_threshold
 
         self._general_hpo_terms = set(general_hpo_terms)
