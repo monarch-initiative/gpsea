@@ -281,6 +281,8 @@ that if there is a signal from the nervous system,
 it will lead to at least one of the descendents of
 *Abnormality of the nervous system* being significant.
 
+See :ref:`general-hpo-terms` section for details.
+
 
 `HMF09` - Skipping terms that are rare on the cohort level 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -297,5 +299,3 @@ The threshold is set as ``annotation_frequency_threshold`` option
 of the :func:`~gpsea.analysis.mtc_filter.HpoMtcFilter.default_filter` constructor,
 with the default value of `0.4` (40%).
 
-
-See :ref:`general-hpo-terms` section for details.
