@@ -207,7 +207,7 @@ a phenotype multiple testing (MT) filter and multiple testing correction (MTC).
 
 Phenotype MT filter selects a (sub)set of HPO terms for testing,
 for instance only the user-selected terms (see :class:`~gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter`)
-or the terms selected by :class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`.
+or the terms selected by :class:`~gpsea.analysis.mtc_filter.IfHpoFilter`.
 
 MTC then adjusts the nominal p values for the increased risk
 of false positive G/P associations.
@@ -221,8 +221,8 @@ We must choose a phenotype MT filter as well as a MTC procedure to perform genot
 Default analysis
 ^^^^^^^^^^^^^^^^
 
-We recommend using HPO MT filter (:class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`) as a phenotype MT filter
-and Benjamini-Hochberg for MTC.
+We recommend using Independent filtering for HPO (:class:`~gpsea.analysis.mtc_filter.IfHpoFilter`)
+and Benjamini-Hochberg MT correction.
 The default analysis can be configured with :func:`~gpsea.analysis.pcats.configure_hpo_term_analysis` convenience method.
 
 >>> from gpsea.analysis.pcats import configure_hpo_term_analysis
@@ -240,10 +240,10 @@ Custom analysis
 If the default selection of phenotype MT filter and multiple testing correction is not an option,
 we can configure the analysis manually.
 
-First, we choose a phenotype MT filter (e.g. :class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`):
+First, we choose a phenotype MT filter (e.g. :class:`~gpsea.analysis.mtc_filter.IfHpoFilter`):
 
->>> from gpsea.analysis.mtc_filter import HpoMtcFilter
->>> mtc_filter = HpoMtcFilter.default_filter(hpo, term_frequency_threshold=.2)
+>>> from gpsea.analysis.mtc_filter import IfHpoFilter
+>>> mtc_filter = IfHpoFilter.default_filter(hpo, term_frequency_threshold=.2)
 
 .. note::
 

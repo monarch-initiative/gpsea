@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from gpsea.analysis.mtc_filter import HpoMtcFilter, SpecifiedTermsMtcFilter
+from gpsea.analysis.mtc_filter import IfHpoFilter, SpecifiedTermsMtcFilter
 from gpsea.analysis.clf import GenotypeClassifier, PhenotypeClassifier, HpoClassifier
 from gpsea.analysis.pcats import apply_classifiers_on_individuals
 from gpsea.model import Cohort
@@ -25,13 +25,13 @@ def patient_counts(
     return counts
 
 
-class TestHpoMtcFilter:
+class TestIfHpoFilter:
     @pytest.fixture
     def mtc_filter(
         self,
         hpo: hpotk.MinimalOntology,
-    ) -> HpoMtcFilter:
-        return HpoMtcFilter.default_filter(
+    ) -> IfHpoFilter:
+        return IfHpoFilter.default_filter(
             hpo=hpo,
             term_frequency_threshold=0.2,
             annotation_frequency_threshold=0.1,
@@ -86,9 +86,9 @@ class TestHpoMtcFilter:
         gt_clf: GenotypeClassifier,
         ph_predicate: PhenotypeClassifier[hpotk.TermId],
     ):
-        counts_df = TestHpoMtcFilter.prepare_counts_df(counts, gt_clf, ph_predicate)
+        counts_df = TestIfHpoFilter.prepare_counts_df(counts, gt_clf, ph_predicate)
 
-        actual = HpoMtcFilter.one_genotype_has_zero_hpo_observations(
+        actual = IfHpoFilter.one_genotype_has_zero_hpo_observations(
             counts=counts_df,
             gt_clf=gt_clf,
         )
@@ -113,9 +113,9 @@ class TestHpoMtcFilter:
         gt_clf: GenotypeClassifier,
         ph_predicate: PhenotypeClassifier[hpotk.TermId],
     ):
-        counts_df = TestHpoMtcFilter.prepare_counts_df(counts, gt_clf, ph_predicate)
+        counts_df = TestIfHpoFilter.prepare_counts_df(counts, gt_clf, ph_predicate)
 
-        actual = HpoMtcFilter.some_cell_has_greater_than_one_count(
+        actual = IfHpoFilter.some_cell_has_greater_than_one_count(
             counts=counts_df,
             ph_clf=ph_predicate,
         )
@@ -139,9 +139,9 @@ class TestHpoMtcFilter:
         gt_clf: GenotypeClassifier,
         ph_predicate: PhenotypeClassifier[hpotk.TermId],
     ):
-        counts_df = TestHpoMtcFilter.prepare_counts_df(counts, gt_clf, ph_predicate)
+        counts_df = TestIfHpoFilter.prepare_counts_df(counts, gt_clf, ph_predicate)
 
-        actual = HpoMtcFilter.get_maximum_group_observed_HPO_frequency(
+        actual = IfHpoFilter.get_maximum_group_observed_HPO_frequency(
             counts_frame=counts_df,
             ph_clf=ph_predicate,
         )
@@ -150,7 +150,7 @@ class TestHpoMtcFilter:
 
     def test_filter_terms_to_test(
         self,
-        mtc_filter: HpoMtcFilter,
+        mtc_filter: IfHpoFilter,
         suox_gt_clf: GenotypeClassifier,
         suox_pheno_clfs: typing.Sequence[PhenotypeClassifier[hpotk.TermId]],
         patient_counts: typing.Sequence[pd.DataFrame],
@@ -199,7 +199,7 @@ class TestHpoMtcFilter:
         idx = curie2idx["HP:0001083"]
         ectopia = patient_counts[idx]
         ectopia_predicate = suox_pheno_clfs[idx]
-        max_f = HpoMtcFilter.get_maximum_group_observed_HPO_frequency(
+        max_f = IfHpoFilter.get_maximum_group_observed_HPO_frequency(
             ectopia,
             ph_clf=ectopia_predicate,
         )
@@ -209,7 +209,7 @@ class TestHpoMtcFilter:
         idx = curie2idx["HP:0001250"]
         seizure = patient_counts[idx]
         seizure_predicate = suox_pheno_clfs[idx]
-        max_f = HpoMtcFilter.get_maximum_group_observed_HPO_frequency(
+        max_f = IfHpoFilter.get_maximum_group_observed_HPO_frequency(
             seizure, ph_clf=seizure_predicate
         )
         assert max_f == pytest.approx(1.0, abs=EPSILON)
@@ -218,7 +218,7 @@ class TestHpoMtcFilter:
         idx = curie2idx["HP:0032350"]
         sulfocysteinuria = patient_counts[idx]
         sulfocysteinuria_predicate = suox_pheno_clfs[idx]
-        max_f = HpoMtcFilter.get_maximum_group_observed_HPO_frequency(
+        max_f = IfHpoFilter.get_maximum_group_observed_HPO_frequency(
             sulfocysteinuria,
             ph_clf=sulfocysteinuria_predicate,
         )
@@ -228,7 +228,7 @@ class TestHpoMtcFilter:
         idx = curie2idx["HP:0012758"]
         ndelay = patient_counts[idx]
         ndelay_predicate = suox_pheno_clfs[idx]
-        max_f = HpoMtcFilter.get_maximum_group_observed_HPO_frequency(
+        max_f = IfHpoFilter.get_maximum_group_observed_HPO_frequency(
             ndelay,
             ph_clf=ndelay_predicate,
         )
@@ -238,7 +238,7 @@ class TestHpoMtcFilter:
         idx = curie2idx["HP:0001276"]
         hypertonia = patient_counts[idx]
         hypertonia_predicate = suox_pheno_clfs[idx]
-        max_f = HpoMtcFilter.get_maximum_group_observed_HPO_frequency(
+        max_f = IfHpoFilter.get_maximum_group_observed_HPO_frequency(
             hypertonia,
             ph_clf=hypertonia_predicate,
         )
@@ -249,7 +249,7 @@ class TestHpoMtcFilter:
         hpo: hpotk.MinimalOntology,
     ):
         with pytest.raises(AssertionError) as e:
-            HpoMtcFilter.default_filter(
+            IfHpoFilter.default_filter(
                 hpo=hpo,
                 term_frequency_threshold=1.1,
                 annotation_frequency_threshold=0.1,
@@ -263,7 +263,7 @@ class TestHpoMtcFilter:
         hpo: hpotk.MinimalOntology,
     ):
         with pytest.raises(AssertionError) as e:
-            HpoMtcFilter.default_filter(
+            IfHpoFilter.default_filter(
                 hpo=hpo,
                 term_frequency_threshold=0.1,
                 annotation_frequency_threshold=1.1,
