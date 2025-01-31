@@ -6,7 +6,7 @@ import pytest
 
 from gpsea.model import Cohort
 
-from gpsea.analysis.mtc_filter import PhenotypeMtcFilter, HpoMtcFilter
+from gpsea.analysis.mtc_filter import PhenotypeMtcFilter, IfHpoFilter
 from gpsea.analysis.pcats import HpoTermAnalysis
 from gpsea.analysis.pcats.stats import CountStatistic, FisherExactTest
 from gpsea.analysis.clf import GenotypeClassifier, PhenotypeClassifier
@@ -22,7 +22,7 @@ class TestHpoTermAnalysis:
         self,
         hpo: hpotk.MinimalOntology,
     ) -> PhenotypeMtcFilter:
-        return HpoMtcFilter.default_filter(
+        return IfHpoFilter.default_filter(
             hpo=hpo,
             term_frequency_threshold=0.2,
             annotation_frequency_threshold=0.25,

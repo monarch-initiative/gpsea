@@ -2,7 +2,7 @@
 GPSEA is a library for finding genotype-phenotype associations.
 """
 
-__version__ = "0.9.3"
+__version__ = "0.9.4"
 
 _overwrite = False
 """

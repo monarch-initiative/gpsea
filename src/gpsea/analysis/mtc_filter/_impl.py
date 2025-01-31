@@ -3,6 +3,7 @@ import dataclasses
 import typing
 
 from collections import deque
+import warnings
 
 import hpotk
 import pandas as pd
@@ -252,14 +253,14 @@ class SpecifiedTermsMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
             raise ValueError(f"{val} is neither `str` nor `hpotk.TermId`")
 
 
-class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
+class IfHpoFilter(PhenotypeMtcFilter[hpotk.TermId]):
     """
-    `HpoMtcFilter` decides which phenotypes should be tested and which phenotypes are not worth testing.
+    `IfHpoFilter` decides which phenotypes should be tested and which phenotypes are not worth testing.
 
     The class leverages a number of heuristics and domain decisions.
-    See :ref:`hpo-mt-filter` section for more info.
+    See :ref:`hpo-if-filter` section for more info.
 
-    We recommend creating an instance using the :func:`default_filter` static factory method.
+    We recommend creating an instance using the :func:`~gpsea.analysis.mtc_filter.IfHpoFilter.default_filter` static factory method.
     """
 
     NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO = PhenotypeMtcResult.fail(
@@ -293,7 +294,7 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
               (e.g., 22% in missense and 3% in nonsense genotypes would be OK,
               but not 13% missense and 10% nonsense genotypes if the threshold is 0.2).
               The default threshold is `0.4` (40%).
-            annotation_frequency_threshold: a `float` in range :math:`(0, 1) with the minimum frequency of
+            annotation_frequency_threshold: a `float` in range :math:`(0, 1]` with the minimum frequency of
                 annotation in the cohort. For instance, if the cohort consists of 100 individuals, and
                 we have explicit observed observations for 20 and excluded for 10 individuals, then the
                 annotation frequency is `0.3`. The purpose of this threshold is to omit terms for which
@@ -340,7 +341,7 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
         general_hpo_term_set.update(second_level_terms)
         general_hpo_term_set.update(third_level_terms)
 
-        return HpoMtcFilter(
+        return IfHpoFilter(
             hpo=hpo,
             term_frequency_threshold=term_frequency_threshold,
             annotation_frequency_threshold=annotation_frequency_threshold,
@@ -355,7 +356,15 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
         general_hpo_terms: typing.Iterable[hpotk.TermId],
     ):
         self._hpo = hpo
+        assert (
+            isinstance(term_frequency_threshold, (int, float))
+            and 0.0 < term_frequency_threshold <= 1.0
+        ), "The term_frequency_threshold must be in the range (0, 1]"
         self._hpo_term_frequency_filter = term_frequency_threshold
+        assert (
+            isinstance(annotation_frequency_threshold, (int, float))
+            and 0.0 < annotation_frequency_threshold <= 1.0
+        ), "The annotation_frequency_threshold must be in the range (0, 1]"
         self._hpo_annotation_frequency_threshold = annotation_frequency_threshold
 
         self._general_hpo_terms = set(general_hpo_terms)
@@ -423,17 +432,17 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
                 continue
 
             if term_id in self._general_hpo_terms:
-                results[idx] = HpoMtcFilter.SKIPPING_GENERAL_TERM
+                results[idx] = IfHpoFilter.SKIPPING_GENERAL_TERM
                 continue
 
             if not self._hpo.graph.is_ancestor_of(PHENOTYPIC_ABNORMALITY, term_id):
-                results[idx] = HpoMtcFilter.SKIPPING_NON_PHENOTYPE_TERM
+                results[idx] = IfHpoFilter.SKIPPING_NON_PHENOTYPE_TERM
                 continue
 
             ph_clf = pheno_clfs[idx]
             contingency_matrix = counts[idx]
 
-            max_freq = HpoMtcFilter.get_maximum_group_observed_HPO_frequency(
+            max_freq = IfHpoFilter.get_maximum_group_observed_HPO_frequency(
                 contingency_matrix,
                 ph_clf=ph_clf,
             )
@@ -459,19 +468,19 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
                 results[idx] = self._not_powered_for_2_by_3
                 continue
 
-            if not HpoMtcFilter.some_cell_has_greater_than_one_count(
+            if not IfHpoFilter.some_cell_has_greater_than_one_count(
                 counts=contingency_matrix,
                 ph_clf=ph_clf,
             ):
-                results[idx] = HpoMtcFilter.NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO
+                results[idx] = IfHpoFilter.NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO
                 continue
 
-            elif HpoMtcFilter.one_genotype_has_zero_hpo_observations(
+            elif IfHpoFilter.one_genotype_has_zero_hpo_observations(
                 counts=contingency_matrix,
                 gt_clf=gt_clf,
             ):
                 results[idx] = (
-                    HpoMtcFilter.SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS
+                    IfHpoFilter.SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS
                 )
                 continue
 
@@ -495,7 +504,7 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
                     axis=None
                 ) < 1:
                     # Do not test if the count is exactly the same to the counts in the only child term.
-                    results[idx] = HpoMtcFilter.SAME_COUNT_AS_THE_ONLY_CHILD
+                    results[idx] = IfHpoFilter.SAME_COUNT_AS_THE_ONLY_CHILD
                     continue
 
             # ##
@@ -520,18 +529,18 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
         return (
             PhenotypeMtcFilter.OK,
             self._below_frequency_threshold,  # HMF01
-            HpoMtcFilter.NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO,  # HMF02
-            HpoMtcFilter.SAME_COUNT_AS_THE_ONLY_CHILD,  # HMF03
-            HpoMtcFilter.SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS,  # HMF05
+            IfHpoFilter.NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO,  # HMF02
+            IfHpoFilter.SAME_COUNT_AS_THE_ONLY_CHILD,  # HMF03
+            IfHpoFilter.SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS,  # HMF05
             self._not_powered_for_2_by_2,  # HMF06
             self._not_powered_for_2_by_3,  # HMF06
-            HpoMtcFilter.SKIPPING_NON_PHENOTYPE_TERM,  # HMF07
-            HpoMtcFilter.SKIPPING_GENERAL_TERM,  # HMF08
+            IfHpoFilter.SKIPPING_NON_PHENOTYPE_TERM,  # HMF07
+            IfHpoFilter.SKIPPING_GENERAL_TERM,  # HMF08
             self._below_annotation_frequency_threshold,  # HMF09
         )
 
     def filter_method_name(self) -> str:
-        return "HPO MTC filter"
+        return "Independent filtering HPO filter"
 
     @staticmethod
     def get_number_of_observed_hpo_observations(
@@ -623,3 +632,65 @@ class HpoMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
 
         # now, ordered_term_list is ordered from leaves to root
         return ordered_term_list
+
+
+class HpoMtcFilter(IfHpoFilter):
+    """
+    `HpoMtcFilter` is deprecated and will be removed in `1.0.0`.
+
+    Use :class:`gpsea.analysis.mtc_filter.IfHpoFilter` instead.
+    """
+
+    @staticmethod
+    def default_filter(
+        hpo: hpotk.MinimalOntology,
+        term_frequency_threshold: float = 0.4,
+        annotation_frequency_threshold: float = 0.4,
+        phenotypic_abnormality: hpotk.TermId = PHENOTYPIC_ABNORMALITY,
+    ):
+        """
+        Args:
+            hpo: HPO
+            term_frequency_threshold: a `float` in range :math:`(0, 1]` with the minimum frequency
+              for an HPO term to have in at least one of the genotype groups
+              (e.g., 22% in missense and 3% in nonsense genotypes would be OK,
+              but not 13% missense and 10% nonsense genotypes if the threshold is 0.2).
+              The default threshold is `0.4` (40%).
+            annotation_frequency_threshold: a `float` in range :math:`(0, 1]` with the minimum frequency of
+                annotation in the cohort. For instance, if the cohort consists of 100 individuals, and
+                we have explicit observed observations for 20 and excluded for 10 individuals, then the
+                annotation frequency is `0.3`. The purpose of this threshold is to omit terms for which
+                we simply do not have much data overall. By default, we set a threshold to `0.4` (40%).
+            phenotypic_abnormality: a :class:`~hpotk.TermId` corresponding to the root of HPO phenotype hierarchy.
+              Having to specify this option should be very rarely, if ever.
+        """
+        warnings.warn(
+            "HpoMtcFilter has been deprecated and will be removed in 1.0.0. Use `IfHpoFilter` instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        IfHpoFilter.default_filter(
+            hpo=hpo,
+            term_frequency_threshold=term_frequency_threshold,
+            annotation_frequency_threshold=annotation_frequency_threshold,
+            phenotypic_abnormality=phenotypic_abnormality,
+        )
+
+    def __init__(
+        self,
+        hpo: hpotk.MinimalOntology,
+        term_frequency_threshold: float,
+        annotation_frequency_threshold: float,
+        general_hpo_terms: typing.Iterable[hpotk.TermId],
+    ):
+        super().__init__(
+            hpo,
+            term_frequency_threshold,
+            annotation_frequency_threshold,
+            general_hpo_terms,
+        )
+        warnings.warn(
+            "HpoMtcFilter has been deprecated and will be removed in 1.0.0. Use `IfHpoFilter` instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )

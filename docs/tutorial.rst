@@ -314,7 +314,7 @@ For general use, we recommend using a combination
 of a *phenotype MT filter* (:class:`~gpsea.analysis.mtc_filter.PhenotypeMtcFilter`) with a *multiple testing correction*.
 Phenotype MT filter chooses the HPO terms to test according to several heuristics, which
 reduce the multiple testing burden and focus the analysis
-on the most interesting terms (see :ref:`HPO MT filter <hpo-mt-filter>` for more info).
+on the most interesting terms (see :ref:`Independent filtering for HPO <hpo-if-filter>` for more info).
 Then the multiple testing correction, such as Bonferroni or Benjamini-Hochberg,
 is used to control the family-wise error rate or the false discovery rate.
 See :ref:`mtc` for more information.
@@ -323,7 +323,7 @@ See :ref:`mtc` for more information.
 >>> analysis = configure_hpo_term_analysis(hpo)
 
 :func:`~gpsea.analysis.pcats.configure_hpo_term_analysis` configures the analysis
-that uses HPO MTC filter (:class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`) for selecting HPO terms of interest,
+that uses Independent filtering for HPO (:class:`~gpsea.analysis.mtc_filter.IfHpoFilter`) for selecting HPO terms of interest,
 Fisher Exact test for computing nominal p values, and Benjamini-Hochberg for multiple testing correction.
 
 

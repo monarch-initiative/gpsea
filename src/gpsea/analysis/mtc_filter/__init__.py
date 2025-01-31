@@ -6,9 +6,15 @@ See :ref:`MTC filters <mtc-filters>` section for more info.
 """
 
 from ._impl import PhenotypeMtcFilter, PhenotypeMtcResult, PhenotypeMtcIssue
-from ._impl import UseAllTermsMtcFilter, SpecifiedTermsMtcFilter, HpoMtcFilter
+from ._impl import UseAllTermsMtcFilter, SpecifiedTermsMtcFilter, IfHpoFilter
+from ._impl import HpoMtcFilter
 
 __all__ = [
-    'PhenotypeMtcFilter', 'PhenotypeMtcResult', 'PhenotypeMtcIssue',
-    'UseAllTermsMtcFilter', 'SpecifiedTermsMtcFilter', 'HpoMtcFilter',
+    "PhenotypeMtcFilter",
+    "PhenotypeMtcResult",
+    "PhenotypeMtcIssue",
+    "UseAllTermsMtcFilter",
+    "SpecifiedTermsMtcFilter",
+    "IfHpoFilter",
+    "HpoMtcFilter",
 ]
