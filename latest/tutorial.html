@@ -1396,7 +1396,7 @@ Luckily, GPSEA simplifies the application of an appropriate multiple testing cor
 of a <em>phenotype MT filter</em> (<a class="reference internal" href="apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcFilter" title="gpsea.analysis.mtc_filter.PhenotypeMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhenotypeMtcFilter</span></code></a>) with a <em>multiple testing correction</em>.
 Phenotype MT filter chooses the HPO terms to test according to several heuristics, which
 reduce the multiple testing burden and focus the analysis
-on the most interesting terms (see <a class="reference internal" href="user-guide/analyses/mtc.html#hpo-mt-filter"><span class="std std-ref">HPO MT filter</span></a> for more info).
+on the most interesting terms (see <a class="reference internal" href="user-guide/analyses/mtc.html#hpo-if-filter"><span class="std std-ref">Independent filtering for HPO</span></a> for more info).
 Then the multiple testing correction, such as Bonferroni or Benjamini-Hochberg,
 is used to control the family-wise error rate or the false discovery rate.
 See <a class="reference internal" href="user-guide/analyses/mtc.html#mtc"><span class="std std-ref">Multiple-testing correction</span></a> for more information.</p>
@@ -1405,7 +1405,7 @@ See <a class="reference internal" href="user-guide/analyses/mtc.html#mtc"><span 
 </pre></div>
 </div>
 <p><a class="reference internal" href="apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.configure_hpo_term_analysis" title="gpsea.analysis.pcats.configure_hpo_term_analysis"><code class="xref py py-func docutils literal notranslate"><span class="pre">configure_hpo_term_analysis()</span></code></a> configures the analysis
-that uses HPO MTC filter (<a class="reference internal" href="apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter" title="gpsea.analysis.mtc_filter.HpoMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></a>) for selecting HPO terms of interest,
+that uses Independent filtering for HPO (<a class="reference internal" href="apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.IfHpoFilter" title="gpsea.analysis.mtc_filter.IfHpoFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">IfHpoFilter</span></code></a>) for selecting HPO terms of interest,
 Fisher Exact test for computing nominal p values, and Benjamini-Hochberg for multiple testing correction.</p>
 </section>
 </section>

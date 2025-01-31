@@ -80,7 +80,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">hpotk</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">..mtc_filter</span><span class="w"> </span><span class="kn">import</span> <span class="n">HpoMtcFilter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..mtc_filter</span><span class="w"> </span><span class="kn">import</span> <span class="n">IfHpoFilter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._impl</span><span class="w"> </span><span class="kn">import</span> <span class="n">HpoTermAnalysis</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">CountStatistic</span><span class="p">,</span> <span class="n">FisherExactTest</span>
 
@@ -96,13 +96,13 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Configure HPO term analysis with default parameters.</span>
 
-<span class="sd">    The default analysis will pre-filter HPO terms with :class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`,</span>
+<span class="sd">    The default analysis will pre-filter HPO terms with :class:`~gpsea.analysis.mtc_filter.IfHpoFilter`,</span>
 <span class="sd">    then compute nominal p values using `count_statistic` (default Fisher exact test),</span>
 <span class="sd">    and apply multiple testing correction (default Benjamini/Hochberg (`fdr_bh`))</span>
 <span class="sd">    with target `mtc_alpha` (default `0.05`).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">HpoTermAnalysis</span><span class="p">(</span>
-        <span class="n">mtc_filter</span><span class="o">=</span><span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">default_filter</span><span class="p">(</span><span class="n">hpo</span><span class="p">),</span>
+        <span class="n">mtc_filter</span><span class="o">=</span><span class="n">IfHpoFilter</span><span class="o">.</span><span class="n">default_filter</span><span class="p">(</span><span class="n">hpo</span><span class="p">),</span>
         <span class="n">count_statistic</span><span class="o">=</span><span class="n">count_statistic</span><span class="p">,</span>
         <span class="n">mtc_correction</span><span class="o">=</span><span class="n">mtc_correction</span><span class="p">,</span>
         <span class="n">mtc_alpha</span><span class="o">=</span><span class="n">mtc_alpha</span><span class="p">,</span>
