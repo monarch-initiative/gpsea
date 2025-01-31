@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Compare genotype and phenotype classes &mdash; GPSEA 0.9.3 documentation</title>
+  <title>Compare genotype and phenotype classes &mdash; GPSEA 0.9.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=0e439607"></script>
+      <script src="../../_static/documentation_options.js?v=c5ca06ca"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -261,15 +261,15 @@ GPSEA uses a two-pronged strategy to reduce the number of tests and, therefore, 
 a phenotype multiple testing (MT) filter and multiple testing correction (MTC).</p>
 <p>Phenotype MT filter selects a (sub)set of HPO terms for testing,
 for instance only the user-selected terms (see <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter" title="gpsea.analysis.mtc_filter.SpecifiedTermsMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecifiedTermsMtcFilter</span></code></a>)
-or the terms selected by <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter" title="gpsea.analysis.mtc_filter.HpoMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></a>.</p>
+or the terms selected by <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.IfHpoFilter" title="gpsea.analysis.mtc_filter.IfHpoFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">IfHpoFilter</span></code></a>.</p>
 <p>MTC then adjusts the nominal p values for the increased risk
 of false positive G/P associations.
 The available MTC procedures are listed in the <a class="reference internal" href="mtc.html#mtc-correction-procedures"><span class="std std-ref">Multiple-testing correction procedures</span></a> section.</p>
 <p>We must choose a phenotype MT filter as well as a MTC procedure to perform genotype-phenotype analysis.</p>
 <section id="default-analysis">
 <span id="default-hpo-analysis"></span><h5>Default analysis<a class="headerlink" href="#default-analysis" title="Link to this heading"></a></h5>
-<p>We recommend using HPO MT filter (<a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter" title="gpsea.analysis.mtc_filter.HpoMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></a>) as a phenotype MT filter
-and Benjamini-Hochberg for MTC.
+<p>We recommend using Independent filtering for HPO (<a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.IfHpoFilter" title="gpsea.analysis.mtc_filter.IfHpoFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">IfHpoFilter</span></code></a>)
+and Benjamini-Hochberg MT correction.
 The default analysis can be configured with <a class="reference internal" href="../../apidocs/gpsea.analysis.pcats.html#gpsea.analysis.pcats.configure_hpo_term_analysis" title="gpsea.analysis.pcats.configure_hpo_term_analysis"><code class="xref py py-func docutils literal notranslate"><span class="pre">configure_hpo_term_analysis()</span></code></a> convenience method.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.pcats</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure_hpo_term_analysis</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">analysis</span> <span class="o">=</span> <span class="n">configure_hpo_term_analysis</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
@@ -282,9 +282,9 @@ a cohort for G/P associations.</p>
 <span id="custom-hpo-analysis"></span><h5>Custom analysis<a class="headerlink" href="#custom-analysis" title="Link to this heading"></a></h5>
 <p>If the default selection of phenotype MT filter and multiple testing correction is not an option,
 we can configure the analysis manually.</p>
-<p>First, we choose a phenotype MT filter (e.g. <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter" title="gpsea.analysis.mtc_filter.HpoMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></a>):</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.mtc_filter</span><span class="w"> </span><span class="kn">import</span> <span class="n">HpoMtcFilter</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_filter</span> <span class="o">=</span> <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">default_filter</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">term_frequency_threshold</span><span class="o">=</span><span class="mf">.2</span><span class="p">)</span>
+<p>First, we choose a phenotype MT filter (e.g. <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.IfHpoFilter" title="gpsea.analysis.mtc_filter.IfHpoFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">IfHpoFilter</span></code></a>):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.mtc_filter</span><span class="w"> </span><span class="kn">import</span> <span class="n">IfHpoFilter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_filter</span> <span class="o">=</span> <span class="n">IfHpoFilter</span><span class="o">.</span><span class="n">default_filter</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">term_frequency_threshold</span><span class="o">=</span><span class="mf">.2</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="admonition note">

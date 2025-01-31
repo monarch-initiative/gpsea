@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Multiple-testing correction &mdash; GPSEA 0.9.3 documentation</title>
+  <title>Multiple-testing correction &mdash; GPSEA 0.9.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=0e439607"></script>
+      <script src="../../_static/documentation_options.js?v=c5ca06ca"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -256,27 +256,31 @@ we pass an iterable (e.g. a tuple) with these two terms as an argument:</p>
 </pre></div>
 </div>
 </section>
-<section id="hpo-mt-filter">
-<span id="id1"></span><h4>HPO MT filter<a class="headerlink" href="#hpo-mt-filter" title="Link to this heading"></a></h4>
-<p>The HPO MT filter involves making several domain judgments and takes advantage of the HPO structure.
-The strategy needs access to HPO:</p>
+<section id="independent-filtering-for-hpo">
+<span id="hpo-if-filter"></span><h4>Independent filtering for HPO<a class="headerlink" href="#independent-filtering-for-hpo" title="Link to this heading"></a></h4>
+<p>Independent filtering for HPO involves making several domain judgments
+and taking advantage of the HPO structure
+in order to reduce the number of HPO terms for testing.
+The filter’s logic is made up of 8 individual heuristics
+to skip testing the terms that are unlikely to yield significant or interesting results (see below).</p>
+<p>Some of the heuristics need to access HPO hierarchy,
+so let’s load HPO</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">hpotk</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">store</span> <span class="o">=</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">configure_ontology_store</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hpo</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">load_minimal_hpo</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="s1">&#39;v2024-07-01&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>and it is implemented in the <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter" title="gpsea.analysis.mtc_filter.HpoMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></a> class:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.mtc_filter</span><span class="w"> </span><span class="kn">import</span> <span class="n">HpoMtcFilter</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">hpo_mtc</span> <span class="o">=</span> <span class="n">HpoMtcFilter</span><span class="o">.</span><span class="n">default_filter</span><span class="p">(</span><span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">)</span>
+<p>and let’s create the  <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.IfHpoFilter" title="gpsea.analysis.mtc_filter.IfHpoFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">IfHpoFilter</span></code></a> class
+using the static constructor
+<a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.IfHpoFilter.default_filter" title="gpsea.analysis.mtc_filter.IfHpoFilter.default_filter"><code class="xref py py-func docutils literal notranslate"><span class="pre">default_filter()</span></code></a>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.mtc_filter</span><span class="w"> </span><span class="kn">import</span> <span class="n">IfHpoFilter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hpo_mtc</span> <span class="o">=</span> <span class="n">IfHpoFilter</span><span class="o">.</span><span class="n">default_filter</span><span class="p">(</span><span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>We use static constructor <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter.default_filter" title="gpsea.analysis.mtc_filter.HpoMtcFilter.default_filter"><code class="xref py py-func docutils literal notranslate"><span class="pre">default_filter()</span></code></a>
-for creating <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter" title="gpsea.analysis.mtc_filter.HpoMtcFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HpoMtcFilter</span></code></a>.
-The constructor takes a <code class="docutils literal notranslate"><span class="pre">term_frequency_threshold</span></code> option (40% by default)
-and the method’s logic is made up of 8 individual heuristics
-designed to skip testing the HPO terms that are unlikely to yield significant or interesting results.</p>
-<nav class="contents local" id="hpo-mt-filters">
-<p class="topic-title">HPO MT filters</p>
+<p>The constructor takes HPO and two thresholds (optional).
+See the API documentation and the explanations below for more details.</p>
+<nav class="contents local" id="id1">
+<p class="topic-title">Independent filtering for HPO</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#hmf01-skip-terms-that-occur-very-rarely" id="id2"><cite>HMF01</cite> - Skip terms that occur very rarely</a></p></li>
 <li><p><a class="reference internal" href="#hmf02-skip-terms-if-no-genotype-group-has-more-than-one-count" id="id3"><cite>HMF02</cite> - Skip terms if no genotype group has more than one count</a></p></li>
@@ -353,6 +357,7 @@ it will derive from one of the more specific descendents.</p>
 that if there is a signal from the nervous system,
 it will lead to at least one of the descendents of
 <em>Abnormality of the nervous system</em> being significant.</p>
+<p>See <a class="reference internal" href="general_hpo_terms.html#general-hpo-terms"><span class="std std-ref">General HPO terms</span></a> section for details.</p>
 </section>
 <section id="hmf09-skipping-terms-that-are-rare-on-the-cohort-level">
 <h5><a class="toc-backref" href="#id9" role="doc-backlink"><cite>HMF09</cite> - Skipping terms that are rare on the cohort level</a><a class="headerlink" href="#hmf09-skipping-terms-that-are-rare-on-the-cohort-level" title="Link to this heading"></a></h5>
@@ -363,9 +368,8 @@ do not have much data overall.</p>
 and we have explicit observed observations for 20 and excluded for 10 individuals,
 then the annotation frequency is <cite>0.3</cite>.</p>
 <p>The threshold is set as <code class="docutils literal notranslate"><span class="pre">annotation_frequency_threshold</span></code> option
-of the <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.HpoMtcFilter.default_filter" title="gpsea.analysis.mtc_filter.HpoMtcFilter.default_filter"><code class="xref py py-func docutils literal notranslate"><span class="pre">default_filter()</span></code></a> constructor,
+of the <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.IfHpoFilter.default_filter" title="gpsea.analysis.mtc_filter.IfHpoFilter.default_filter"><code class="xref py py-func docutils literal notranslate"><span class="pre">default_filter()</span></code></a> constructor,
 with the default value of <cite>0.4</cite> (40%).</p>
-<p>See <a class="reference internal" href="general_hpo_terms.html#general-hpo-terms"><span class="std std-ref">General HPO terms</span></a> section for details.</p>
 </section>
 </section>
 </section>
