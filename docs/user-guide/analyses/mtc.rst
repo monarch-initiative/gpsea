@@ -171,31 +171,37 @@ we pass an iterable (e.g. a tuple) with these two terms as an argument:
 2
 
 
-.. _hpo-mt-filter:
+.. _hpo-if-filter:
 
-HPO MT filter
--------------
+Independent filtering for HPO
+-----------------------------
 
-The HPO MT filter involves making several domain judgments and takes advantage of the HPO structure.
-The strategy needs access to HPO:
+Independent filtering for HPO involves making several domain judgments
+and taking advantage of the HPO structure
+in order to reduce the number of HPO terms for testing.
+The filter's logic is made up of 8 individual heuristics 
+to skip testing the terms that are unlikely to yield significant or interesting results (see below).
+
+Some of the heuristics need to access HPO hierarchy,
+so let's load HPO
 
 >>> import hpotk
 >>> store = hpotk.configure_ontology_store()
 >>> hpo = store.load_minimal_hpo(release='v2024-07-01')
 
-and it is implemented in the :class:`~gpsea.analysis.mtc_filter.HpoMtcFilter` class:
+and let's create the  :class:`~gpsea.analysis.mtc_filter.IfHpoFilter` class
+using the static constructor
+:func:`~gpsea.analysis.mtc_filter.IfHpoFilter.default_filter`:
 
->>> from gpsea.analysis.mtc_filter import HpoMtcFilter
->>> hpo_mtc = HpoMtcFilter.default_filter(hpo=hpo)
+>>> from gpsea.analysis.mtc_filter import IfHpoFilter
+>>> hpo_mtc = IfHpoFilter.default_filter(hpo=hpo)
 
 
-We use static constructor :func:`~gpsea.analysis.mtc_filter.HpoMtcFilter.default_filter`
-for creating :class:`~gpsea.analysis.mtc_filter.HpoMtcFilter`.
-The constructor takes a ``term_frequency_threshold`` option (40% by default) 
-and the method's logic is made up of 8 individual heuristics 
-designed to skip testing the HPO terms that are unlikely to yield significant or interesting results.
+The constructor takes HPO and two thresholds (optional).
+See the API documentation and the explanations below for more details.
 
-.. contents:: HPO MT filters
+
+.. contents:: Independent filtering for HPO
   :depth: 1
   :local:
 
@@ -296,6 +302,6 @@ and we have explicit observed observations for 20 and excluded for 10 individual
 then the annotation frequency is `0.3`. 
 
 The threshold is set as ``annotation_frequency_threshold`` option
-of the :func:`~gpsea.analysis.mtc_filter.HpoMtcFilter.default_filter` constructor,
+of the :func:`~gpsea.analysis.mtc_filter.IfHpoFilter.default_filter` constructor,
 with the default value of `0.4` (40%).
 
