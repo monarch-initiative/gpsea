@@ -432,7 +432,7 @@
 <span class="sd">              (e.g., 22% in missense and 3% in nonsense genotypes would be OK,</span>
 <span class="sd">              but not 13% missense and 10% nonsense genotypes if the threshold is 0.2).</span>
 <span class="sd">              The default threshold is `0.4` (40%).</span>
-<span class="sd">            annotation_frequency_threshold: a `float` in range :math:`(0, 1) with the minimum frequency of</span>
+<span class="sd">            annotation_frequency_threshold: a `float` in range :math:`(0, 1]` with the minimum frequency of</span>
 <span class="sd">                annotation in the cohort. For instance, if the cohort consists of 100 individuals, and</span>
 <span class="sd">                we have explicit observed observations for 20 and excluded for 10 individuals, then the</span>
 <span class="sd">                annotation frequency is `0.3`. The purpose of this threshold is to omit terms for which</span>
@@ -495,7 +495,13 @@
         <span class="n">general_hpo_terms</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span> <span class="o">=</span> <span class="n">hpo</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">term_frequency_threshold</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> \
+            <span class="ow">and</span> <span class="mf">0.</span> <span class="o">&lt;</span> <span class="n">term_frequency_threshold</span> <span class="o">&lt;=</span> <span class="mf">1.</span><span class="p">,</span> \
+            <span class="s2">&quot;The term_frequency_threshold must be in the range (0, 1]&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hpo_term_frequency_filter</span> <span class="o">=</span> <span class="n">term_frequency_threshold</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">annotation_frequency_threshold</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> \
+            <span class="ow">and</span> <span class="mf">0.</span> <span class="o">&lt;</span> <span class="n">annotation_frequency_threshold</span> <span class="o">&lt;=</span> <span class="mf">1.</span><span class="p">,</span> \
+            <span class="s2">&quot;The annotation_frequency_threshold must be in the range (0, 1]&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hpo_annotation_frequency_threshold</span> <span class="o">=</span> <span class="n">annotation_frequency_threshold</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_general_hpo_terms</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">general_hpo_terms</span><span class="p">)</span>
