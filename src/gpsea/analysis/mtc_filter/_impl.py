@@ -263,10 +263,6 @@ class IfHpoFilter(PhenotypeMtcFilter[hpotk.TermId]):
     We recommend creating an instance using the :func:`~gpsea.analysis.mtc_filter.IfHpoFilter.default_filter` static factory method.
     """
 
-    NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO = PhenotypeMtcResult.fail(
-        "HMF02",
-        "Skipping term because no genotype has more than one observed HPO count",
-    )
     SAME_COUNT_AS_THE_ONLY_CHILD = PhenotypeMtcResult.fail(
         "HMF03",
         "Skipping term because of a child term with the same individual counts",
@@ -468,13 +464,6 @@ class IfHpoFilter(PhenotypeMtcFilter[hpotk.TermId]):
                 results[idx] = self._not_powered_for_2_by_3
                 continue
 
-            if not IfHpoFilter.some_cell_has_greater_than_one_count(
-                counts=contingency_matrix,
-                ph_clf=ph_clf,
-            ):
-                results[idx] = IfHpoFilter.NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO
-                continue
-
             elif IfHpoFilter.one_genotype_has_zero_hpo_observations(
                 counts=contingency_matrix,
                 gt_clf=gt_clf,
@@ -529,8 +518,9 @@ class IfHpoFilter(PhenotypeMtcFilter[hpotk.TermId]):
         return (
             PhenotypeMtcFilter.OK,
             self._below_frequency_threshold,  # HMF01
-            IfHpoFilter.NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO,  # HMF02
+            # HMF02 - gone
             IfHpoFilter.SAME_COUNT_AS_THE_ONLY_CHILD,  # HMF03
+            # HMF04 - gone
             IfHpoFilter.SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS,  # HMF05
             self._not_powered_for_2_by_2,  # HMF06
             self._not_powered_for_2_by_3,  # HMF06
@@ -572,24 +562,6 @@ class IfHpoFilter(PhenotypeMtcFilter[hpotk.TermId]):
         gt_clf: GenotypeClassifier,
     ):
         return any(counts.loc[:, c].sum() == 0 for c in gt_clf.get_categories())
-
-    @staticmethod
-    def some_cell_has_greater_than_one_count(
-        counts: pd.DataFrame,
-        ph_clf: PhenotypeClassifier[hpotk.TermId],
-    ) -> bool:
-        """
-        If no genotype has more than one HPO count, we do not want to do a test. For instance, if MISSENSE has one
-        observed HPO and N excluded, and NOT MISSENSE has zero or one observed HPO, then we will skip the test
-
-        Args:
-            counts: pandas DataFrame with counts
-            ph_clf: the phenotype classifier that produced the counts
-
-        Returns: true if at least one of the genotypes has more than one observed HPO count
-
-        """
-        return (counts.loc[ph_clf.present_phenotype_category] > 1).any()
 
     def _get_ordered_terms(
         self,
