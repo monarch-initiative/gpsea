@@ -537,7 +537,7 @@ class IfHpoFilter(PhenotypeMtcFilter[hpotk.TermId]):
         counts_frame: pd.DataFrame,
         ph_clf: PhenotypeClassifier[hpotk.TermId],
     ) -> int:
-        return counts_frame.loc[ph_clf.present_phenotype_category].sum()
+        return counts_frame.loc[ph_clf.present_phenotype_category].sum() # type: ignore
 
     @staticmethod
     def get_maximum_group_observed_HPO_frequency(
@@ -553,7 +553,7 @@ class IfHpoFilter(PhenotypeMtcFilter[hpotk.TermId]):
             # Prevent division by zeros
             return 0.0
 
-        present_hpo_count_per_gt = counts_frame.loc[ph_clf.present_phenotype_category]
+        present_hpo_count_per_gt = counts_frame.loc[ph_clf.present_phenotype_category] # type: ignore
         return (present_hpo_count_per_gt / all_hpo_count_per_gt).max()
 
     @staticmethod
@@ -561,7 +561,7 @@ class IfHpoFilter(PhenotypeMtcFilter[hpotk.TermId]):
         counts: pd.DataFrame,
         gt_clf: GenotypeClassifier,
     ):
-        return any(counts.loc[:, c].sum() == 0 for c in gt_clf.get_categories())
+        return any(counts.loc[:, c].sum() == 0 for c in gt_clf.get_categories()) # type: ignore
 
     def _get_ordered_terms(
         self,
