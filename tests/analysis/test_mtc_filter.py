@@ -98,33 +98,6 @@ class TestIfHpoFilter:
     @pytest.mark.parametrize(
         "counts, expected",
         [
-            ((1, 0, 20, 30), False),
-            ((2, 0, 20, 30), True),
-            ((0, 1, 20, 30), False),
-            ((0, 2, 20, 30), True),
-            ((0, 0, 20, 30), False),
-            ((2, 2, 20, 30), True),
-        ],
-    )
-    def test_some_cell_has_greater_than_one_count(
-        self,
-        counts: typing.Tuple[int],
-        expected: bool,
-        gt_clf: GenotypeClassifier,
-        ph_predicate: PhenotypeClassifier[hpotk.TermId],
-    ):
-        counts_df = TestIfHpoFilter.prepare_counts_df(counts, gt_clf, ph_predicate)
-
-        actual = IfHpoFilter.some_cell_has_greater_than_one_count(
-            counts=counts_df,
-            ph_clf=ph_predicate,
-        )
-
-        assert actual == expected
-
-    @pytest.mark.parametrize(
-        "counts, expected",
-        [
             ((1, 2, 99, 198), 0.01),
             ((1, 3, 99, 197), 0.015),
             ((0, 0, 100, 200), 0.0),

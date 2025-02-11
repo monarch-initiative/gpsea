@@ -221,14 +221,6 @@ in the MISSENSE group and 2% in the not-MISSENSE group,
 the term is unlikely to be of great interest because it is rare.
 
 
-`HMF02` - Skip terms if no genotype group has more than one count
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-In a related heuristic, we skip terms if no genotype group has more 
-than one count. This is not completely redundant with the previous condition,
-because some terms may have a small number of total observations.
-
-
 `HMF03` - Skip terms if all counts are identical to counts for a child term
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
