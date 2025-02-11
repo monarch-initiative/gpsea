@@ -400,10 +400,6 @@
 <span class="sd">    We recommend creating an instance using the :func:`~gpsea.analysis.mtc_filter.IfHpoFilter.default_filter` static factory method.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span>
-        <span class="s2">&quot;HMF02&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Skipping term because no genotype has more than one observed HPO count&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
     <span class="n">SAME_COUNT_AS_THE_ONLY_CHILD</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span>
         <span class="s2">&quot;HMF03&quot;</span><span class="p">,</span>
         <span class="s2">&quot;Skipping term because of a child term with the same individual counts&quot;</span><span class="p">,</span>
@@ -610,13 +606,6 @@
                 <span class="n">results</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_not_powered_for_2_by_3</span>
                 <span class="k">continue</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">IfHpoFilter</span><span class="o">.</span><span class="n">some_cell_has_greater_than_one_count</span><span class="p">(</span>
-                <span class="n">counts</span><span class="o">=</span><span class="n">contingency_matrix</span><span class="p">,</span>
-                <span class="n">ph_clf</span><span class="o">=</span><span class="n">ph_clf</span><span class="p">,</span>
-            <span class="p">):</span>
-                <span class="n">results</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">IfHpoFilter</span><span class="o">.</span><span class="n">NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO</span>
-                <span class="k">continue</span>
-
             <span class="k">elif</span> <span class="n">IfHpoFilter</span><span class="o">.</span><span class="n">one_genotype_has_zero_hpo_observations</span><span class="p">(</span>
                 <span class="n">counts</span><span class="o">=</span><span class="n">contingency_matrix</span><span class="p">,</span>
                 <span class="n">gt_clf</span><span class="o">=</span><span class="n">gt_clf</span><span class="p">,</span>
@@ -674,8 +663,9 @@
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">PhenotypeMtcFilter</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_below_frequency_threshold</span><span class="p">,</span>  <span class="c1"># HMF01</span>
-            <span class="n">IfHpoFilter</span><span class="o">.</span><span class="n">NO_GENOTYPE_HAS_MORE_THAN_ONE_HPO</span><span class="p">,</span>  <span class="c1"># HMF02</span>
+            <span class="c1"># HMF02 - gone</span>
             <span class="n">IfHpoFilter</span><span class="o">.</span><span class="n">SAME_COUNT_AS_THE_ONLY_CHILD</span><span class="p">,</span>  <span class="c1"># HMF03</span>
+            <span class="c1"># HMF04 - gone</span>
             <span class="n">IfHpoFilter</span><span class="o">.</span><span class="n">SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS</span><span class="p">,</span>  <span class="c1"># HMF05</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_not_powered_for_2_by_2</span><span class="p">,</span>  <span class="c1"># HMF06</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_not_powered_for_2_by_3</span><span class="p">,</span>  <span class="c1"># HMF06</span>
@@ -698,7 +688,7 @@
         <span class="n">counts_frame</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">ph_clf</span><span class="p">:</span> <span class="n">PhenotypeClassifier</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">counts_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ph_clf</span><span class="o">.</span><span class="n">present_phenotype_category</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="n">counts_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ph_clf</span><span class="o">.</span><span class="n">present_phenotype_category</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="c1"># type: ignore</span></div>
 
 
 <div class="viewcode-block" id="IfHpoFilter.get_maximum_group_observed_HPO_frequency">
@@ -717,7 +707,7 @@
             <span class="c1"># Prevent division by zeros</span>
             <span class="k">return</span> <span class="mf">0.0</span>
 
-        <span class="n">present_hpo_count_per_gt</span> <span class="o">=</span> <span class="n">counts_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ph_clf</span><span class="o">.</span><span class="n">present_phenotype_category</span><span class="p">]</span>
+        <span class="n">present_hpo_count_per_gt</span> <span class="o">=</span> <span class="n">counts_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ph_clf</span><span class="o">.</span><span class="n">present_phenotype_category</span><span class="p">]</span> <span class="c1"># type: ignore</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">present_hpo_count_per_gt</span> <span class="o">/</span> <span class="n">all_hpo_count_per_gt</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span></div>
 
 
@@ -728,28 +718,7 @@
         <span class="n">counts</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">gt_clf</span><span class="p">:</span> <span class="n">GenotypeClassifier</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">counts</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">gt_clf</span><span class="o">.</span><span class="n">get_categories</span><span class="p">())</span></div>
-
-
-<div class="viewcode-block" id="IfHpoFilter.some_cell_has_greater_than_one_count">
-<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.IfHpoFilter.some_cell_has_greater_than_one_count">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">some_cell_has_greater_than_one_count</span><span class="p">(</span>
-        <span class="n">counts</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="n">ph_clf</span><span class="p">:</span> <span class="n">PhenotypeClassifier</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        If no genotype has more than one HPO count, we do not want to do a test. For instance, if MISSENSE has one</span>
-<span class="sd">        observed HPO and N excluded, and NOT MISSENSE has zero or one observed HPO, then we will skip the test</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            counts: pandas DataFrame with counts</span>
-<span class="sd">            ph_clf: the phenotype classifier that produced the counts</span>
-
-<span class="sd">        Returns: true if at least one of the genotypes has more than one observed HPO count</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">counts</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ph_clf</span><span class="o">.</span><span class="n">present_phenotype_category</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">counts</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">gt_clf</span><span class="o">.</span><span class="n">get_categories</span><span class="p">())</span> <span class="c1"># type: ignore</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_ordered_terms</span><span class="p">(</span>
