@@ -338,15 +338,15 @@ Now we can perform the testing and evaluate the results.
 ...     pheno_clfs=pheno_clfs,
 ... )
 >>> result.total_tests
-17
+30
 
-We only tested 17 HPO terms. This is despite the individuals being collectively annotated with
+We only tested 30 HPO terms. This is despite the individuals being collectively annotated with
 369 direct and indirect HPO terms
 
 >>> len(result.phenotypes)
 369
 
-We can show the reasoning behind *not* testing 352 (`369 - 17`) HPO terms
+We can show the reasoning behind *not* testing 339 (`369 - 30`) HPO terms
 by exploring the phenotype MTC filtering report:
 
 >>> from gpsea.view import MtcStatsViewer
