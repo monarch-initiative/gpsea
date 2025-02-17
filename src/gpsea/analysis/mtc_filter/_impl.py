@@ -339,7 +339,7 @@ class IfHpoFilter(PhenotypeMtcFilter[hpotk.TermId]):
 
         return IfHpoFilter(
             hpo=hpo,
-            term_frequency_threshold=term_frequency_threshold,
+            # term_frequency_threshold=term_frequency_threshold,
             annotation_frequency_threshold=annotation_frequency_threshold,
             general_hpo_terms=general_hpo_term_set,
         )
@@ -347,34 +347,35 @@ class IfHpoFilter(PhenotypeMtcFilter[hpotk.TermId]):
     def __init__(
         self,
         hpo: hpotk.MinimalOntology,
-        term_frequency_threshold: float,
+        # term_frequency_threshold: float,
         annotation_frequency_threshold: float,
         general_hpo_terms: typing.Iterable[hpotk.TermId],
     ):
         self._hpo = hpo
-        assert (
-            isinstance(term_frequency_threshold, (int, float))
-            and 0.0 < term_frequency_threshold <= 1.0
-        ), "The term_frequency_threshold must be in the range (0, 1]"
-        self._hpo_term_frequency_filter = term_frequency_threshold
+        # assert (
+        #     isinstance(term_frequency_threshold, (int, float))
+        #     and 0.0 < term_frequency_threshold <= 1.0
+        # ), "The term_frequency_threshold must be in the range (0, 1]"
+        # self._hpo_term_frequency_filter = term_frequency_threshold
         assert (
             isinstance(annotation_frequency_threshold, (int, float))
             and 0.0 < annotation_frequency_threshold <= 1.0
         ), "The annotation_frequency_threshold must be in the range (0, 1]"
         self._hpo_annotation_frequency_threshold = annotation_frequency_threshold
+        # self._hpo_annotation_frequency_threshold_perc = self._hpo_annotation_frequency_threshold * 100
 
         self._general_hpo_terms = set(general_hpo_terms)
 
-        self._below_frequency_threshold = PhenotypeMtcResult.fail(
-            code="HMF01",
-            reason="Skipping term with maximum frequency that was"
-            f" less than threshold {self._hpo_term_frequency_filter}",
-        )
-
+        # self._below_frequency_threshold = PhenotypeMtcResult.fail(
+        #     code="HMF01",
+        #     reason="Skipping term with maximum frequency that was"
+        #     f" less than threshold {self._hpo_term_frequency_filter}",
+        # )
+        
         self._below_annotation_frequency_threshold = PhenotypeMtcResult.fail(
             code="HMF09",
-            reason="Skipping term with maximum annotation frequency that was"
-            f" less than threshold {self._hpo_annotation_frequency_threshold}",
+            reason="Skipping term that was annotated to less than "
+            f"{self._hpo_annotation_frequency_threshold:.0%} of the cohort members",
         )
 
         # Do not perform a test if the counts in the genotype categories do not even have nominal statistical power
@@ -435,16 +436,16 @@ class IfHpoFilter(PhenotypeMtcFilter[hpotk.TermId]):
                 results[idx] = IfHpoFilter.SKIPPING_NON_PHENOTYPE_TERM
                 continue
 
-            ph_clf = pheno_clfs[idx]
+            # ph_clf = pheno_clfs[idx]
             contingency_matrix = counts[idx]
 
-            max_freq = IfHpoFilter.get_maximum_group_observed_HPO_frequency(
-                contingency_matrix,
-                ph_clf=ph_clf,
-            )
-            if max_freq < self._hpo_term_frequency_filter:
-                results[idx] = self._below_frequency_threshold
-                continue
+            # max_freq = IfHpoFilter.get_maximum_group_observed_HPO_frequency(
+            #     contingency_matrix,
+            #     ph_clf=ph_clf,
+            # )
+            # if max_freq < self._hpo_term_frequency_filter:
+            #     results[idx] = self._below_frequency_threshold
+            #     continue
 
             total_count = contingency_matrix.sum().sum()
             if total_count < annotation_count_thr:
@@ -517,7 +518,7 @@ class IfHpoFilter(PhenotypeMtcFilter[hpotk.TermId]):
     def possible_results(self) -> typing.Collection[PhenotypeMtcResult]:
         return (
             PhenotypeMtcFilter.OK,
-            self._below_frequency_threshold,  # HMF01
+            # self._below_frequency_threshold,  # HMF01
             # HMF02 - gone
             IfHpoFilter.SAME_COUNT_AS_THE_ONLY_CHILD,  # HMF03
             # HMF04 - gone

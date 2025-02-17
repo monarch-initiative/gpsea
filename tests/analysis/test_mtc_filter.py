@@ -217,19 +217,19 @@ class TestIfHpoFilter:
         )
         assert max_f == pytest.approx(0.5714, abs=EPSILON)
 
-    def test_mtc_filter_term_frequency_threshold_raises(
-        self,
-        hpo: hpotk.MinimalOntology,
-    ):
-        with pytest.raises(AssertionError) as e:
-            IfHpoFilter.default_filter(
-                hpo=hpo,
-                term_frequency_threshold=1.1,
-                annotation_frequency_threshold=0.1,
-            )
-        assert e.value.args == (
-            "The term_frequency_threshold must be in the range (0, 1]",
-        )
+    # def test_mtc_filter_term_frequency_threshold_raises(
+    #     self,
+    #     hpo: hpotk.MinimalOntology,
+    # ):
+    #     with pytest.raises(AssertionError) as e:
+    #         IfHpoFilter.default_filter(
+    #             hpo=hpo,
+    #             term_frequency_threshold=1.1,
+    #             annotation_frequency_threshold=0.1,
+    #         )
+    #     assert e.value.args == (
+    #         "The term_frequency_threshold must be in the range (0, 1]",
+    #     )
 
     def test_mtc_filter_annotation_frequency_threshold_raises(
         self,
