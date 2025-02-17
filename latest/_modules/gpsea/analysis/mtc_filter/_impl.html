@@ -478,7 +478,7 @@
 
         <span class="k">return</span> <span class="n">IfHpoFilter</span><span class="p">(</span>
             <span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span>
-            <span class="n">term_frequency_threshold</span><span class="o">=</span><span class="n">term_frequency_threshold</span><span class="p">,</span>
+            <span class="c1"># term_frequency_threshold=term_frequency_threshold,</span>
             <span class="n">annotation_frequency_threshold</span><span class="o">=</span><span class="n">annotation_frequency_threshold</span><span class="p">,</span>
             <span class="n">general_hpo_terms</span><span class="o">=</span><span class="n">general_hpo_term_set</span><span class="p">,</span>
         <span class="p">)</span></div>
@@ -487,34 +487,35 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
-        <span class="n">term_frequency_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="c1"># term_frequency_threshold: float,</span>
         <span class="n">annotation_frequency_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">general_hpo_terms</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span> <span class="o">=</span> <span class="n">hpo</span>
-        <span class="k">assert</span> <span class="p">(</span>
-            <span class="nb">isinstance</span><span class="p">(</span><span class="n">term_frequency_threshold</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span>
-            <span class="ow">and</span> <span class="mf">0.0</span> <span class="o">&lt;</span> <span class="n">term_frequency_threshold</span> <span class="o">&lt;=</span> <span class="mf">1.0</span>
-        <span class="p">),</span> <span class="s2">&quot;The term_frequency_threshold must be in the range (0, 1]&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_hpo_term_frequency_filter</span> <span class="o">=</span> <span class="n">term_frequency_threshold</span>
+        <span class="c1"># assert (</span>
+        <span class="c1">#     isinstance(term_frequency_threshold, (int, float))</span>
+        <span class="c1">#     and 0.0 &lt; term_frequency_threshold &lt;= 1.0</span>
+        <span class="c1"># ), &quot;The term_frequency_threshold must be in the range (0, 1]&quot;</span>
+        <span class="c1"># self._hpo_term_frequency_filter = term_frequency_threshold</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="nb">isinstance</span><span class="p">(</span><span class="n">annotation_frequency_threshold</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span>
             <span class="ow">and</span> <span class="mf">0.0</span> <span class="o">&lt;</span> <span class="n">annotation_frequency_threshold</span> <span class="o">&lt;=</span> <span class="mf">1.0</span>
         <span class="p">),</span> <span class="s2">&quot;The annotation_frequency_threshold must be in the range (0, 1]&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hpo_annotation_frequency_threshold</span> <span class="o">=</span> <span class="n">annotation_frequency_threshold</span>
+        <span class="c1"># self._hpo_annotation_frequency_threshold_perc = self._hpo_annotation_frequency_threshold * 100</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_general_hpo_terms</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">general_hpo_terms</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_below_frequency_threshold</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span>
-            <span class="n">code</span><span class="o">=</span><span class="s2">&quot;HMF01&quot;</span><span class="p">,</span>
-            <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Skipping term with maximum frequency that was&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot; less than threshold </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_hpo_term_frequency_filter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-        <span class="p">)</span>
-
+        <span class="c1"># self._below_frequency_threshold = PhenotypeMtcResult.fail(</span>
+        <span class="c1">#     code=&quot;HMF01&quot;,</span>
+        <span class="c1">#     reason=&quot;Skipping term with maximum frequency that was&quot;</span>
+        <span class="c1">#     f&quot; less than threshold {self._hpo_term_frequency_filter}&quot;,</span>
+        <span class="c1"># )</span>
+        
         <span class="bp">self</span><span class="o">.</span><span class="n">_below_annotation_frequency_threshold</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span>
             <span class="n">code</span><span class="o">=</span><span class="s2">&quot;HMF09&quot;</span><span class="p">,</span>
-            <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Skipping term with maximum annotation frequency that was&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot; less than threshold </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_hpo_annotation_frequency_threshold</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Skipping term that was annotated to less than &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_hpo_annotation_frequency_threshold</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2"> of the cohort members&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># Do not perform a test if the counts in the genotype categories do not even have nominal statistical power</span>
@@ -577,16 +578,16 @@
                 <span class="n">results</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">IfHpoFilter</span><span class="o">.</span><span class="n">SKIPPING_NON_PHENOTYPE_TERM</span>
                 <span class="k">continue</span>
 
-            <span class="n">ph_clf</span> <span class="o">=</span> <span class="n">pheno_clfs</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="c1"># ph_clf = pheno_clfs[idx]</span>
             <span class="n">contingency_matrix</span> <span class="o">=</span> <span class="n">counts</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
 
-            <span class="n">max_freq</span> <span class="o">=</span> <span class="n">IfHpoFilter</span><span class="o">.</span><span class="n">get_maximum_group_observed_HPO_frequency</span><span class="p">(</span>
-                <span class="n">contingency_matrix</span><span class="p">,</span>
-                <span class="n">ph_clf</span><span class="o">=</span><span class="n">ph_clf</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="k">if</span> <span class="n">max_freq</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hpo_term_frequency_filter</span><span class="p">:</span>
-                <span class="n">results</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_below_frequency_threshold</span>
-                <span class="k">continue</span>
+            <span class="c1"># max_freq = IfHpoFilter.get_maximum_group_observed_HPO_frequency(</span>
+            <span class="c1">#     contingency_matrix,</span>
+            <span class="c1">#     ph_clf=ph_clf,</span>
+            <span class="c1"># )</span>
+            <span class="c1"># if max_freq &lt; self._hpo_term_frequency_filter:</span>
+            <span class="c1">#     results[idx] = self._below_frequency_threshold</span>
+            <span class="c1">#     continue</span>
 
             <span class="n">total_count</span> <span class="o">=</span> <span class="n">contingency_matrix</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">total_count</span> <span class="o">&lt;</span> <span class="n">annotation_count_thr</span><span class="p">:</span>
@@ -662,7 +663,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">possible_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">PhenotypeMtcResult</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">PhenotypeMtcFilter</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_below_frequency_threshold</span><span class="p">,</span>  <span class="c1"># HMF01</span>
+            <span class="c1"># self._below_frequency_threshold,  # HMF01</span>
             <span class="c1"># HMF02 - gone</span>
             <span class="n">IfHpoFilter</span><span class="o">.</span><span class="n">SAME_COUNT_AS_THE_ONLY_CHILD</span><span class="p">,</span>  <span class="c1"># HMF03</span>
             <span class="c1"># HMF04 - gone</span>

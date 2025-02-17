@@ -295,12 +295,12 @@ We can now test associations between the genotype classes and the HPO terms:
 >>> len(result.phenotypes)
 369
 >>> result.total_tests
-24
+32
 
 
 We tested the ``cohort`` for association between the genotype classes (``gt_clf``)
 and HPO terms (``pheno_clfs``).
-Thanks to phenotype MT filter, we only tested 24 out of 369 terms.
+Thanks to phenotype MT filter, we only tested 32 out of 369 terms.
 The MT filter report shows the filtering details:
 
 >>> from gpsea.view import MtcStatsViewer
