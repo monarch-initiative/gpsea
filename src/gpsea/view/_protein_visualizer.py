@@ -10,10 +10,24 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import numpy as np
 
-from gpsea.model import Cohort, ProteinMetadata, TranscriptCoordinates, VariantEffect
+from gpsea.model import Cohort, ProteinMetadata, TranscriptCoordinates, Variant, VariantEffect
 
 from ._base import BaseProteinVisualizer
 from ._protein_visualizable import ProteinVisualizable
+
+
+def at_least_variant_annotated_wrt_protein(
+    variants: typing.Iterable[Variant],
+    protein_id: str,
+) -> bool:
+    """
+    Check if at least one of the `variants` is annotated with respect to the target `protein_id`.
+    """
+    return any(
+        ann.protein_id is not None and ann.protein_id == protein_id
+        for variant in variants
+        for ann in variant.tx_annotations
+    )
 
 
 class ProteinVisualizer(BaseProteinVisualizer):
@@ -86,9 +100,16 @@ class ProteinVisualizer(BaseProteinVisualizer):
             [(f.min_pos_abs, f.max_pos_abs) for f in feature_handler.features]  # define intervals
         )
 
-        variant_handler = DrawableProteinVariantHandler(
-            cohort=cohort,
+        if not at_least_variant_annotated_wrt_protein(cohort.all_variants(), protein_metadata.protein_id):
+            raise ValueError(f"No variants annotated with respect to \"{protein_metadata.protein_id}\" were found")
+
+        pvis = ProteinVisualizable(
+            tx_coordinates=None,
             protein_meta=protein_metadata,
+            cohort=cohort,
+        )  
+        variant_handler = DrawableProteinVariantHandler(
+            pvis=pvis,
         )
 
         x_ticks = generate_ticks(apprx_n_ticks=6, min=1, max=protein_metadata.protein_length)
@@ -358,15 +379,10 @@ class DrawableProteinVariant:
 class DrawableProteinVariantHandler:
     def __init__(
         self,
-        cohort: Cohort,
-        protein_meta: ProteinMetadata,
+        pvis: ProteinVisualizable,
         aggregation_method: typing.Literal['standard', 'disease'] = 'standard',
     ):
-        self._pvis = ProteinVisualizable(
-            tx_coordinates=None,
-            protein_meta=protein_meta,
-            cohort=cohort,
-        )  
+        self._pvis = pvis
         if aggregation_method in ['standard', 'disease']:
             self.aggregation_method = aggregation_method
         else:
