@@ -332,13 +332,13 @@ for using with phenotype scores.</p>
 <p>In case of the <em>RERE</em> cohort, the analysis shows a significant difference
 between the number of structural defects in individuals
 with point vs. loss-of-function mutations.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">pval</span> 
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">pval</span>
 <span class="go">0.0120749576...</span>
 </pre></div>
 </div>
 <p>To explore further, we can access a data frame with genotype categories and phenotype counts:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">scores</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">scores</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>  
+<span class="gp">&gt;&gt;&gt; </span><span class="n">scores</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 <span class="go">                                      genotype  phenotype</span>
 <span class="go">patient_id</span>
 <span class="go">Subject 10[PMID_27087320_Subject_10]         1          0</span>

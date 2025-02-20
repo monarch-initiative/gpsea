@@ -235,7 +235,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variant_locations_counted_absolute</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">marker_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">marker_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="c1"># `self._marker_counts` should be a 1D array with non-negative ints (counts).</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_marker_counts</span>
 
     <span class="nd">@property</span>

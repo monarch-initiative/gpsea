@@ -202,7 +202,7 @@ loader function:</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cohort</span><span class="p">,</span> <span class="n">qc_results</span> <span class="o">=</span> <span class="n">load_phenopackets</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">phenopackets</span><span class="o">=</span><span class="n">phenopackets</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">cohort_creator</span><span class="o">=</span><span class="n">cohort_creator</span><span class="p">,</span>
-<span class="gp">... </span><span class="p">)</span>  
+<span class="gp">... </span><span class="p">)</span>
 <span class="go">Individuals Processed: ...</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span>
 <span class="go">19</span>
@@ -212,7 +212,7 @@ loader function:</p>
 and we get back a <code class="docutils literal notranslate"><span class="pre">cohort</span></code> as well as a <a class="reference internal" href="../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PreprocessingValidationResult" title="gpsea.preprocessing.PreprocessingValidationResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">PreprocessingValidationResult</span></code></a> (<code class="docutils literal notranslate"><span class="pre">qc_results</span></code>)
 with any Q/C issues.</p>
 <p>The <a class="reference internal" href="../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PreprocessingValidationResult.summarize" title="gpsea.preprocessing.PreprocessingValidationResult.summarize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">summarize()</span></code></a> method summarizes the found issues:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">qc_results</span><span class="o">.</span><span class="n">summarize</span><span class="p">()</span>  
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">qc_results</span><span class="o">.</span><span class="n">summarize</span><span class="p">()</span>
 <span class="go">Validated under permissive policy</span>
 <span class="go">No errors or warnings were found</span>
 </pre></div>
@@ -232,7 +232,7 @@ from a list of JSON files, or from a folder with phenopacket JSON files.</p>
 phenopackets from one or more paths that point to phenopacket JSON files:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_phenopacket_files</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pp_file_paths</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;path/to/phenopacket1.json&#39;</span><span class="p">,</span> <span class="s1">&#39;path/to/phenopacket2.json&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort</span><span class="p">,</span> <span class="n">qc_results</span> <span class="o">=</span> <span class="n">load_phenopacket_files</span><span class="p">(</span><span class="n">pp_file_paths</span><span class="p">,</span> <span class="n">cohort_creator</span><span class="p">)</span>  
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort</span><span class="p">,</span> <span class="n">qc_results</span> <span class="o">=</span> <span class="n">load_phenopacket_files</span><span class="p">(</span><span class="n">pp_file_paths</span><span class="p">,</span> <span class="n">cohort_creator</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Alternatively, you can load an entire directory of phenopackets
@@ -242,7 +242,7 @@ the loader includes all files that end with <code class="docutils literal notran
 and ignores any other files or sub-directories:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_phenopacket_folder</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pp_dir</span> <span class="o">=</span> <span class="s1">&#39;path/to/folder/with/many/phenopacket/json/files&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort</span><span class="p">,</span> <span class="n">qc_results</span> <span class="o">=</span> <span class="n">load_phenopacket_folder</span><span class="p">(</span><span class="n">pp_dir</span><span class="p">,</span> <span class="n">cohort_creator</span><span class="p">)</span>  
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort</span><span class="p">,</span> <span class="n">qc_results</span> <span class="o">=</span> <span class="n">load_phenopacket_folder</span><span class="p">(</span><span class="n">pp_dir</span><span class="p">,</span> <span class="n">cohort_creator</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -257,7 +257,7 @@ The issues can be explored programmatically
 through the <a class="reference internal" href="../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PreprocessingValidationResult" title="gpsea.preprocessing.PreprocessingValidationResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">PreprocessingValidationResult</span></code></a> API,
 or we can display a summary with the
 <a class="reference internal" href="../apidocs/gpsea.preprocessing.html#gpsea.preprocessing.PreprocessingValidationResult.summarize" title="gpsea.preprocessing.PreprocessingValidationResult.summarize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">summarize()</span></code></a> method:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">qc_results</span><span class="o">.</span><span class="n">summarize</span><span class="p">()</span>  
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">qc_results</span><span class="o">.</span><span class="n">summarize</span><span class="p">()</span>
 <span class="go">Validated under permissive policy</span>
 <span class="go">No errors or warnings were found</span>
 </pre></div>

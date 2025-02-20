@@ -213,7 +213,7 @@ We will compute functional annotations for the mutations and then include the in
 a <a class="reference internal" href="apidocs/gpsea.model.html#gpsea.model.Cohort" title="gpsea.model.Cohort"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cohort</span></code></a>:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure_caching_cohort_creator</span><span class="p">,</span> <span class="n">load_phenopackets</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cohort_creator</span> <span class="o">=</span> <span class="n">configure_caching_cohort_creator</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort</span><span class="p">,</span> <span class="n">validation</span> <span class="o">=</span> <span class="n">load_phenopackets</span><span class="p">(</span>  
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cohort</span><span class="p">,</span> <span class="n">validation</span> <span class="o">=</span> <span class="n">load_phenopackets</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">phenopackets</span><span class="o">=</span><span class="n">phenopackets</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">cohort_creator</span><span class="o">=</span><span class="n">cohort_creator</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
@@ -221,7 +221,7 @@ a <a class="reference internal" href="apidocs/gpsea.model.html#gpsea.model.Cohor
 </pre></div>
 </div>
 <p>and we will check that there are no Q/C issues:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">validation</span><span class="o">.</span><span class="n">summarize</span><span class="p">()</span>  
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">validation</span><span class="o">.</span><span class="n">summarize</span><span class="p">()</span>
 <span class="go">Validated under none policy</span>
 <span class="go">No errors or warnings were found</span>
 </pre></div>
@@ -245,7 +245,7 @@ the most common HPO terms, variants, diseases, and variant effects:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.view</span><span class="w"> </span><span class="kn">import</span> <span class="n">CohortViewer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">viewer</span> <span class="o">=</span> <span class="n">CohortViewer</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">report</span> <span class="o">=</span> <span class="n">viewer</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">,</span> <span class="n">transcript_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">report</span>  
+<span class="gp">&gt;&gt;&gt; </span><span class="n">report</span>
 </pre></div>
 </div>
 <div>
@@ -733,7 +733,7 @@ with one or more variant alleles (<em>Count</em>):</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.view</span><span class="w"> </span><span class="kn">import</span> <span class="n">CohortVariantViewer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">viewer</span> <span class="o">=</span> <span class="n">CohortVariantViewer</span><span class="p">(</span><span class="n">tx_id</span><span class="o">=</span><span class="n">tx_id</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">report</span> <span class="o">=</span> <span class="n">viewer</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">cohort</span><span class="o">=</span><span class="n">cohort</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">report</span>  
+<span class="gp">&gt;&gt;&gt; </span><span class="n">report</span>
 </pre></div>
 </div>
 <div>
@@ -1432,7 +1432,7 @@ by exploring the phenotype MTC filtering report:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.view</span><span class="w"> </span><span class="kn">import</span> <span class="n">MtcStatsViewer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_viewer</span> <span class="o">=</span> <span class="n">MtcStatsViewer</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_report</span> <span class="o">=</span> <span class="n">mtc_viewer</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_report</span>  
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_report</span>
 </pre></div>
 </div>
 <div>
@@ -1614,7 +1614,7 @@ by exploring the phenotype MTC filtering report:</p>
 </div><p>and these are the tested HPO terms ordered by the p value corrected with the Benjamini-Hochberg procedure:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.view</span><span class="w"> </span><span class="kn">import</span> <span class="n">summarize_hpo_analysis</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span> <span class="o">=</span> <span class="n">summarize_hpo_analysis</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span>  
+<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span>
 </pre></div>
 </div>
 <table class="docutils align-default" id="id5">

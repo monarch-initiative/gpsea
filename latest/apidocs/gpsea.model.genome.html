@@ -104,7 +104,7 @@ Genomic regions are transposable - they can flip the coordinates between DNA str
 <p>The classes are largely a port of <a class="reference external" href="https://github.com/exomiser/svart">Svart</a> library.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.model.genome.GenomeBuild">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.model.genome.</span></span><span class="sig-name descname"><span class="pre">GenomeBuild</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.GenomeBuildIdentifier" title="gpsea.model.genome._genome.GenomeBuildIdentifier"><span class="pre">GenomeBuildIdentifier</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">contigs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.model.genome.Contig" title="gpsea.model.genome._genome.Contig"><span class="pre">Contig</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#GenomeBuild"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.GenomeBuild" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.model.genome.</span></span><span class="sig-name descname"><span class="pre">GenomeBuild</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.GenomeBuildIdentifier" title="gpsea.model.genome._genome.GenomeBuildIdentifier"><span class="pre">GenomeBuildIdentifier</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">contigs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.model.genome.Contig" title="gpsea.model.genome._genome.Contig"><span class="pre">Contig</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#GenomeBuild"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.GenomeBuild" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p><cite>GenomeBuild</cite> is a container for the <a class="reference internal" href="#gpsea.model.genome.GenomeBuild.genome_build_id" title="gpsea.model.genome.GenomeBuild.genome_build_id"><code class="xref py py-attr docutils literal notranslate"><span class="pre">genome_build_id</span></code></a> and the <a class="reference internal" href="#gpsea.model.genome.GenomeBuild.contigs" title="gpsea.model.genome.GenomeBuild.contigs"><code class="xref py py-attr docutils literal notranslate"><span class="pre">contigs</span></code></a> of the build.</p>
 <p>The build supports retrieving contig by various identifiers:</p>
@@ -122,21 +122,6 @@ Genomic regions are transposable - they can flip the coordinates between DNA str
 <span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">chr1</span> <span class="o">==</span> <span class="n">GRCh38</span><span class="o">.</span><span class="n">contig_by_name</span><span class="p">(</span><span class="s1">&#39;chr1&#39;</span><span class="p">)</span>    <span class="c1"># by UCSC name</span>
 </pre></div>
 </div>
-<dl class="py property">
-<dt class="sig sig-object py" id="gpsea.model.genome.GenomeBuild.identifier">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">identifier</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.model.genome.GenomeBuild.identifier" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="gpsea.model.genome.GenomeBuild.genome_build_id">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">genome_build_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#gpsea.model.genome.GenomeBuildIdentifier" title="gpsea.model.genome._genome.GenomeBuildIdentifier"><span class="pre">GenomeBuildIdentifier</span></a></em><a class="headerlink" href="#gpsea.model.genome.GenomeBuild.genome_build_id" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="gpsea.model.genome.GenomeBuild.contigs">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">contigs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.model.genome.Contig" title="gpsea.model.genome._genome.Contig"><span class="pre">Contig</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gpsea.model.genome.GenomeBuild.contigs" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.model.genome.GenomeBuild.contig_by_name">
 <span class="sig-name descname"><span class="pre">contig_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gpsea.model.genome.Contig" title="gpsea.model.genome._genome.Contig"><span class="pre">Contig</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#GenomeBuild.contig_by_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.GenomeBuild.contig_by_name" title="Link to this definition"></a></dt>
@@ -155,11 +140,26 @@ Genomic regions are transposable - they can flip the coordinates between DNA str
 </dl>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.model.genome.GenomeBuild.contigs">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">contigs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gpsea.model.genome.Contig" title="gpsea.model.genome._genome.Contig"><span class="pre">Contig</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gpsea.model.genome.GenomeBuild.contigs" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.model.genome.GenomeBuild.genome_build_id">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">genome_build_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#gpsea.model.genome.GenomeBuildIdentifier" title="gpsea.model.genome._genome.GenomeBuildIdentifier"><span class="pre">GenomeBuildIdentifier</span></a></em><a class="headerlink" href="#gpsea.model.genome.GenomeBuild.genome_build_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.model.genome.GenomeBuild.identifier">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">identifier</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.model.genome.GenomeBuild.identifier" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.model.genome.Contig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.model.genome.</span></span><span class="sig-name descname"><span class="pre">Contig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">gb_acc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">refseq_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucsc_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#Contig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.Contig" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.model.genome.</span></span><span class="sig-name descname"><span class="pre">Contig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">gb_acc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">refseq_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucsc_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#Contig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.Contig" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sized" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sized</span></code></a></p>
 <p><cite>Contig</cite> represents identifiers and length of a contiguous sequence of genome assembly.</p>
 <p>The identifiers include:</p>
@@ -172,30 +172,30 @@ Genomic regions are transposable - they can flip the coordinates between DNA str
 <p>The length of a <cite>Contig</cite> represents the number of bases of the contig sequence.</p>
 <p>You should not try to create a <cite>Contig</cite> on your own, but always get it from a <a class="reference internal" href="#gpsea.model.genome.GenomeBuild" title="gpsea.model.genome.GenomeBuild"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenomeBuild</span></code></a>.</p>
 <dl class="py property">
-<dt class="sig sig-object py" id="gpsea.model.genome.Contig.name">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.model.genome.Contig.name" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gpsea.model.genome.Contig.genbank_acc">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">genbank_acc</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.model.genome.Contig.genbank_acc" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="gpsea.model.genome.Contig.genbank_acc">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">genbank_acc</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.model.genome.Contig.genbank_acc" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gpsea.model.genome.Contig.name">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.model.genome.Contig.name" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="gpsea.model.genome.Contig.refseq_name">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">refseq_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.model.genome.Contig.refseq_name" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">refseq_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.model.genome.Contig.refseq_name" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="gpsea.model.genome.Contig.ucsc_name">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ucsc_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.model.genome.Contig.ucsc_name" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ucsc_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.model.genome.Contig.ucsc_name" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.model.genome.GenomeBuildIdentifier">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.model.genome.</span></span><span class="sig-name descname"><span class="pre">GenomeBuildIdentifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">major_assembly</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">patch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#GenomeBuildIdentifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.GenomeBuildIdentifier" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.model.genome.</span></span><span class="sig-name descname"><span class="pre">GenomeBuildIdentifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">major_assembly</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">patch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#GenomeBuildIdentifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.GenomeBuildIdentifier" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Identifier of the genome build consisting of <a class="reference internal" href="#gpsea.model.genome.GenomeBuildIdentifier.major_assembly" title="gpsea.model.genome.GenomeBuildIdentifier.major_assembly"><code class="xref py py-attr docutils literal notranslate"><span class="pre">major_assembly</span></code></a> (e.g. GRCh38) and <a class="reference internal" href="#gpsea.model.genome.GenomeBuildIdentifier.patch" title="gpsea.model.genome.GenomeBuildIdentifier.patch"><code class="xref py py-attr docutils literal notranslate"><span class="pre">patch</span></code></a> (e.g. p13).</p>
 <dl class="field-list simple">
@@ -207,28 +207,28 @@ Genomic regions are transposable - they can flip the coordinates between DNA str
 </dd>
 </dl>
 <dl class="py property">
+<dt class="sig sig-object py" id="gpsea.model.genome.GenomeBuildIdentifier.identifier">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">identifier</span></span><a class="headerlink" href="#gpsea.model.genome.GenomeBuildIdentifier.identifier" title="Link to this definition"></a></dt>
+<dd><p>Get genome build identifier consisting of major assembly + patch, e.g. <cite>GRCh38.p13</cite></p>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="gpsea.model.genome.GenomeBuildIdentifier.major_assembly">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">major_assembly</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.model.genome.GenomeBuildIdentifier.major_assembly" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">major_assembly</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.model.genome.GenomeBuildIdentifier.major_assembly" title="Link to this definition"></a></dt>
 <dd><p>Get major assembly, e.g. <cite>GRCh38</cite>.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="gpsea.model.genome.GenomeBuildIdentifier.patch">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">patch</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.model.genome.GenomeBuildIdentifier.patch" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">patch</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.model.genome.GenomeBuildIdentifier.patch" title="Link to this definition"></a></dt>
 <dd><p>Get assembly patch , e.g. <cite>p13</cite>.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="gpsea.model.genome.GenomeBuildIdentifier.identifier">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">identifier</span></span><a class="headerlink" href="#gpsea.model.genome.GenomeBuildIdentifier.identifier" title="Link to this definition"></a></dt>
-<dd><p>Get genome build identifier consisting of major assembly + patch, e.g. <cite>GRCh38.p13</cite></p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.model.genome.Region">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.model.genome.</span></span><span class="sig-name descname"><span class="pre">Region</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#Region"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.Region" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.model.genome.</span></span><span class="sig-name descname"><span class="pre">Region</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#Region"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.Region" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sized" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sized</span></code></a></p>
 <p><cite>Region</cite> represents a contiguous region/slice of a biological sequence, such as DNA, RNA, or protein.</p>
 <p>The <a class="reference internal" href="#gpsea.model.genome.Region.start" title="gpsea.model.genome.Region.start"><code class="xref py py-attr docutils literal notranslate"><span class="pre">start</span></code></a> and <a class="reference internal" href="#gpsea.model.genome.Region.end" title="gpsea.model.genome.Region.end"><code class="xref py py-attr docutils literal notranslate"><span class="pre">end</span></code></a> represent 0-based coordinates of the region.
@@ -241,29 +241,6 @@ The region has length that corresponds to the number of spanned bases/aminoacids
 </ul>
 </dd>
 </dl>
-<dl class="py property">
-<dt class="sig sig-object py" id="gpsea.model.genome.Region.start">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#gpsea.model.genome.Region.start" title="Link to this definition"></a></dt>
-<dd><p>Get 0-based (excluded) start coordinate of the region.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="gpsea.model.genome.Region.end">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">end</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#gpsea.model.genome.Region.end" title="Link to this definition"></a></dt>
-<dd><p>Get 0-based (included) end coordinate of the region.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.model.genome.Region.overlaps_with">
-<span class="sig-name descname"><span class="pre">overlaps_with</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.Region" title="gpsea.model.genome._genome.Region"><span class="pre">Region</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#Region.overlaps_with"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.Region.overlaps_with" title="Link to this definition"></a></dt>
-<dd><p>Test if this <cite>Region</cite> overlaps with the <cite>other</cite> <cite>Region</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> – another <a class="reference internal" href="#gpsea.model.genome.Region" title="gpsea.model.genome.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.model.genome.Region.contains">
 <span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.Region" title="gpsea.model.genome._genome.Region"><span class="pre">Region</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#Region.contains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.Region.contains" title="Link to this definition"></a></dt>
@@ -304,17 +281,40 @@ and negative if this is located downstream (right) of <cite>other</cite>
 <p>Returns: an <cite>int</cite> with the distance.</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.model.genome.Region.end">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">end</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#gpsea.model.genome.Region.end" title="Link to this definition"></a></dt>
+<dd><p>Get 0-based (included) end coordinate of the region.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.model.genome.Region.is_empty">
 <span class="sig-name descname"><span class="pre">is_empty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#Region.is_empty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.Region.is_empty" title="Link to this definition"></a></dt>
 <dd><p>Return <cite>True</cite> if the region is empty, i.e. it spans 0 units/bases/aminoacids…</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.genome.Region.overlaps_with">
+<span class="sig-name descname"><span class="pre">overlaps_with</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.Region" title="gpsea.model.genome._genome.Region"><span class="pre">Region</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#Region.overlaps_with"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.Region.overlaps_with" title="Link to this definition"></a></dt>
+<dd><p>Test if this <cite>Region</cite> overlaps with the <cite>other</cite> <cite>Region</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> – another <a class="reference internal" href="#gpsea.model.genome.Region" title="gpsea.model.genome.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.model.genome.Region.start">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#gpsea.model.genome.Region.start" title="Link to this definition"></a></dt>
+<dd><p>Get 0-based (excluded) start coordinate of the region.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.model.genome.GenomicRegion">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.model.genome.</span></span><span class="sig-name descname"><span class="pre">GenomicRegion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.Contig" title="gpsea.model.genome._genome.Contig"><span class="pre">Contig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">strand</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.Strand" title="gpsea.model.genome._genome.Strand"><span class="pre">Strand</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#GenomicRegion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.GenomicRegion" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.model.genome.</span></span><span class="sig-name descname"><span class="pre">GenomicRegion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.Contig" title="gpsea.model.genome._genome.Contig"><span class="pre">Contig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">strand</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.Strand" title="gpsea.model.genome._genome.Strand"><span class="pre">Strand</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#GenomicRegion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.GenomicRegion" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gpsea.model.genome.Transposable" title="gpsea.model.genome._genome.Transposable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Transposable</span></code></a>, <a class="reference internal" href="#gpsea.model.genome.Region" title="gpsea.model.genome._genome.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a></p>
 <p><cite>GenomicRegion</cite> represents a region located on strand of a DNA contig.</p>
 <dl class="field-list simple">
@@ -327,29 +327,39 @@ and negative if this is located downstream (right) of <cite>other</cite>
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpsea.model.genome.GenomicRegion.contains">
+<span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.GenomicRegion" title="gpsea.model.genome._genome.GenomicRegion"><span class="pre">GenomicRegion</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#GenomicRegion.contains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.GenomicRegion.contains" title="Link to this definition"></a></dt>
+<dd><p>Check if this <cite>GenomicRegion</cite> contains the <cite>other</cite> genomic region.</p>
+<p>Empty interval <cite>other</cite> is considered as being contained in <cite>self</cite> if <cite>other</cite> lies on either boundary of <cite>self</cite>.
+Genomic region located on a different contig is never contained.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> – other <a class="reference internal" href="#gpsea.model.genome.GenomicRegion" title="gpsea.model.genome.GenomicRegion"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenomicRegion</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="gpsea.model.genome.GenomicRegion.contig">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">contig</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#gpsea.model.genome.Contig" title="gpsea.model.genome._genome.Contig"><span class="pre">Contig</span></a></em><a class="headerlink" href="#gpsea.model.genome.GenomicRegion.contig" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">contig</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#gpsea.model.genome.Contig" title="gpsea.model.genome._genome.Contig"><span class="pre">Contig</span></a></em><a class="headerlink" href="#gpsea.model.genome.GenomicRegion.contig" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gpsea.model.genome.GenomicRegion.start_on_strand">
-<span class="sig-name descname"><span class="pre">start_on_strand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.Strand" title="gpsea.model.genome._genome.Strand"><span class="pre">Strand</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#GenomicRegion.start_on_strand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.GenomicRegion.start_on_strand" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="gpsea.model.genome.GenomicRegion.distance_to">
+<span class="sig-name descname"><span class="pre">distance_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.GenomicRegion" title="gpsea.model.genome._genome.GenomicRegion"><span class="pre">GenomicRegion</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#GenomicRegion.distance_to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.GenomicRegion.distance_to" title="Link to this definition"></a></dt>
+<dd><p>Calculate the number of bases present between this <cite>GenomicRegion</cite> and the <cite>other</cite> genomic region.</p>
+<p>The distance is zero if the regions are adjacent or if they overlap.
+The distance is positive if this is upstream (left) of <cite>other</cite>
+and negative if this is located downstream (right) of <cite>other</cite>
+:param other: other <a class="reference internal" href="#gpsea.model.genome.GenomicRegion" title="gpsea.model.genome.GenomicRegion"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenomicRegion</span></code></a></p>
+<p>Returns: an <cite>int</cite> with the distance.
+Raises: <cite>ValueError</cite> if the <cite>other</cite> region is on a different contig.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gpsea.model.genome.GenomicRegion.end_on_strand">
 <span class="sig-name descname"><span class="pre">end_on_strand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.Strand" title="gpsea.model.genome._genome.Strand"><span class="pre">Strand</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#GenomicRegion.end_on_strand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.GenomicRegion.end_on_strand" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="gpsea.model.genome.GenomicRegion.strand">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">strand</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#gpsea.model.genome.Strand" title="gpsea.model.genome._genome.Strand"><span class="pre">Strand</span></a></em><a class="headerlink" href="#gpsea.model.genome.GenomicRegion.strand" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gpsea.model.genome.GenomicRegion.with_strand">
-<span class="sig-name descname"><span class="pre">with_strand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.Strand" title="gpsea.model.genome._genome.Strand"><span class="pre">Strand</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#GenomicRegion.with_strand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.GenomicRegion.with_strand" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -368,52 +378,30 @@ Genomic regions located on different contigs do not overlap.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gpsea.model.genome.GenomicRegion.contains">
-<span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.GenomicRegion" title="gpsea.model.genome._genome.GenomicRegion"><span class="pre">GenomicRegion</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#GenomicRegion.contains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.GenomicRegion.contains" title="Link to this definition"></a></dt>
-<dd><p>Check if this <cite>GenomicRegion</cite> contains the <cite>other</cite> genomic region.</p>
-<p>Empty interval <cite>other</cite> is considered as being contained in <cite>self</cite> if <cite>other</cite> lies on either boundary of <cite>self</cite>.
-Genomic region located on a different contig is never contained.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> – other <a class="reference internal" href="#gpsea.model.genome.GenomicRegion" title="gpsea.model.genome.GenomicRegion"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenomicRegion</span></code></a>.</p>
-</dd>
-</dl>
-</dd></dl>
+<dt class="sig sig-object py" id="gpsea.model.genome.GenomicRegion.start_on_strand">
+<span class="sig-name descname"><span class="pre">start_on_strand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.Strand" title="gpsea.model.genome._genome.Strand"><span class="pre">Strand</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#GenomicRegion.start_on_strand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.GenomicRegion.start_on_strand" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpsea.model.genome.GenomicRegion.strand">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">strand</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#gpsea.model.genome.Strand" title="gpsea.model.genome._genome.Strand"><span class="pre">Strand</span></a></em><a class="headerlink" href="#gpsea.model.genome.GenomicRegion.strand" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gpsea.model.genome.GenomicRegion.distance_to">
-<span class="sig-name descname"><span class="pre">distance_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.GenomicRegion" title="gpsea.model.genome._genome.GenomicRegion"><span class="pre">GenomicRegion</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#GenomicRegion.distance_to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.GenomicRegion.distance_to" title="Link to this definition"></a></dt>
-<dd><p>Calculate the number of bases present between this <cite>GenomicRegion</cite> and the <cite>other</cite> genomic region.</p>
-<p>The distance is zero if the regions are adjacent or if they overlap.
-The distance is positive if this is upstream (left) of <cite>other</cite>
-and negative if this is located downstream (right) of <cite>other</cite>
-:param other: other <a class="reference internal" href="#gpsea.model.genome.GenomicRegion" title="gpsea.model.genome.GenomicRegion"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenomicRegion</span></code></a></p>
-<p>Returns: an <cite>int</cite> with the distance.
-Raises: <cite>ValueError</cite> if the <cite>other</cite> region is on a different contig.</p>
-</dd></dl>
+<dt class="sig sig-object py" id="gpsea.model.genome.GenomicRegion.with_strand">
+<span class="sig-name descname"><span class="pre">with_strand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.Strand" title="gpsea.model.genome._genome.Strand"><span class="pre">Strand</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#GenomicRegion.with_strand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.GenomicRegion.with_strand" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.model.genome.Strand">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.model.genome.</span></span><span class="sig-name descname"><span class="pre">Strand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#Strand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.Strand" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.model.genome.</span></span><span class="sig-name descname"><span class="pre">Strand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#Strand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.Strand" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
 <p><cite>Strand</cite> is an enum to model positive and negative strands of double-stranded sequences, such as DNA.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gpsea.model.genome.Strand.POSITIVE">
-<span class="sig-name descname"><span class="pre">POSITIVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('+',)</span></em><a class="headerlink" href="#gpsea.model.genome.Strand.POSITIVE" title="Link to this definition"></a></dt>
-<dd><p>The positive strand of a double stranded sequence.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gpsea.model.genome.Strand.NEGATIVE">
-<span class="sig-name descname"><span class="pre">NEGATIVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('-',)</span></em><a class="headerlink" href="#gpsea.model.genome.Strand.NEGATIVE" title="Link to this definition"></a></dt>
-<dd><p>The negative strand of a double stranded sequence.</p>
-</dd></dl>
-
 <dl class="py property">
 <dt class="sig sig-object py" id="gpsea.model.genome.Strand.symbol">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">symbol</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.model.genome.Strand.symbol" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">symbol</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#gpsea.model.genome.Strand.symbol" title="Link to this definition"></a></dt>
 <dd><p>Get a <cite>str</cite> with the strand’s sign.</p>
 </dd></dl>
 
@@ -435,28 +423,40 @@ Raises: <cite>ValueError</cite> if the <cite>other</cite> region is on a differe
 <dd><p>Get the opposite strand of the current strand.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gpsea.model.genome.Strand.POSITIVE">
+<span class="sig-name descname"><span class="pre">POSITIVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('+',)</span></em><a class="headerlink" href="#gpsea.model.genome.Strand.POSITIVE" title="Link to this definition"></a></dt>
+<dd><p>The positive strand of a double stranded sequence.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gpsea.model.genome.Strand.NEGATIVE">
+<span class="sig-name descname"><span class="pre">NEGATIVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('-',)</span></em><a class="headerlink" href="#gpsea.model.genome.Strand.NEGATIVE" title="Link to this definition"></a></dt>
+<dd><p>The negative strand of a double stranded sequence.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.model.genome.Stranded">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.model.genome.</span></span><span class="sig-name descname"><span class="pre">Stranded</span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#Stranded"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.Stranded" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.model.genome.</span></span><span class="sig-name descname"><span class="pre">Stranded</span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#Stranded"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.Stranded" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Mixin for classes that are on double-stranded sequences.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="gpsea.model.genome.Stranded.strand">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">strand</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#gpsea.model.genome.Strand" title="gpsea.model.genome._genome.Strand"><span class="pre">Strand</span></a></em><a class="headerlink" href="#gpsea.model.genome.Stranded.strand" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">abstract</span></span><span class="w"> </span><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">strand</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#gpsea.model.genome.Strand" title="gpsea.model.genome._genome.Strand"><span class="pre">Strand</span></a></em><a class="headerlink" href="#gpsea.model.genome.Stranded.strand" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gpsea.model.genome.Transposable">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.model.genome.</span></span><span class="sig-name descname"><span class="pre">Transposable</span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#Transposable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.Transposable" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpsea.model.genome.</span></span><span class="sig-name descname"><span class="pre">Transposable</span></span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#Transposable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.Transposable" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gpsea.model.genome.Stranded" title="gpsea.model.genome._genome.Stranded"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stranded</span></code></a></p>
 <p><cite>Transposable</cite> elements know how to flip themselves to arbitrary <a class="reference internal" href="#gpsea.model.genome.Strand" title="gpsea.model.genome.Strand"><code class="xref py py-class docutils literal notranslate"><span class="pre">Strand</span></code></a> of a sequence.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="gpsea.model.genome.Transposable.with_strand">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">with_strand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.Strand" title="gpsea.model.genome._genome.Strand"><span class="pre">Strand</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#Transposable.with_strand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.Transposable.with_strand" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gpsea.model.genome.Transposable.to_negative_strand">
+<span class="sig-name descname"><span class="pre">to_negative_strand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#Transposable.to_negative_strand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.Transposable.to_negative_strand" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -470,8 +470,8 @@ Raises: <cite>ValueError</cite> if the <cite>other</cite> region is on a differe
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gpsea.model.genome.Transposable.to_negative_strand">
-<span class="sig-name descname"><span class="pre">to_negative_strand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#Transposable.to_negative_strand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.Transposable.to_negative_strand" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gpsea.model.genome.Transposable.with_strand">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">with_strand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gpsea.model.genome.Strand" title="gpsea.model.genome._genome.Strand"><span class="pre">Strand</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gpsea/model/genome/_genome.html#Transposable.with_strand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpsea.model.genome.Transposable.with_strand" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
