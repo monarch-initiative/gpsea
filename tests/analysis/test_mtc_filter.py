@@ -33,7 +33,6 @@ class TestIfHpoFilter:
     ) -> IfHpoFilter:
         return IfHpoFilter.default_filter(
             hpo=hpo,
-            term_frequency_threshold=0.2,
             annotation_frequency_threshold=0.1,
         )
 
@@ -95,59 +94,6 @@ class TestIfHpoFilter:
 
         assert actual == expected
 
-    @pytest.mark.parametrize(
-        "counts, expected",
-        [
-            ((1, 0, 20, 30), False),
-            ((2, 0, 20, 30), True),
-            ((0, 1, 20, 30), False),
-            ((0, 2, 20, 30), True),
-            ((0, 0, 20, 30), False),
-            ((2, 2, 20, 30), True),
-        ],
-    )
-    def test_some_cell_has_greater_than_one_count(
-        self,
-        counts: typing.Tuple[int],
-        expected: bool,
-        gt_clf: GenotypeClassifier,
-        ph_predicate: PhenotypeClassifier[hpotk.TermId],
-    ):
-        counts_df = TestIfHpoFilter.prepare_counts_df(counts, gt_clf, ph_predicate)
-
-        actual = IfHpoFilter.some_cell_has_greater_than_one_count(
-            counts=counts_df,
-            ph_clf=ph_predicate,
-        )
-
-        assert actual == expected
-
-    @pytest.mark.parametrize(
-        "counts, expected",
-        [
-            ((1, 2, 99, 198), 0.01),
-            ((1, 3, 99, 197), 0.015),
-            ((0, 0, 100, 200), 0.0),
-            ((0, 0, 0, 200), 0.0),
-            ((0, 0, 0, 0), 0.0),
-        ],
-    )
-    def test_get_maximum_group_observed_HPO_frequency(
-        self,
-        counts: typing.Tuple[int],
-        expected: float,
-        gt_clf: GenotypeClassifier,
-        ph_predicate: PhenotypeClassifier[hpotk.TermId],
-    ):
-        counts_df = TestIfHpoFilter.prepare_counts_df(counts, gt_clf, ph_predicate)
-
-        actual = IfHpoFilter.get_maximum_group_observed_HPO_frequency(
-            counts_frame=counts_df,
-            ph_clf=ph_predicate,
-        )
-
-        assert actual == pytest.approx(expected)
-
     def test_filter_terms_to_test(
         self,
         mtc_filter: IfHpoFilter,
@@ -178,86 +124,6 @@ class TestIfHpoFilter:
             None,
         ]
 
-    def test_min_observed_HPO_threshold(
-        self,
-        suox_pheno_clfs: typing.Sequence[PhenotypeClassifier[hpotk.TermId]],
-        patient_counts: typing.Sequence[pd.DataFrame],
-    ):
-        """
-        In our heuristic filter, we only test terms that have at least a threshold
-        frequency in at least one of the groups. We use the `patient_counts` - a sequence of DataFrames
-        with 2x2 contingenicy tables of counts. For instance, each column will have one row for
-        PatientCategories.YES and one for PatientCategories.NO, indicating counts of measured observed/excluded
-        HPO phenotypes. Each column is a certain genotype, e.g., MISSENSE or NON-MISSENSE. We want the
-        function to return the maximum frequency. In each column, the frequency is calculate by
-        PatientCategories.YES / (PatientCategories.YES+PatientCategories.NO). This function tests that this works
-        for all of the HPO terms in the dictionary.
-        """
-        EPSILON = 0.001
-        curie2idx = {p.phenotype.value: i for i, p in enumerate(suox_pheno_clfs)}
-        # Ectopia lentis HP:0001083  (1 2  3 1), freqs are 1/4=0.25 and 3/4=0.75
-        idx = curie2idx["HP:0001083"]
-        ectopia = patient_counts[idx]
-        ectopia_predicate = suox_pheno_clfs[idx]
-        max_f = IfHpoFilter.get_maximum_group_observed_HPO_frequency(
-            ectopia,
-            ph_clf=ectopia_predicate,
-        )
-        assert max_f == pytest.approx(0.75, abs=EPSILON)
-
-        # Seizure HP:0001250 (11 5 0 1), freqs are 11/11=1.0 and 5/6=0.8333333
-        idx = curie2idx["HP:0001250"]
-        seizure = patient_counts[idx]
-        seizure_predicate = suox_pheno_clfs[idx]
-        max_f = IfHpoFilter.get_maximum_group_observed_HPO_frequency(
-            seizure, ph_clf=seizure_predicate
-        )
-        assert max_f == pytest.approx(1.0, abs=EPSILON)
-
-        # Sulfocysteinuria HP:0032350 (2 3 0 0), freqs are both 1
-        idx = curie2idx["HP:0032350"]
-        sulfocysteinuria = patient_counts[idx]
-        sulfocysteinuria_predicate = suox_pheno_clfs[idx]
-        max_f = IfHpoFilter.get_maximum_group_observed_HPO_frequency(
-            sulfocysteinuria,
-            ph_clf=sulfocysteinuria_predicate,
-        )
-        assert max_f == pytest.approx(1.0, abs=EPSILON)
-
-        # Neurodevelopmental delay HP:0012758 (4 0 4 5), freqs are 4/8 = 0.5 and 0/5=0.0
-        idx = curie2idx["HP:0012758"]
-        ndelay = patient_counts[idx]
-        ndelay_predicate = suox_pheno_clfs[idx]
-        max_f = IfHpoFilter.get_maximum_group_observed_HPO_frequency(
-            ndelay,
-            ph_clf=ndelay_predicate,
-        )
-        assert max_f == pytest.approx(0.5, abs=EPSILON)
-
-        # Hypertonia HP:0001276 (4 2 3 3) freqs are 4/7=0.4375 and 2/5=0.5714
-        idx = curie2idx["HP:0001276"]
-        hypertonia = patient_counts[idx]
-        hypertonia_predicate = suox_pheno_clfs[idx]
-        max_f = IfHpoFilter.get_maximum_group_observed_HPO_frequency(
-            hypertonia,
-            ph_clf=hypertonia_predicate,
-        )
-        assert max_f == pytest.approx(0.5714, abs=EPSILON)
-
-    def test_mtc_filter_term_frequency_threshold_raises(
-        self,
-        hpo: hpotk.MinimalOntology,
-    ):
-        with pytest.raises(AssertionError) as e:
-            IfHpoFilter.default_filter(
-                hpo=hpo,
-                term_frequency_threshold=1.1,
-                annotation_frequency_threshold=0.1,
-            )
-        assert e.value.args == (
-            "The term_frequency_threshold must be in the range (0, 1]",
-        )
-
     def test_mtc_filter_annotation_frequency_threshold_raises(
         self,
         hpo: hpotk.MinimalOntology,
@@ -265,7 +131,6 @@ class TestIfHpoFilter:
         with pytest.raises(AssertionError) as e:
             IfHpoFilter.default_filter(
                 hpo=hpo,
-                term_frequency_threshold=0.1,
                 annotation_frequency_threshold=1.1,
             )
         assert e.value.args == (

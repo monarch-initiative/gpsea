@@ -155,7 +155,8 @@ class ProteinVisualizable:
         return self._variant_locations_counted_absolute
 
     @property
-    def marker_counts(self):
+    def marker_counts(self) -> np.ndarray:
+        # `self._marker_counts` should be a 1D array with non-negative ints (counts).
         return self._marker_counts
 
     @property

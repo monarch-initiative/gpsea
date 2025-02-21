@@ -243,7 +243,7 @@ we can configure the analysis manually.
 First, we choose a phenotype MT filter (e.g. :class:`~gpsea.analysis.mtc_filter.IfHpoFilter`):
 
 >>> from gpsea.analysis.mtc_filter import IfHpoFilter
->>> mtc_filter = IfHpoFilter.default_filter(hpo, term_frequency_threshold=.2)
+>>> mtc_filter = IfHpoFilter.default_filter(hpo)
 
 .. note::
 
@@ -295,12 +295,12 @@ We can now test associations between the genotype classes and the HPO terms:
 >>> len(result.phenotypes)
 369
 >>> result.total_tests
-24
+32
 
 
 We tested the ``cohort`` for association between the genotype classes (``gt_clf``)
 and HPO terms (``pheno_clfs``).
-Thanks to phenotype MT filter, we only tested 24 out of 369 terms.
+Thanks to phenotype MT filter, we only tested 32 out of 369 terms.
 The MT filter report shows the filtering details:
 
 >>> from gpsea.view import MtcStatsViewer
@@ -331,7 +331,7 @@ one HPO term per row. The rows are ordered by the corrected p value and nominal 
 
 .. csv-table:: *TBX5* frameshift vs rest
    :file: report/tbx5_frameshift.csv
-   :header-rows: 2
+   :header-rows: 1
 
 .. doctest:: phenotype-classes
    :hide:
@@ -346,5 +346,5 @@ was observed in 42/71 (59%) patients with no frameshift allele (`Other`)
 but it was observed in 19/19 (100%) patients with a frameshift allele (`Frameshift`).
 Fisher exact test computed a p value of `~0.000242`
 and the p value corrected by Benjamini-Hochberg procedure
-is `~0.005806`.
+is `~0.00774`.
 

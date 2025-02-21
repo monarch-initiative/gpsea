@@ -52,7 +52,7 @@ def hpo_term_analysis_result(
         corrected_pvals=(math.nan, 0.01),
         mtc_filter_name="Random MTC filter",
         mtc_filter_results=(
-            PhenotypeMtcResult.fail("RMF01", "Not too interesting"),
+            PhenotypeMtcResult.fail("RMF01", "Not too interesting", doclink="https://www.example.com/boring"),
             PhenotypeMtcResult.ok(),
         ),
     )
