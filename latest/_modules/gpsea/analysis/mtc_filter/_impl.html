@@ -78,6 +78,7 @@
   <h1>Source code for gpsea.analysis.mtc_filter._impl</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">deque</span>
@@ -88,6 +89,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">hpotk.constants.hpo.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">PHENOTYPIC_ABNORMALITY</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">gpsea</span><span class="w"> </span><span class="kn">import</span> <span class="n">_BASE_URL</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..clf</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenotypeClassifier</span><span class="p">,</span> <span class="n">PhenotypeClassifier</span><span class="p">,</span> <span class="n">P</span>
 
 
@@ -107,6 +109,11 @@
     <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A human-friendly explanation of the issue.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">doclink</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An URL of the documentation for the issue.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
@@ -140,8 +147,12 @@
 <div class="viewcode-block" id="PhenotypeMtcResult.fail">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.PhenotypeMtcResult.fail">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">fail</span><span class="p">(</span><span class="n">code</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;PhenotypeMtcResult&quot;</span><span class="p">:</span>
-        <span class="n">issue</span> <span class="o">=</span> <span class="n">PhenotypeMtcIssue</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">code</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">reason</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fail</span><span class="p">(</span>
+        <span class="n">code</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">doclink</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;PhenotypeMtcResult&quot;</span><span class="p">:</span>
+        <span class="n">issue</span> <span class="o">=</span> <span class="n">PhenotypeMtcIssue</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">code</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">reason</span><span class="p">,</span> <span class="n">doclink</span><span class="o">=</span><span class="n">doclink</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">PhenotypeMtcResult</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">issue</span><span class="o">=</span><span class="n">issue</span><span class="p">)</span></div>
 
 
@@ -321,7 +332,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">NON_SPECIFIED_TERM</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span>
-        <span class="n">code</span><span class="o">=</span><span class="s2">&quot;ST1&quot;</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Non-specified term&quot;</span>
+        <span class="n">code</span><span class="o">=</span><span class="s2">&quot;ST1&quot;</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Non-specified term&quot;</span><span class="p">,</span>
+        <span class="n">doclink</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_BASE_URL</span><span class="p">,</span> <span class="s2">&quot;user-guide/analyses/mtc.html#specified-terms-mt-filter&quot;</span><span class="p">),</span>
     <span class="p">)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The MTC filtering result returned when an HPO term does not belong among the selection of terms to be tested.</span>
@@ -400,35 +412,53 @@
 <span class="sd">    We recommend creating an instance using the :func:`~gpsea.analysis.mtc_filter.IfHpoFilter.default_filter` static factory method.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">__DOC_SECTION</span> <span class="o">=</span> <span class="s2">&quot;user-guide/analyses/mtc.html&quot;</span>
+
     <span class="n">SAME_COUNT_AS_THE_ONLY_CHILD</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span>
         <span class="s2">&quot;HMF03&quot;</span><span class="p">,</span>
         <span class="s2">&quot;Skipping term because of a child term with the same individual counts&quot;</span><span class="p">,</span>
+        <span class="n">doclink</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">_BASE_URL</span><span class="p">,</span>
+            <span class="n">__DOC_SECTION</span><span class="p">,</span>
+            <span class="s2">&quot;#skip-terms-if-all-counts-are-identical-to-counts-for-a-child-term&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span>
-        <span class="s2">&quot;HMF05&quot;</span><span class="p">,</span> <span class="s2">&quot;Skipping term because one genotype had zero observations&quot;</span>
+        <span class="s2">&quot;HMF05&quot;</span><span class="p">,</span> <span class="s2">&quot;Skipping term because one genotype had zero observations&quot;</span><span class="p">,</span>
+        <span class="n">doclink</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">_BASE_URL</span><span class="p">,</span>
+            <span class="n">__DOC_SECTION</span><span class="p">,</span>
+            <span class="s2">&quot;#skip-term-if-one-of-the-genotype-groups-has-neither-observed-nor-excluded-observations&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">SKIPPING_NON_PHENOTYPE_TERM</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span>
-        <span class="s2">&quot;HMF07&quot;</span><span class="p">,</span> <span class="s2">&quot;Skipping non phenotype term&quot;</span>
+        <span class="s2">&quot;HMF07&quot;</span><span class="p">,</span> <span class="s2">&quot;Skipping non phenotype term&quot;</span><span class="p">,</span>
+        <span class="n">doclink</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">_BASE_URL</span><span class="p">,</span>
+            <span class="n">__DOC_SECTION</span><span class="p">,</span>
+            <span class="s2">&quot;#skipping-terms-that-are-not-descendents-of-phenotypic-abnormality&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
     <span class="p">)</span>
-    <span class="n">SKIPPING_GENERAL_TERM</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="s2">&quot;HMF08&quot;</span><span class="p">,</span> <span class="s2">&quot;Skipping general term&quot;</span><span class="p">)</span>
+    <span class="n">SKIPPING_GENERAL_TERM</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span>
+        <span class="s2">&quot;HMF08&quot;</span><span class="p">,</span> <span class="s2">&quot;Skipping general term&quot;</span><span class="p">,</span>
+        <span class="n">doclink</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">_BASE_URL</span><span class="p">,</span>
+            <span class="n">__DOC_SECTION</span><span class="p">,</span>
+            <span class="s2">&quot;#skipping-general-level-terms&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
 
 <div class="viewcode-block" id="IfHpoFilter.default_filter">
 <a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.IfHpoFilter.default_filter">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">default_filter</span><span class="p">(</span>
         <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
-        <span class="n">term_frequency_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.4</span><span class="p">,</span>
         <span class="n">annotation_frequency_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.4</span><span class="p">,</span>
         <span class="n">phenotypic_abnormality</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span> <span class="o">=</span> <span class="n">PHENOTYPIC_ABNORMALITY</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            hpo: HPO</span>
-<span class="sd">            term_frequency_threshold: a `float` in range :math:`(0, 1]` with the minimum frequency</span>
-<span class="sd">              for an HPO term to have in at least one of the genotype groups</span>
-<span class="sd">              (e.g., 22% in missense and 3% in nonsense genotypes would be OK,</span>
-<span class="sd">              but not 13% missense and 10% nonsense genotypes if the threshold is 0.2).</span>
-<span class="sd">              The default threshold is `0.4` (40%).</span>
 <span class="sd">            annotation_frequency_threshold: a `float` in range :math:`(0, 1]` with the minimum frequency of</span>
 <span class="sd">                annotation in the cohort. For instance, if the cohort consists of 100 individuals, and</span>
 <span class="sd">                we have explicit observed observations for 20 and excluded for 10 individuals, then the</span>
@@ -487,16 +517,10 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
-        <span class="c1"># term_frequency_threshold: float,</span>
         <span class="n">annotation_frequency_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">general_hpo_terms</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hpo</span> <span class="o">=</span> <span class="n">hpo</span>
-        <span class="c1"># assert (</span>
-        <span class="c1">#     isinstance(term_frequency_threshold, (int, float))</span>
-        <span class="c1">#     and 0.0 &lt; term_frequency_threshold &lt;= 1.0</span>
-        <span class="c1"># ), &quot;The term_frequency_threshold must be in the range (0, 1]&quot;</span>
-        <span class="c1"># self._hpo_term_frequency_filter = term_frequency_threshold</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="nb">isinstance</span><span class="p">(</span><span class="n">annotation_frequency_threshold</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span>
             <span class="ow">and</span> <span class="mf">0.0</span> <span class="o">&lt;</span> <span class="n">annotation_frequency_threshold</span> <span class="o">&lt;=</span> <span class="mf">1.0</span>
@@ -506,16 +530,15 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_general_hpo_terms</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">general_hpo_terms</span><span class="p">)</span>
 
-        <span class="c1"># self._below_frequency_threshold = PhenotypeMtcResult.fail(</span>
-        <span class="c1">#     code=&quot;HMF01&quot;,</span>
-        <span class="c1">#     reason=&quot;Skipping term with maximum frequency that was&quot;</span>
-        <span class="c1">#     f&quot; less than threshold {self._hpo_term_frequency_filter}&quot;,</span>
-        <span class="c1"># )</span>
-        
         <span class="bp">self</span><span class="o">.</span><span class="n">_below_annotation_frequency_threshold</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span>
             <span class="n">code</span><span class="o">=</span><span class="s2">&quot;HMF09&quot;</span><span class="p">,</span>
             <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Skipping term that was annotated to less than &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_hpo_annotation_frequency_threshold</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2"> of the cohort members&quot;</span><span class="p">,</span>
+            <span class="n">doclink</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">_BASE_URL</span><span class="p">,</span>
+                <span class="n">IfHpoFilter</span><span class="o">.</span><span class="n">__DOC_SECTION</span><span class="p">,</span>
+                <span class="s2">&quot;#skipping-terms-that-are-rare-on-the-cohort-level&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
         <span class="c1"># Do not perform a test if the counts in the genotype categories do not even have nominal statistical power</span>
@@ -536,12 +559,22 @@
             <span class="n">code</span><span class="o">=</span><span class="s2">&quot;HMF06&quot;</span><span class="p">,</span>
             <span class="n">reason</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Skipping term with less than </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_min_observations_for_2_by_2</span><span class="si">}</span><span class="s2"> observations&quot;</span>
             <span class="s2">&quot; (not powered for 2x2)&quot;</span><span class="p">,</span>
+            <span class="n">doclink</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">_BASE_URL</span><span class="p">,</span>
+                <span class="n">IfHpoFilter</span><span class="o">.</span><span class="n">__DOC_SECTION</span><span class="p">,</span>
+                <span class="s2">&quot;#skip-term-if-underpowered-for-2x2-or-2x3-analysis&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_min_observations_for_2_by_3</span> <span class="o">=</span> <span class="mi">6</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_not_powered_for_2_by_3</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span>
             <span class="n">code</span><span class="o">=</span><span class="s2">&quot;HMF06&quot;</span><span class="p">,</span>
             <span class="n">reason</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Skipping term with less than </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_min_observations_for_2_by_3</span><span class="si">}</span><span class="s2"> observations&quot;</span>
             <span class="s2">&quot; (not powered for 2x3)&quot;</span><span class="p">,</span>
+            <span class="n">doclink</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">_BASE_URL</span><span class="p">,</span>
+                <span class="n">IfHpoFilter</span><span class="o">.</span><span class="n">__DOC_SECTION</span><span class="p">,</span>
+                <span class="s2">&quot;#skip-term-if-underpowered-for-2x2-or-2x3-analysis&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="IfHpoFilter.filter">
@@ -578,16 +611,7 @@
                 <span class="n">results</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">IfHpoFilter</span><span class="o">.</span><span class="n">SKIPPING_NON_PHENOTYPE_TERM</span>
                 <span class="k">continue</span>
 
-            <span class="c1"># ph_clf = pheno_clfs[idx]</span>
             <span class="n">contingency_matrix</span> <span class="o">=</span> <span class="n">counts</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
-
-            <span class="c1"># max_freq = IfHpoFilter.get_maximum_group_observed_HPO_frequency(</span>
-            <span class="c1">#     contingency_matrix,</span>
-            <span class="c1">#     ph_clf=ph_clf,</span>
-            <span class="c1"># )</span>
-            <span class="c1"># if max_freq &lt; self._hpo_term_frequency_filter:</span>
-            <span class="c1">#     results[idx] = self._below_frequency_threshold</span>
-            <span class="c1">#     continue</span>
 
             <span class="n">total_count</span> <span class="o">=</span> <span class="n">contingency_matrix</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">total_count</span> <span class="o">&lt;</span> <span class="n">annotation_count_thr</span><span class="p">:</span>
@@ -663,7 +687,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">possible_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Collection</span><span class="p">[</span><span class="n">PhenotypeMtcResult</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">PhenotypeMtcFilter</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span>
-            <span class="c1"># self._below_frequency_threshold,  # HMF01</span>
+            <span class="c1"># HMF01 - gone</span>
             <span class="c1"># HMF02 - gone</span>
             <span class="n">IfHpoFilter</span><span class="o">.</span><span class="n">SAME_COUNT_AS_THE_ONLY_CHILD</span><span class="p">,</span>  <span class="c1"># HMF03</span>
             <span class="c1"># HMF04 - gone</span>
@@ -690,26 +714,6 @@
         <span class="n">ph_clf</span><span class="p">:</span> <span class="n">PhenotypeClassifier</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">counts_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ph_clf</span><span class="o">.</span><span class="n">present_phenotype_category</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="c1"># type: ignore</span></div>
-
-
-<div class="viewcode-block" id="IfHpoFilter.get_maximum_group_observed_HPO_frequency">
-<a class="viewcode-back" href="../../../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.IfHpoFilter.get_maximum_group_observed_HPO_frequency">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_maximum_group_observed_HPO_frequency</span><span class="p">(</span>
-        <span class="n">counts_frame</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="n">ph_clf</span><span class="p">:</span> <span class="n">PhenotypeClassifier</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            The maximum frequency of observed HPO annotations across all genotypes.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">all_hpo_count_per_gt</span> <span class="o">=</span> <span class="n">counts_frame</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">all_hpo_count_per_gt</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
-            <span class="c1"># Prevent division by zeros</span>
-            <span class="k">return</span> <span class="mf">0.0</span>
-
-        <span class="n">present_hpo_count_per_gt</span> <span class="o">=</span> <span class="n">counts_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ph_clf</span><span class="o">.</span><span class="n">present_phenotype_category</span><span class="p">]</span> <span class="c1"># type: ignore</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">present_hpo_count_per_gt</span> <span class="o">/</span> <span class="n">all_hpo_count_per_gt</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="IfHpoFilter.one_genotype_has_zero_hpo_observations">
@@ -787,11 +791,6 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            hpo: HPO</span>
-<span class="sd">            term_frequency_threshold: a `float` in range :math:`(0, 1]` with the minimum frequency</span>
-<span class="sd">              for an HPO term to have in at least one of the genotype groups</span>
-<span class="sd">              (e.g., 22% in missense and 3% in nonsense genotypes would be OK,</span>
-<span class="sd">              but not 13% missense and 10% nonsense genotypes if the threshold is 0.2).</span>
-<span class="sd">              The default threshold is `0.4` (40%).</span>
 <span class="sd">            annotation_frequency_threshold: a `float` in range :math:`(0, 1]` with the minimum frequency of</span>
 <span class="sd">                annotation in the cohort. For instance, if the cohort consists of 100 individuals, and</span>
 <span class="sd">                we have explicit observed observations for 20 and excluded for 10 individuals, then the</span>
@@ -807,7 +806,6 @@
         <span class="p">)</span>
         <span class="n">IfHpoFilter</span><span class="o">.</span><span class="n">default_filter</span><span class="p">(</span>
             <span class="n">hpo</span><span class="o">=</span><span class="n">hpo</span><span class="p">,</span>
-            <span class="n">term_frequency_threshold</span><span class="o">=</span><span class="n">term_frequency_threshold</span><span class="p">,</span>
             <span class="n">annotation_frequency_threshold</span><span class="o">=</span><span class="n">annotation_frequency_threshold</span><span class="p">,</span>
             <span class="n">phenotypic_abnormality</span><span class="o">=</span><span class="n">phenotypic_abnormality</span><span class="p">,</span>
         <span class="p">)</span></div>
@@ -816,13 +814,11 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">hpo</span><span class="p">:</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">MinimalOntology</span><span class="p">,</span>
-        <span class="n">term_frequency_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">annotation_frequency_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">general_hpo_terms</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">],</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">hpo</span><span class="p">,</span>
-            <span class="n">term_frequency_threshold</span><span class="p">,</span>
             <span class="n">annotation_frequency_threshold</span><span class="p">,</span>
             <span class="n">general_hpo_terms</span><span class="p">,</span>
         <span class="p">)</span>
