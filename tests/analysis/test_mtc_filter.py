@@ -119,7 +119,7 @@ class TestIfHpoFilter:
         assert reasons == [
             None,
             None,
-            "Skipping term with less than 7 observations (not powered for 2x2)",
+            "Skip term if underpowered for 2x2 analysis",
             None,
             None,
         ]
