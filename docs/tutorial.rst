@@ -371,7 +371,7 @@ and these are the tested HPO terms ordered by the p value corrected with the Ben
 
 .. csv-table:: *TBX5* truncating vs. missense
    :file: report/tbx5_truncating_vs_missense.csv
-   :header-rows: 2
+   :header-rows: 1
 
 .. doctest:: tutorial
   :hide:
@@ -397,4 +397,4 @@ and we found an association between truncating *TBX5* variants
 and `Ventricular septal defect <https://hpo.jax.org/browse/term/HP:0001629>`_.
 
 This is just one of many analysis types that are possible with GPSEA.
-Please refer to the User guide (next section) to learn more.
+Please refer to the user guide (next section) to learn more.
