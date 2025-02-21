@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gpsea.analysis.mtc_filter._impl &mdash; GPSEA 0.9.5 documentation</title>
+  <title>gpsea.analysis.mtc_filter._impl &mdash; GPSEA 0.9.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=61b282d3"></script>
+      <script src="../../../../_static/documentation_options.js?v=564a08b9"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -78,7 +78,6 @@
   <h1>Source code for gpsea.analysis.mtc_filter._impl</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">deque</span>
@@ -89,7 +88,6 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">hpotk.constants.hpo.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">PHENOTYPIC_ABNORMALITY</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">gpsea</span><span class="w"> </span><span class="kn">import</span> <span class="n">_BASE_URL</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..clf</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenotypeClassifier</span><span class="p">,</span> <span class="n">PhenotypeClassifier</span><span class="p">,</span> <span class="n">P</span>
 
 
@@ -333,18 +331,21 @@
 
     <span class="n">NON_SPECIFIED_TERM</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span>
         <span class="n">code</span><span class="o">=</span><span class="s2">&quot;ST1&quot;</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Non-specified term&quot;</span><span class="p">,</span>
-        <span class="n">doclink</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_BASE_URL</span><span class="p">,</span> <span class="s2">&quot;user-guide/analyses/mtc.html#specified-terms-mt-filter&quot;</span><span class="p">),</span>
+        <span class="n">doclink</span><span class="o">=</span><span class="s2">&quot;#specified-terms-mt-filter&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The MTC filtering result returned when an HPO term does not belong among the selection of terms to be tested.</span>
-
-<span class="sd">    :param terms_to_test: an iterable of items of CURIE `str` or :class:`~hpotk.TermId` representing the terms to test.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">terms_to_test</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hpotk</span><span class="o">.</span><span class="n">TermId</span><span class="p">]],</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the filter.</span>
+
+<span class="sd">        :param terms_to_test: an iterable of items of CURIE `str` or :class:`~hpotk.TermId` representing the terms to test.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_terms_to_test</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
             <span class="n">SpecifiedTermsMtcFilter</span><span class="o">.</span><span class="n">verify_term_id</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">terms_to_test</span>
         <span class="p">)</span>
@@ -412,40 +413,22 @@
 <span class="sd">    We recommend creating an instance using the :func:`~gpsea.analysis.mtc_filter.IfHpoFilter.default_filter` static factory method.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">__DOC_SECTION</span> <span class="o">=</span> <span class="s2">&quot;user-guide/analyses/mtc.html&quot;</span>
-
     <span class="n">SAME_COUNT_AS_THE_ONLY_CHILD</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span>
         <span class="s2">&quot;HMF03&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Skipping term because of a child term with the same individual counts&quot;</span><span class="p">,</span>
-        <span class="n">doclink</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="n">_BASE_URL</span><span class="p">,</span>
-            <span class="n">__DOC_SECTION</span><span class="p">,</span>
-            <span class="s2">&quot;#skip-terms-if-all-counts-are-identical-to-counts-for-a-child-term&quot;</span><span class="p">,</span>
-        <span class="p">),</span>
+        <span class="s2">&quot;Skip terms if all counts are identical to counts for a child term&quot;</span><span class="p">,</span>
+        <span class="n">doclink</span><span class="o">=</span><span class="s2">&quot;#skip-terms-if-all-counts-are-identical-to-counts-for-a-child-term&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span>
         <span class="s2">&quot;HMF05&quot;</span><span class="p">,</span> <span class="s2">&quot;Skipping term because one genotype had zero observations&quot;</span><span class="p">,</span>
-        <span class="n">doclink</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="n">_BASE_URL</span><span class="p">,</span>
-            <span class="n">__DOC_SECTION</span><span class="p">,</span>
-            <span class="s2">&quot;#skip-term-if-one-of-the-genotype-groups-has-neither-observed-nor-excluded-observations&quot;</span><span class="p">,</span>
-        <span class="p">),</span>
+        <span class="n">doclink</span><span class="o">=</span><span class="s2">&quot;#skip-term-if-one-of-the-genotype-groups-has-neither-observed-nor-excluded-observations&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">SKIPPING_NON_PHENOTYPE_TERM</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span>
-        <span class="s2">&quot;HMF07&quot;</span><span class="p">,</span> <span class="s2">&quot;Skipping non phenotype term&quot;</span><span class="p">,</span>
-        <span class="n">doclink</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="n">_BASE_URL</span><span class="p">,</span>
-            <span class="n">__DOC_SECTION</span><span class="p">,</span>
-            <span class="s2">&quot;#skipping-terms-that-are-not-descendents-of-phenotypic-abnormality&quot;</span><span class="p">,</span>
-        <span class="p">),</span>
+        <span class="s2">&quot;HMF07&quot;</span><span class="p">,</span> <span class="s2">&quot;Skipping terms that are not descendents of Phenotypic abnormality&quot;</span><span class="p">,</span>
+        <span class="n">doclink</span><span class="o">=</span><span class="s2">&quot;#skipping-terms-that-are-not-descendents-of-phenotypic-abnormality&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">SKIPPING_GENERAL_TERM</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span>
-        <span class="s2">&quot;HMF08&quot;</span><span class="p">,</span> <span class="s2">&quot;Skipping general term&quot;</span><span class="p">,</span>
-        <span class="n">doclink</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="n">_BASE_URL</span><span class="p">,</span>
-            <span class="n">__DOC_SECTION</span><span class="p">,</span>
-            <span class="s2">&quot;#skipping-general-level-terms&quot;</span><span class="p">,</span>
-        <span class="p">),</span>
+        <span class="s2">&quot;HMF08&quot;</span><span class="p">,</span> <span class="s2">&quot;Skipping </span><span class="se">\&quot;</span><span class="s2">general</span><span class="se">\&quot;</span><span class="s2"> level terms&quot;</span><span class="p">,</span>
+        <span class="n">doclink</span><span class="o">=</span><span class="s2">&quot;#skipping-general-level-terms&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
 <div class="viewcode-block" id="IfHpoFilter.default_filter">
@@ -526,19 +509,14 @@
             <span class="ow">and</span> <span class="mf">0.0</span> <span class="o">&lt;</span> <span class="n">annotation_frequency_threshold</span> <span class="o">&lt;=</span> <span class="mf">1.0</span>
         <span class="p">),</span> <span class="s2">&quot;The annotation_frequency_threshold must be in the range (0, 1]&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hpo_annotation_frequency_threshold</span> <span class="o">=</span> <span class="n">annotation_frequency_threshold</span>
-        <span class="c1"># self._hpo_annotation_frequency_threshold_perc = self._hpo_annotation_frequency_threshold * 100</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_general_hpo_terms</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">general_hpo_terms</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_below_annotation_frequency_threshold</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span>
             <span class="n">code</span><span class="o">=</span><span class="s2">&quot;HMF09&quot;</span><span class="p">,</span>
-            <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Skipping term that was annotated to less than &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_hpo_annotation_frequency_threshold</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2"> of the cohort members&quot;</span><span class="p">,</span>
-            <span class="n">doclink</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="n">_BASE_URL</span><span class="p">,</span>
-                <span class="n">IfHpoFilter</span><span class="o">.</span><span class="n">__DOC_SECTION</span><span class="p">,</span>
-                <span class="s2">&quot;#skipping-terms-that-are-rare-on-the-cohort-level&quot;</span><span class="p">,</span>
-            <span class="p">),</span>
+            <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Skipping terms that are rare on the cohort level &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;(in less than </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_hpo_annotation_frequency_threshold</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2"> of the cohort members)&quot;</span><span class="p">,</span>
+            <span class="n">doclink</span><span class="o">=</span><span class="s2">&quot;#skipping-terms-that-are-rare-on-the-cohort-level&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># Do not perform a test if the counts in the genotype categories do not even have nominal statistical power</span>
@@ -557,24 +535,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_min_observations_for_2_by_2</span> <span class="o">=</span> <span class="mi">7</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_not_powered_for_2_by_2</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span>
             <span class="n">code</span><span class="o">=</span><span class="s2">&quot;HMF06&quot;</span><span class="p">,</span>
-            <span class="n">reason</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Skipping term with less than </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_min_observations_for_2_by_2</span><span class="si">}</span><span class="s2"> observations&quot;</span>
-            <span class="s2">&quot; (not powered for 2x2)&quot;</span><span class="p">,</span>
-            <span class="n">doclink</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="n">_BASE_URL</span><span class="p">,</span>
-                <span class="n">IfHpoFilter</span><span class="o">.</span><span class="n">__DOC_SECTION</span><span class="p">,</span>
-                <span class="s2">&quot;#skip-term-if-underpowered-for-2x2-or-2x3-analysis&quot;</span><span class="p">,</span>
-            <span class="p">),</span>
+            <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Skip term if underpowered for 2x2 analysis&quot;</span><span class="p">,</span>
+            <span class="n">doclink</span><span class="o">=</span><span class="s2">&quot;#skip-term-if-underpowered-for-2x2-or-2x3-analysis&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_min_observations_for_2_by_3</span> <span class="o">=</span> <span class="mi">6</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_not_powered_for_2_by_3</span> <span class="o">=</span> <span class="n">PhenotypeMtcResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span>
             <span class="n">code</span><span class="o">=</span><span class="s2">&quot;HMF06&quot;</span><span class="p">,</span>
-            <span class="n">reason</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Skipping term with less than </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_min_observations_for_2_by_3</span><span class="si">}</span><span class="s2"> observations&quot;</span>
-            <span class="s2">&quot; (not powered for 2x3)&quot;</span><span class="p">,</span>
-            <span class="n">doclink</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="n">_BASE_URL</span><span class="p">,</span>
-                <span class="n">IfHpoFilter</span><span class="o">.</span><span class="n">__DOC_SECTION</span><span class="p">,</span>
-                <span class="s2">&quot;#skip-term-if-underpowered-for-2x2-or-2x3-analysis&quot;</span><span class="p">,</span>
-            <span class="p">),</span>
+            <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Skip term if underpowered for 2x3 analysis&quot;</span><span class="p">,</span>
+            <span class="n">doclink</span><span class="o">=</span><span class="s2">&quot;#skip-term-if-underpowered-for-2x2-or-2x3-analysis&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="IfHpoFilter.filter">
