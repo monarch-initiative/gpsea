@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Compare genotype and phenotype classes &mdash; GPSEA 0.9.4 documentation</title>
+  <title>Compare genotype and phenotype classes &mdash; GPSEA 0.9.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c5ca06ca"></script>
+      <script src="../../_static/documentation_options.js?v=61b282d3"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -284,7 +284,7 @@ a cohort for G/P associations.</p>
 we can configure the analysis manually.</p>
 <p>First, we choose a phenotype MT filter (e.g. <a class="reference internal" href="../../apidocs/gpsea.analysis.mtc_filter.html#gpsea.analysis.mtc_filter.IfHpoFilter" title="gpsea.analysis.mtc_filter.IfHpoFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">IfHpoFilter</span></code></a>):</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.analysis.mtc_filter</span><span class="w"> </span><span class="kn">import</span> <span class="n">IfHpoFilter</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_filter</span> <span class="o">=</span> <span class="n">IfHpoFilter</span><span class="o">.</span><span class="n">default_filter</span><span class="p">(</span><span class="n">hpo</span><span class="p">,</span> <span class="n">term_frequency_threshold</span><span class="o">=</span><span class="mf">.2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_filter</span> <span class="o">=</span> <span class="n">IfHpoFilter</span><span class="o">.</span><span class="n">default_filter</span><span class="p">(</span><span class="n">hpo</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -336,12 +336,12 @@ we can configure the analysis manually.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">phenotypes</span><span class="p">)</span>
 <span class="go">369</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">total_tests</span>
-<span class="go">24</span>
+<span class="go">32</span>
 </pre></div>
 </div>
 <p>We tested the <code class="docutils literal notranslate"><span class="pre">cohort</span></code> for association between the genotype classes (<code class="docutils literal notranslate"><span class="pre">gt_clf</span></code>)
 and HPO terms (<code class="docutils literal notranslate"><span class="pre">pheno_clfs</span></code>).
-Thanks to phenotype MT filter, we only tested 24 out of 369 terms.
+Thanks to phenotype MT filter, we only tested 32 out of 369 terms.
 The MT filter report shows the filtering details:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gpsea.view</span><span class="w"> </span><span class="kn">import</span> <span class="n">MtcStatsViewer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mtc_viewer</span> <span class="o">=</span> <span class="n">MtcStatsViewer</span><span class="p">()</span>
@@ -485,7 +485,7 @@ The MT filter report shows the filtering details:</p>
 <div class="cards">
   <div class="card">
     <ul>
-      <li>Phenotype MTC filter: <em>HPO MTC filter</em></li>
+      <li>Phenotype MTC filter: <em>Independent filtering HPO filter</em></li>
       <li>Multiple testing correction: <em>fdr_bh</em></li>
     </ul>
   </div>
@@ -493,32 +493,34 @@ The MT filter report shows the filtering details:</p>
     <table>
       <tbody>
         <tr>
-          <th>Code</th>
           <th>Reason</th>
           <th>Count</th>
         </tr>
         
         <tr>
-          <td>HMF01</td>
-          <td>Skipping term with maximum frequency that was less than threshold 0.2</td>
-          <td>10</td>
+          
+            <td><a href="https://monarch-initiative.github.io/gpsea/stable/user-guide/analyses/mtc.html/#skip-terms-if-all-counts-are-identical-to-counts-for-a-child-term">Skipping term because of a child term with the same individual counts</a></td>
+          
+          <td>1</td>
         </tr>
         
         <tr>
-          <td>HMF08</td>
-          <td>Skipping general term</td>
+          
+            <td><a href="https://monarch-initiative.github.io/gpsea/stable/user-guide/analyses/mtc.html/#skipping-general-level-terms">Skipping general term</a></td>
+          
           <td>48</td>
         </tr>
         
         <tr>
-          <td>HMF09</td>
-          <td>Skipping term with maximum annotation frequency that was less than threshold 0.4</td>
-          <td>287</td>
+          
+            <td><a href="https://monarch-initiative.github.io/gpsea/stable/user-guide/analyses/mtc.html/#skipping-terms-that-are-rare-on-the-cohort-level">Skipping term that was annotated to less than 40% of the cohort members</a></td>
+          
+          <td>288</td>
         </tr>
         
       </tbody>
       <caption>
-        Performed statistical tests for 24 out of the total of 369 HPO terms.
+        Performed statistical tests for 32 out of the total of 369 HPO terms.
       </caption>
     </table>
   </div>
@@ -545,49 +547,85 @@ one HPO term per row. The rows are ordered by the corrected p value and nominal 
 <th class="head"><p>Corrected p values</p></th>
 <th class="head"><p>p values</p></th>
 </tr>
-<tr class="row-even"><th class="head"><p>Ventricular septal defect [HP:0001629]</p></th>
-<th class="head"><p>19/19 (100%)</p></th>
-<th class="head"><p>42/71 (59%)</p></th>
-<th class="head"><p>0.005806240832840839</p></th>
-<th class="head"><p>0.00024192670136836828</p></th>
-</tr>
 </thead>
 <tbody>
+<tr class="row-even"><td><p>Ventricular septal defect [HP:0001629]</p></td>
+<td><p>19/19 (100%)</p></td>
+<td><p>42/71 (59%)</p></td>
+<td><p>0.007741654443787785</p></td>
+<td><p>0.00024192670136836828</p></td>
+</tr>
 <tr class="row-odd"><td><p>Absent thumb [HP:0009777]</p></td>
 <td><p>14/31 (45%)</p></td>
 <td><p>18/100 (18%)</p></td>
-<td><p>0.04456405819223913</p></td>
+<td><p>0.05941874425631884</p></td>
 <td><p>0.0037136715160199273</p></td>
 </tr>
 <tr class="row-even"><td><p>Secundum atrial septal defect [HP:0001684]</p></td>
 <td><p>4/22 (18%)</p></td>
 <td><p>23/55 (42%)</p></td>
-<td><p>0.4065940176561687</p></td>
+<td><p>0.5421253568748916</p></td>
 <td><p>0.06544319142266644</p></td>
 </tr>
 <tr class="row-odd"><td><p>Triphalangeal thumb [HP:0001199]</p></td>
 <td><p>13/32 (41%)</p></td>
 <td><p>23/99 (23%)</p></td>
-<td><p>0.4065940176561687</p></td>
+<td><p>0.5421253568748916</p></td>
 <td><p>0.06932119159387057</p></td>
 </tr>
 <tr class="row-even"><td><p>Muscular ventricular septal defect [HP:0011623]</p></td>
 <td><p>6/25 (24%)</p></td>
 <td><p>8/84 (10%)</p></td>
-<td><p>0.4065940176561687</p></td>
+<td><p>0.5421253568748916</p></td>
 <td><p>0.08470708701170182</p></td>
 </tr>
-<tr class="row-odd"><td><p>Short thumb [HP:0009778]</p></td>
+<tr class="row-odd"><td><p>Amelia involving the upper limbs [HP:0009812]</p></td>
+<td><p>1/37 (3%)</p></td>
+<td><p>0/114 (0%)</p></td>
+<td><p>1.0</p></td>
+<td><p>0.24503311258278143</p></td>
+</tr>
+<tr class="row-even"><td><p>Patent foramen ovale [HP:0001655]</p></td>
+<td><p>0/36 (0%)</p></td>
+<td><p>4/69 (6%)</p></td>
+<td><p>1.0</p></td>
+<td><p>0.29623386322415446</p></td>
+</tr>
+<tr class="row-odd"><td><p>Perimembranous ventricular septal defect [HP:0011682]</p></td>
+<td><p>3/25 (12%)</p></td>
+<td><p>6/84 (7%)</p></td>
+<td><p>1.0</p></td>
+<td><p>0.4256518230307461</p></td>
+</tr>
+<tr class="row-even"><td><p>Short thumb [HP:0009778]</p></td>
 <td><p>8/30 (27%)</p></td>
 <td><p>25/69 (36%)</p></td>
 <td><p>1.0</p></td>
 <td><p>0.4870099714553749</p></td>
 </tr>
-<tr class="row-even"><td><p>Absent radius [HP:0003974]</p></td>
+<tr class="row-odd"><td><p>Absent radius [HP:0003974]</p></td>
 <td><p>6/25 (24%)</p></td>
 <td><p>9/43 (21%)</p></td>
 <td><p>1.0</p></td>
 <td><p>0.7703831604944444</p></td>
+</tr>
+<tr class="row-even"><td><p>Short 1st metacarpal [HP:0010034]</p></td>
+<td><p>0/22 (0%)</p></td>
+<td><p>1/45 (2%)</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Common atrium [HP:0011565]</p></td>
+<td><p>0/38 (0%)</p></td>
+<td><p>1/115 (1%)</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Unroofed coronary sinus [HP:0031297]</p></td>
+<td><p>0/38 (0%)</p></td>
+<td><p>1/117 (1%)</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
 </tr>
 <tr class="row-odd"><td><p>Abnormal long bone morphology [HP:0011314]</p></td>
 <td><p>13/13 (100%)</p></td>
@@ -607,57 +645,69 @@ one HPO term per row. The rows are ordered by the corrected p value and nominal 
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-even"><td><p>Atrial septal defect [HP:0001631]</p></td>
+<tr class="row-even"><td><p>Upper limb phocomelia [HP:0009813]</p></td>
+<td><p>2/37 (5%)</p></td>
+<td><p>8/116 (7%)</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Atrial septal defect [HP:0001631]</p></td>
 <td><p>20/20 (100%)</p></td>
 <td><p>63/65 (97%)</p></td>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-odd"><td><p>Abnormal atrial septum morphology [HP:0011994]</p></td>
+<tr class="row-even"><td><p>Abnormal atrial septum morphology [HP:0011994]</p></td>
 <td><p>20/20 (100%)</p></td>
 <td><p>64/64 (100%)</p></td>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-even"><td><p>Abnormal cardiac atrium morphology [HP:0005120]</p></td>
+<tr class="row-odd"><td><p>Abnormal cardiac atrium morphology [HP:0005120]</p></td>
 <td><p>20/20 (100%)</p></td>
 <td><p>64/64 (100%)</p></td>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-odd"><td><p>Abnormal hand morphology [HP:0005922]</p></td>
+<tr class="row-even"><td><p>Abnormal hand morphology [HP:0005922]</p></td>
 <td><p>20/20 (100%)</p></td>
 <td><p>75/75 (100%)</p></td>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-even"><td><p>Aplasia/hypoplasia of the extremities [HP:0009815]</p></td>
+<tr class="row-odd"><td><p>Aplasia/hypoplasia of the extremities [HP:0009815]</p></td>
 <td><p>22/22 (100%)</p></td>
 <td><p>78/78 (100%)</p></td>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-odd"><td><p>Aplasia/hypoplasia involving bones of the upper limbs [HP:0006496]</p></td>
+<tr class="row-even"><td><p>Aplasia/hypoplasia involving bones of the upper limbs [HP:0006496]</p></td>
 <td><p>22/22 (100%)</p></td>
 <td><p>78/78 (100%)</p></td>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-even"><td><p>Aplasia/hypoplasia involving bones of the extremities [HP:0045060]</p></td>
+<tr class="row-odd"><td><p>Aplasia/hypoplasia involving bones of the extremities [HP:0045060]</p></td>
 <td><p>22/22 (100%)</p></td>
 <td><p>78/78 (100%)</p></td>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-odd"><td><p>Aplasia/hypoplasia involving the skeleton [HP:0009115]</p></td>
+<tr class="row-even"><td><p>Aplasia/hypoplasia involving the skeleton [HP:0009115]</p></td>
 <td><p>23/23 (100%)</p></td>
 <td><p>80/80 (100%)</p></td>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-even"><td><p>Abnormal cardiac septum morphology [HP:0001671]</p></td>
+<tr class="row-odd"><td><p>Abnormal cardiac septum morphology [HP:0001671]</p></td>
 <td><p>28/28 (100%)</p></td>
 <td><p>89/89 (100%)</p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Complete atrioventricular canal defect [HP:0001674]</p></td>
+<td><p>3/36 (8%)</p></td>
+<td><p>6/67 (9%)</p></td>
 <td><p>1.0</p></td>
 <td><p>1.0</p></td>
 </tr>
@@ -700,7 +750,7 @@ was observed in 42/71 (59%) patients with no frameshift allele (<cite>Other</cit
 but it was observed in 19/19 (100%) patients with a frameshift allele (<cite>Frameshift</cite>).
 Fisher exact test computed a p value of <cite>~0.000242</cite>
 and the p value corrected by Benjamini-Hochberg procedure
-is <cite>~0.005806</cite>.</p>
+is <cite>~0.00774</cite>.</p>
 </section>
 </section>
 </section>
