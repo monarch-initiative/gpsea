@@ -24,7 +24,6 @@ class TestHpoTermAnalysis:
     ) -> PhenotypeMtcFilter:
         return IfHpoFilter.default_filter(
             hpo=hpo,
-            term_frequency_threshold=0.2,
             annotation_frequency_threshold=0.25,
         )
 

@@ -664,6 +664,7 @@ class MtcStatsViewer(BaseViewer):
                 {
                     "code": mtc_issue.code,
                     "reason": mtc_issue.reason,
+                    "doclink": mtc_issue.doclink,
                     "count": count,
                 }
             )

@@ -206,23 +206,10 @@ See the API documentation and the explanations below for more details.
   :local:
 
 
-`HMF01` - Skip terms that occur very rarely
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. _hmf03:
 
-The ``term_frequency_threshold`` determines the mininum proportion of individuals
-with direct or indirect annotation by the HPO term to test.
-We check each of the genotype groups (e.g., MISSENSE vs. not-MISSENSE),
-and we only retain a term for testing if the proportion of individuals
-in at least one genotype group is greater than
-or equal to ``term_frequency_threshold``.
-This is because of our assumption that even if there is statistical significance,
-if a term is only seen in (for example) 7% of individuals
-in the MISSENSE group and 2% in the not-MISSENSE group,
-the term is unlikely to be of great interest because it is rare.
-
-
-`HMF03` - Skip terms if all counts are identical to counts for a child term
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Skip terms if all counts are identical to counts for a child term
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Let's say a term such as    
 `Posterior polar cataract (HP:0001115) <https://hpo.jax.org/browse/term/HP:0001115>`_
@@ -238,14 +225,17 @@ and the result of a test, such as the Fisher Exact test, would be exactly the sa
 for *Polar cataract* as for *Posterior polar cataract*.
 
 
-`HMF05` - Skip term if one of the genotype groups has neither observed nor excluded observations
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. _hmf05:
+
+Skip term if one of the genotype groups has neither observed nor excluded observations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Skip terms if there are no HPO observations in a group.
 
+.. _hmf06:
 
-`HMF06` - Skip term if underpowered for 2x2 or 2x3 analysis
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Skip term if underpowered for 2x2 or 2x3 analysis
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If the individuals are binned into 2 phenotype groups and 2 genotype groups (2x2)
 and the total count of patients in all genotype-phenotype groups is less than 7,
@@ -254,8 +244,10 @@ is less than 6, then there is a lack even of the nominal statistical power
 and the counts can never be significant.
 
 
-`HMF07` - Skipping terms that are not descendents of *Phenotypic abnormality*
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. _hmf07:
+
+Skipping terms that are not descendents of *Phenotypic abnormality*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The HPO has a number of other branches that describe modes of inheritance,
 past medical history, and clinical modifiers.
@@ -264,8 +256,10 @@ so, all terms that are not descendants of
 `Phenotypic abnormality <https://hpo.jax.org/browse/term/HP:0000118>`_ are filtered out.
 
 
-`HMF08` - Skipping "general" level terms
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. _hmf08:
+
+Skipping "general" level terms
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 All the direct children of the root phenotype term
 `Phenotypic abnormality (HP:0000118) <https://hpo.jax.org/browse/term/HP:0000118>`_
@@ -282,8 +276,10 @@ it will lead to at least one of the descendents of
 See :ref:`general-hpo-terms` section for details.
 
 
-`HMF09` - Skipping terms that are rare on the cohort level 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. _hmf09:
+
+Skipping terms that are rare on the cohort level 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 We skip terms that occur in less than a certain percentage of cohort members.
 The purpose of this threshold is to omit terms for which we simply

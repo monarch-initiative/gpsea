@@ -243,7 +243,7 @@ we can configure the analysis manually.
 First, we choose a phenotype MT filter (e.g. :class:`~gpsea.analysis.mtc_filter.IfHpoFilter`):
 
 >>> from gpsea.analysis.mtc_filter import IfHpoFilter
->>> mtc_filter = IfHpoFilter.default_filter(hpo, term_frequency_threshold=.2)
+>>> mtc_filter = IfHpoFilter.default_filter(hpo)
 
 .. note::
 

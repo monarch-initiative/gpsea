@@ -12,14 +12,16 @@
     <table>
       <tbody>
         <tr>
-          <th>Code</th>
           <th>Reason</th>
           <th>Count</th>
         </tr>
-        {% for skipped  in issue_to_count %}
+        {% for skipped in issue_to_count %}
         <tr>
-          <td>{{ skipped.code }}</td>
-          <td>{{ skipped.reason }}</td>
+          {% if skipped.doclink is none %}
+            <td>{{ skipped.reason }}</td>
+          {% else %}
+            <td><a href="{{ skipped.doclink }}">{{ skipped.reason }}</a></td>
+          {% endif %}
           <td>{{ skipped.count }}</td>
         </tr>
         {% endfor %}
