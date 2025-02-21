@@ -8,5 +8,3 @@ _overwrite = False
 """
 A private "hack" flag for regenerating documentation output (HTML fragments, figures).
 """
-
-_BASE_URL = "https://monarch-initiative.github.io/gpsea/stable"

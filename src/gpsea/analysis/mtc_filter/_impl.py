@@ -1,6 +1,5 @@
 import abc
 import dataclasses
-import os
 import typing
 
 from collections import deque
@@ -11,7 +10,6 @@ import pandas as pd
 
 from hpotk.constants.hpo.base import PHENOTYPIC_ABNORMALITY
 
-from gpsea import _BASE_URL
 from ..clf import GenotypeClassifier, PhenotypeClassifier, P
 
 
@@ -211,18 +209,21 @@ class SpecifiedTermsMtcFilter(PhenotypeMtcFilter[hpotk.TermId]):
 
     NON_SPECIFIED_TERM = PhenotypeMtcResult.fail(
         code="ST1", reason="Non-specified term",
-        doclink=os.path.join(_BASE_URL, "user-guide/analyses/mtc.html#specified-terms-mt-filter"),
+        doclink="#specified-terms-mt-filter",
     )
     """
     The MTC filtering result returned when an HPO term does not belong among the selection of terms to be tested.
-
-    :param terms_to_test: an iterable of items of CURIE `str` or :class:`~hpotk.TermId` representing the terms to test.
     """
 
     def __init__(
         self,
         terms_to_test: typing.Iterable[typing.Union[str, hpotk.TermId]],
     ):
+        """
+        Create the filter.
+
+        :param terms_to_test: an iterable of items of CURIE `str` or :class:`~hpotk.TermId` representing the terms to test.
+        """
         self._terms_to_test = tuple(
             SpecifiedTermsMtcFilter.verify_term_id(val) for val in terms_to_test
         )
@@ -275,40 +276,22 @@ class IfHpoFilter(PhenotypeMtcFilter[hpotk.TermId]):
     We recommend creating an instance using the :func:`~gpsea.analysis.mtc_filter.IfHpoFilter.default_filter` static factory method.
     """
 
-    __DOC_SECTION = "user-guide/analyses/mtc.html"
-
     SAME_COUNT_AS_THE_ONLY_CHILD = PhenotypeMtcResult.fail(
         "HMF03",
-        "Skipping term because of a child term with the same individual counts",
-        doclink=os.path.join(
-            _BASE_URL,
-            __DOC_SECTION,
-            "#skip-terms-if-all-counts-are-identical-to-counts-for-a-child-term",
-        ),
+        "Skip terms if all counts are identical to counts for a child term",
+        doclink="#skip-terms-if-all-counts-are-identical-to-counts-for-a-child-term",
     )
     SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS = PhenotypeMtcResult.fail(
         "HMF05", "Skipping term because one genotype had zero observations",
-        doclink=os.path.join(
-            _BASE_URL,
-            __DOC_SECTION,
-            "#skip-term-if-one-of-the-genotype-groups-has-neither-observed-nor-excluded-observations",
-        ),
+        doclink="#skip-term-if-one-of-the-genotype-groups-has-neither-observed-nor-excluded-observations",
     )
     SKIPPING_NON_PHENOTYPE_TERM = PhenotypeMtcResult.fail(
-        "HMF07", "Skipping non phenotype term",
-        doclink=os.path.join(
-            _BASE_URL,
-            __DOC_SECTION,
-            "#skipping-terms-that-are-not-descendents-of-phenotypic-abnormality",
-        ),
+        "HMF07", "Skipping terms that are not descendents of Phenotypic abnormality",
+        doclink="#skipping-terms-that-are-not-descendents-of-phenotypic-abnormality",
     )
     SKIPPING_GENERAL_TERM = PhenotypeMtcResult.fail(
-        "HMF08", "Skipping general term",
-        doclink=os.path.join(
-            _BASE_URL,
-            __DOC_SECTION,
-            "#skipping-general-level-terms",
-        ),
+        "HMF08", "Skipping \"general\" level terms",
+        doclink="#skipping-general-level-terms",
     )
 
     @staticmethod
@@ -386,19 +369,14 @@ class IfHpoFilter(PhenotypeMtcFilter[hpotk.TermId]):
             and 0.0 < annotation_frequency_threshold <= 1.0
         ), "The annotation_frequency_threshold must be in the range (0, 1]"
         self._hpo_annotation_frequency_threshold = annotation_frequency_threshold
-        # self._hpo_annotation_frequency_threshold_perc = self._hpo_annotation_frequency_threshold * 100
 
         self._general_hpo_terms = set(general_hpo_terms)
 
         self._below_annotation_frequency_threshold = PhenotypeMtcResult.fail(
             code="HMF09",
-            reason="Skipping term that was annotated to less than "
-            f"{self._hpo_annotation_frequency_threshold:.0%} of the cohort members",
-            doclink=os.path.join(
-                _BASE_URL,
-                IfHpoFilter.__DOC_SECTION,
-                "#skipping-terms-that-are-rare-on-the-cohort-level",
-            ),
+            reason="Skipping terms that are rare on the cohort level "
+            f"(in less than {self._hpo_annotation_frequency_threshold:.0%} of the cohort members)",
+            doclink="#skipping-terms-that-are-rare-on-the-cohort-level",
         )
 
         # Do not perform a test if the counts in the genotype categories do not even have nominal statistical power
@@ -417,24 +395,14 @@ class IfHpoFilter(PhenotypeMtcFilter[hpotk.TermId]):
         self._min_observations_for_2_by_2 = 7
         self._not_powered_for_2_by_2 = PhenotypeMtcResult.fail(
             code="HMF06",
-            reason=f"Skipping term with less than {self._min_observations_for_2_by_2} observations"
-            " (not powered for 2x2)",
-            doclink=os.path.join(
-                _BASE_URL,
-                IfHpoFilter.__DOC_SECTION,
-                "#skip-term-if-underpowered-for-2x2-or-2x3-analysis",
-            ),
+            reason="Skip term if underpowered for 2x2 analysis",
+            doclink="#skip-term-if-underpowered-for-2x2-or-2x3-analysis",
         )
         self._min_observations_for_2_by_3 = 6
         self._not_powered_for_2_by_3 = PhenotypeMtcResult.fail(
             code="HMF06",
-            reason=f"Skipping term with less than {self._min_observations_for_2_by_3} observations"
-            " (not powered for 2x3)",
-            doclink=os.path.join(
-                _BASE_URL,
-                IfHpoFilter.__DOC_SECTION,
-                "#skip-term-if-underpowered-for-2x2-or-2x3-analysis",
-            ),
+            reason="Skip term if underpowered for 2x3 analysis",
+            doclink="#skip-term-if-underpowered-for-2x2-or-2x3-analysis",
         )
 
     def filter(
