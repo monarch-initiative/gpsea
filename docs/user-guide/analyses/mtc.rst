@@ -179,7 +179,7 @@ Independent filtering for HPO
 Independent filtering for HPO involves making several domain judgments
 and taking advantage of the HPO structure
 in order to reduce the number of HPO terms for testing.
-The filter's logic is made up of 8 individual heuristics 
+The filter's logic is made up of 6 individual heuristics 
 to skip testing the terms that are unlikely to yield significant or interesting results (see below).
 
 Some of the heuristics need to access HPO hierarchy,
@@ -197,7 +197,7 @@ using the static constructor
 >>> hpo_mtc = IfHpoFilter.default_filter(hpo=hpo)
 
 
-The constructor takes HPO and two thresholds (optional).
+The constructor takes HPO and one threshold (optional).
 See the API documentation and the explanations below for more details.
 
 
@@ -205,8 +205,6 @@ See the API documentation and the explanations below for more details.
   :depth: 1
   :local:
 
-
-.. _hmf03:
 
 Skip terms if all counts are identical to counts for a child term
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -225,14 +223,11 @@ and the result of a test, such as the Fisher Exact test, would be exactly the sa
 for *Polar cataract* as for *Posterior polar cataract*.
 
 
-.. _hmf05:
-
 Skip term if one of the genotype groups has neither observed nor excluded observations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Skip terms if there are no HPO observations in a group.
 
-.. _hmf06:
 
 Skip term if underpowered for 2x2 or 2x3 analysis
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -244,8 +239,6 @@ is less than 6, then there is a lack even of the nominal statistical power
 and the counts can never be significant.
 
 
-.. _hmf07:
-
 Skipping terms that are not descendents of *Phenotypic abnormality*
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -255,8 +248,6 @@ We do not think it makes much sense to test for enrichment of these terms,
 so, all terms that are not descendants of
 `Phenotypic abnormality <https://hpo.jax.org/browse/term/HP:0000118>`_ are filtered out.
 
-
-.. _hmf08:
 
 Skipping "general" level terms
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -275,8 +266,6 @@ it will lead to at least one of the descendents of
 
 See :ref:`general-hpo-terms` section for details.
 
-
-.. _hmf09:
 
 Skipping terms that are rare on the cohort level 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

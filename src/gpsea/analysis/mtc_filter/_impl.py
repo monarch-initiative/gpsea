@@ -280,19 +280,35 @@ class IfHpoFilter(PhenotypeMtcFilter[hpotk.TermId]):
     SAME_COUNT_AS_THE_ONLY_CHILD = PhenotypeMtcResult.fail(
         "HMF03",
         "Skipping term because of a child term with the same individual counts",
-        doclink=os.path.join(_BASE_URL, __DOC_SECTION, "#hmf03"),
+        doclink=os.path.join(
+            _BASE_URL,
+            __DOC_SECTION,
+            "#skip-terms-if-all-counts-are-identical-to-counts-for-a-child-term",
+        ),
     )
     SKIPPING_SINCE_ONE_GENOTYPE_HAD_ZERO_OBSERVATIONS = PhenotypeMtcResult.fail(
         "HMF05", "Skipping term because one genotype had zero observations",
-        doclink=os.path.join(_BASE_URL, __DOC_SECTION, "#hmf05"),
+        doclink=os.path.join(
+            _BASE_URL,
+            __DOC_SECTION,
+            "#skip-term-if-one-of-the-genotype-groups-has-neither-observed-nor-excluded-observations",
+        ),
     )
     SKIPPING_NON_PHENOTYPE_TERM = PhenotypeMtcResult.fail(
         "HMF07", "Skipping non phenotype term",
-        doclink=os.path.join(_BASE_URL, __DOC_SECTION, "#hmf07"),
+        doclink=os.path.join(
+            _BASE_URL,
+            __DOC_SECTION,
+            "#skipping-terms-that-are-not-descendents-of-phenotypic-abnormality",
+        ),
     )
     SKIPPING_GENERAL_TERM = PhenotypeMtcResult.fail(
         "HMF08", "Skipping general term",
-        doclink=os.path.join(_BASE_URL, __DOC_SECTION, "#hmf08"),
+        doclink=os.path.join(
+            _BASE_URL,
+            __DOC_SECTION,
+            "#skipping-general-level-terms",
+        ),
     )
 
     @staticmethod
@@ -378,7 +394,11 @@ class IfHpoFilter(PhenotypeMtcFilter[hpotk.TermId]):
             code="HMF09",
             reason="Skipping term that was annotated to less than "
             f"{self._hpo_annotation_frequency_threshold:.0%} of the cohort members",
-            doclink=os.path.join(_BASE_URL, IfHpoFilter.__DOC_SECTION, "#hmf09"),
+            doclink=os.path.join(
+                _BASE_URL,
+                IfHpoFilter.__DOC_SECTION,
+                "#skipping-terms-that-are-rare-on-the-cohort-level",
+            ),
         )
 
         # Do not perform a test if the counts in the genotype categories do not even have nominal statistical power
@@ -399,14 +419,22 @@ class IfHpoFilter(PhenotypeMtcFilter[hpotk.TermId]):
             code="HMF06",
             reason=f"Skipping term with less than {self._min_observations_for_2_by_2} observations"
             " (not powered for 2x2)",
-            doclink=os.path.join(_BASE_URL, IfHpoFilter.__DOC_SECTION, "#hmf06"),
+            doclink=os.path.join(
+                _BASE_URL,
+                IfHpoFilter.__DOC_SECTION,
+                "#skip-term-if-underpowered-for-2x2-or-2x3-analysis",
+            ),
         )
         self._min_observations_for_2_by_3 = 6
         self._not_powered_for_2_by_3 = PhenotypeMtcResult.fail(
             code="HMF06",
             reason=f"Skipping term with less than {self._min_observations_for_2_by_3} observations"
             " (not powered for 2x3)",
-            doclink=os.path.join(_BASE_URL, IfHpoFilter.__DOC_SECTION, "#hmf06"),
+            doclink=os.path.join(
+                _BASE_URL,
+                IfHpoFilter.__DOC_SECTION,
+                "#skip-term-if-underpowered-for-2x2-or-2x3-analysis",
+            ),
         )
 
     def filter(

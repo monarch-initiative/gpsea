@@ -331,7 +331,7 @@ one HPO term per row. The rows are ordered by the corrected p value and nominal 
 
 .. csv-table:: *TBX5* frameshift vs rest
    :file: report/tbx5_frameshift.csv
-   :header-rows: 2
+   :header-rows: 1
 
 .. doctest:: phenotype-classes
    :hide:
@@ -346,5 +346,5 @@ was observed in 42/71 (59%) patients with no frameshift allele (`Other`)
 but it was observed in 19/19 (100%) patients with a frameshift allele (`Frameshift`).
 Fisher exact test computed a p value of `~0.000242`
 and the p value corrected by Benjamini-Hochberg procedure
-is `~0.005806`.
+is `~0.00774`.
 
