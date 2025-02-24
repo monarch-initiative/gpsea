@@ -51,7 +51,7 @@ Let's start by loading a :class:`~gpsea.model.Cohort`
 of 19 individuals with mutations in *RERE* leading to Holt-Oram syndrome.
 The cohort was prepared from phenopackets as described in :ref:`create-a-cohort` section,
 and then serialized as
-a `JSON file <https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/RERE.0.1.20.json>`_
+a `JSON file <https://github.com/P2GX/gpsea/tree/main/docs/cohort-data/RERE.0.1.20.json>`_
 following the instructions in :ref:`cohort-persistence` section.
 
 .. 
@@ -184,7 +184,7 @@ Need more?
 The builtin predicates should cover majority of use cases.
 However, if a predicate seems to be missing,
 feel free to submit an issue in our
-`GitHub tracker <https://github.com/monarch-initiative/gpsea/issues>`_,
+`GitHub tracker <https://github.com/P2GX/gpsea/issues>`_,
 or implement your own predicate by following the :ref:`custom-variant-predicate`
 guide.
 

@@ -47,7 +47,7 @@ It is also possible to instal the *latest* release with the latest features and 
 On top of having Python available, installation of the latest release needs
 `Git <https://git-scm.com/>`_ to be installed as well::
 
-  git clone https://github.com/monarch-initiative/gpsea.git
+  git clone https://github.com/P2GX/gpsea.git
   
   cd gpsea
 

@@ -58,7 +58,7 @@ of the cohort and the distribution of the identified variants.
 We exemplify the exploratory analysis on a cohort of 156 individuals with mutations
 in *TBX5* from Phenopacket Store *0.1.20*. The cohort was preprocessed as described
 in the :ref:`input-data` section and stored
-at `docs/cohort-data/TBX5.0.1.20.json <https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/TBX5.0.1.20.json>`_
+at `docs/cohort-data/TBX5.0.1.20.json <https://github.com/P2GX/gpsea/tree/main/docs/cohort-data/TBX5.0.1.20.json>`_
 in JSON format.
 
 

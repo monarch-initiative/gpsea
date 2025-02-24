@@ -41,7 +41,7 @@ We provide recommended reading for background on the study of genotype-phenotype
 Feedback
 ********
 
-The best place to leave feedback, ask questions, and report bugs is the GPSEA `Issue Tracker <https://github.com/monarch-initiative/gpsea/issues>`_.
+The best place to leave feedback, ask questions, and report bugs is the GPSEA `Issue Tracker <https://github.com/P2GX/gpsea/issues>`_.
 
 .. toctree::
     :caption: Table of Contents
