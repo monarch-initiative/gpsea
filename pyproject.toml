@@ -6,8 +6,8 @@ build-backend = "setuptools.build_meta"
 name = "gpsea"
 authors = [
     {name = "Lauren Rekerle", email="lauren.rekerle@jax.org"},
-    {name = "Daniel Danis", email="daniel.danis@jax.org"},
-    {name = "Peter Robinson", email="peter.robinson@jax.org"},
+    {name = "Daniel Danis", email="daniel.danis@bih-charite.de"},
+    {name = "Peter Robinson", email="peter.robinson@bih-charite.de"},
      ]
 description = "Discover genotype-phenotype correlations with GA4GH phenopackets"
 readme = "README.md"
@@ -61,10 +61,10 @@ docs = [
 ]
 
 [project.urls]
-homepage = "https://github.com/monarch-initiative/gpsea"
-repository = "https://github.com/monarch-initiative/gpsea.git"
-documentation = "https://monarch-initiative.github.io/gpsea/stable"
-bugtracker = "https://github.com/monarch-initiative/gpsea/issues"
+homepage = "https://github.com/P2GX/gpsea"
+repository = "https://github.com/P2GX/gpsea.git"
+documentation = "https://P2GX.github.io/gpsea/stable"
+bugtracker = "https://github.com/P2GX/gpsea/issues"
 
 [tool.setuptools]
 package-dir = { "" = "src" }

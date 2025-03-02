@@ -69,7 +69,7 @@ Let's now analyze the subjects reported in *Jordan et al*.
 We will load 19 phenopackets that represent individuals with mutations in *RERE*
 whose signs and symptoms were encoded into HPO terms and deposited into Phenopacket Store.
 We will load the :class:`~gpsea.model.Cohort`
-from a `JSON file <https://github.com/monarch-initiative/gpsea/tree/main/docs/cohort-data/RERE.0.1.20.json>`_.
+from a `JSON file <https://github.com/P2GX/gpsea/tree/main/docs/cohort-data/RERE.0.1.20.json>`_.
 The cohort was prepared from phenopackets as described in :ref:`create-a-cohort` section,
 and then serialized as a JSON file following the instructions in :ref:`cohort-persistence` section.
 
