@@ -5,11 +5,11 @@
 
 GPSEA (Genotypes and Phenotypes - Statistical Evaluation of Associations) is a Python package for finding genotype-phenotype associations.
 
-See our documentation for the [setup](https://P2GX.github.io/gpsea/stable/setup.html) instructions,
-a [tutorial](https://P2GX.github.io/gpsea/stable/tutorial.html) with an end-to-end genotype-phenotype association analysis,
-and a comprehensive [user guide](https://P2GX.github.io/gpsea/stable/user-guide/index.html) with everything else.
+See our documentation for the [setup](https://p2gx.github.io/gpsea/stable/setup.html) instructions,
+a [tutorial](https://p2gx.github.io/gpsea/stable/tutorial.html) with an end-to-end genotype-phenotype association analysis,
+and a comprehensive [user guide](https://p2gx.github.io/gpsea/stable/user-guide/index.html) with everything else.
 
 The documentation comes in two flavors:
 
-- [Stable documentation](https://P2GX.github.io/gpsea/stable/) (last release on `main` branch)
-- [Latest documentation](https://P2GX.github.io/gpsea/latest) (bleeding edge, latest commit on `develop` branch)
+- [Stable documentation](https://p2gx.github.io/gpsea/stable/) (last release on `main` branch)
+- [Latest documentation](https://p2gx.github.io/gpsea/latest) (bleeding edge, latest commit on `develop` branch)
